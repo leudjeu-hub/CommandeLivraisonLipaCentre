@@ -10,39 +10,46 @@
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/products.js" defer></script>
+  <script src="js/i18n.js" defer></script>
   <script src="js/script.js" defer></script>
 </head>
 <body>
+  <!--
+    Traduction : chaque élément traduisible porte data-i18n="clé" (contenu) et/ou
+    data-i18n-attr="attribut:clé;…" (placeholder, aria-label). Le texte français reste
+    ici ; les traductions anglaises sont dans js/i18n.js.
+  -->
   <header>
-    <a class="brand" href="#top">Librairie du Centre<small>LIBRAIRIE &amp; PAPETERIE · YAOUNDÉ</small></a>
-    <nav aria-label="Navigation principale">
-      <button type="button" class="menu-toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks"><span aria-hidden="true">☰</span> Menu</button>
+    <a class="brand" href="#top"><span data-i18n="brand.name">Librairie du Centre</span><small data-i18n="brand.tagline">LIBRAIRIE &amp; PAPETERIE · YAOUNDÉ</small></a>
+    <nav aria-label="Navigation principale" data-i18n-attr="aria-label:nav.label">
+      <button type="button" class="menu-toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks"><span aria-hidden="true">☰</span> <span data-i18n="nav.menu">Menu</span></button>
       <div class="nav-links" id="navLinks">
-        <a href="#catalogue">Le catalogue</a>
-        <a href="#listes">Listes scolaires</a>
-        <a href="#livraison">Livraison</a>
+        <a href="#catalogue" data-i18n="nav.catalogue">Le catalogue</a>
+        <a href="#listes" data-i18n="nav.lists">Listes scolaires</a>
+        <a href="#livraison" data-i18n="nav.delivery">Livraison</a>
+        <button type="button" class="lang-toggle" id="langBtn" lang="en" aria-label="Switch to English">English</button>
       </div>
-      <button type="button" class="btn" id="cartBtn">Panier <span id="count">0</span></button>
+      <button type="button" class="btn" id="cartBtn"><span data-i18n="nav.cart">Panier</span> <span id="count">0</span></button>
     </nav>
   </header>
 
-  <div class="notice">Version de présentation · Articles et prix illustratifs · Chaque commande est confirmée par la librairie.</div>
+  <div class="notice" data-i18n="notice">Version de présentation · Articles et prix illustratifs · Chaque commande est confirmée par la librairie.</div>
 
   <main id="top">
     <!-- Accueil -->
     <div class="hero">
       <div>
-        <div class="eyebrow">Vos essentiels, à votre porte</div>
-        <h1>Une page s’ouvre.<br><em>Nous vous la livrons.</em></h1>
-        <p class="intro">Livres, fournitures scolaires et papeterie de bureau. Préparez votre panier en quelques clics, pour une livraison à domicile à Yaoundé et un paiement à la réception.</p>
+        <div class="eyebrow" data-i18n="hero.eyebrow">Vos essentiels, à votre porte</div>
+        <h1 data-i18n="hero.title">Une page s’ouvre.<br><em>Nous vous la livrons.</em></h1>
+        <p class="intro" data-i18n="hero.intro">Livres, fournitures scolaires et papeterie de bureau. Préparez votre panier en quelques clics, pour une livraison à domicile à Yaoundé et un paiement à la réception.</p>
         <div class="actions">
-          <a class="btn" href="#catalogue">Découvrir le catalogue ↗</a>
-          <a class="btn light" href="#listes">Ma liste scolaire</a>
+          <a class="btn" href="#catalogue" data-i18n="hero.cta">Découvrir le catalogue ↗</a>
+          <a class="btn light" href="#listes" data-i18n="hero.list">Ma liste scolaire</a>
         </div>
-        <p class="muted">Téléphone · WhatsApp · Commande en ligne</p>
+        <p class="muted" data-i18n="hero.channels">Téléphone · WhatsApp · Commande en ligne</p>
       </div>
-      <div class="scene" aria-label="Illustration de livres et fournitures">
-        <svg viewBox="0 0 450 320" role="img" aria-label="Livres, cahier et crayon">
+      <div class="scene" aria-label="Illustration de livres et fournitures" data-i18n-attr="aria-label:hero.sceneLabel">
+        <svg viewBox="0 0 450 320" role="img" aria-label="Livres, cahier et crayon" data-i18n-attr="aria-label:hero.svgLabel">
           <ellipse cx="235" cy="276" rx="165" ry="20" fill="#c8b99a"/>
           <g transform="translate(65 100) rotate(-12)">
             <rect width="145" height="185" rx="5" fill="#31574b"/>
@@ -68,27 +75,27 @@
           <circle cx="349" cy="55" r="23" fill="#f7f4ec"/>
           <path d="M338 55l7 7 15-16" fill="none" stroke="#31574b" stroke-width="3"/>
         </svg>
-        <div class="stamp">📦 À domicile à Yaoundé<br><strong>Paiement à la réception</strong></div>
+        <div class="stamp" data-i18n="hero.stamp">📦 À domicile à Yaoundé<br><strong>Paiement à la réception</strong></div>
       </div>
     </div>
 
     <div class="strip">
-      <div><strong>01 / Choisissez vos articles</strong><span>Un catalogue simple, pour l’école et le bureau.</span></div>
-      <div><strong>02 / Précisez votre adresse</strong><span>Quartier, repère et créneau souhaité.</span></div>
-      <div><strong>03 / Payez à la réception</strong><span>Espèces, Orange Money ou MTN MoMo, après activation.</span></div>
+      <div><strong data-i18n="strip.1.title">01 / Choisissez vos articles</strong><span data-i18n="strip.1.text">Un catalogue simple, pour l’école et le bureau.</span></div>
+      <div><strong data-i18n="strip.2.title">02 / Précisez votre adresse</strong><span data-i18n="strip.2.text">Quartier, repère et créneau souhaité.</span></div>
+      <div><strong data-i18n="strip.3.title">03 / Payez à la réception</strong><span data-i18n="strip.3.text">Espèces, Orange Money ou MTN MoMo, après activation.</span></div>
     </div>
 
     <!-- Catalogue (rempli par js/script.js à partir de js/products.js) -->
     <section id="catalogue">
       <div class="sectionhead">
         <div>
-          <div class="eyebrow">La sélection du Centre</div>
-          <h2>Tout commence ici.</h2>
+          <div class="eyebrow" data-i18n="catalogue.eyebrow">La sélection du Centre</div>
+          <h2 data-i18n="catalogue.title">Tout commence ici.</h2>
         </div>
-        <p class="muted">Catalogue de démonstration · Prix en FCFA</p>
+        <p class="muted" data-i18n="catalogue.note">Catalogue de démonstration · Prix en FCFA</p>
       </div>
       <div class="tools">
-        <input type="search" id="search" placeholder="Rechercher un cahier, un stylo…" aria-label="Rechercher un produit">
+        <input type="search" id="search" placeholder="Rechercher un cahier, un stylo…" aria-label="Rechercher un produit" data-i18n-attr="placeholder:catalogue.searchPlaceholder;aria-label:catalogue.searchLabel">
         <div class="chips" id="filters"></div>
       </div>
       <div class="grid" id="products"></div>
@@ -97,40 +104,40 @@
     <!-- Listes scolaires -->
     <section id="listes" class="feature">
       <div>
-        <div class="eyebrow">Parents, simplifiez la rentrée</div>
-        <h2>Une liste scolaire ?<br>Nous préparons le reste.</h2>
-        <p>Rassemblez les livres et fournitures demandés par l’école. Préparez votre demande de devis avec la classe, les références et les quantités.</p>
-        <button type="button" class="btn" id="listBtn">Préparer une demande de devis ↗</button>
+        <div class="eyebrow" data-i18n="lists.eyebrow">Parents, simplifiez la rentrée</div>
+        <h2 data-i18n="lists.title">Une liste scolaire ?<br>Nous préparons le reste.</h2>
+        <p data-i18n="lists.text">Rassemblez les livres et fournitures demandés par l’école. Préparez votre demande de devis avec la classe, les références et les quantités.</p>
+        <button type="button" class="btn" id="listBtn" data-i18n="lists.cta">Préparer une demande de devis ↗</button>
       </div>
       <div>
-        <h3>Le bon article, la bonne édition.</h3>
-        <p class="muted">Chaque livre doit être confirmé par son titre, son auteur et son édition. Toute substitution nécessite votre accord.</p>
+        <h3 data-i18n="lists.edition.title">Le bon article, la bonne édition.</h3>
+        <p class="muted" data-i18n="lists.edition.text">Chaque livre doit être confirmé par son titre, son auteur et son édition. Toute substitution nécessite votre accord.</p>
         <hr>
-        <h3>Pour les entreprises aussi.</h3>
-        <p class="muted">Papier, classeurs, stylos et fournitures : indiquez vos besoins récurrents dans votre demande de devis.</p>
-        <p class="alert">Envoyez votre liste directement par WhatsApp depuis le formulaire de devis.</p>
+        <h3 data-i18n="lists.business.title">Pour les entreprises aussi.</h3>
+        <p class="muted" data-i18n="lists.business.text">Papier, classeurs, stylos et fournitures : indiquez vos besoins récurrents dans votre demande de devis.</p>
+        <p class="alert" data-i18n="lists.whatsapp">Envoyez votre liste directement par WhatsApp depuis le formulaire de devis.</p>
       </div>
     </section>
 
     <!-- Livraison -->
     <section id="livraison">
-      <div class="eyebrow">Un service de proximité</div>
-      <h2>La livraison, en toute clarté.</h2>
+      <div class="eyebrow" data-i18n="delivery.eyebrow">Un service de proximité</div>
+      <h2 data-i18n="delivery.title">La livraison, en toute clarté.</h2>
       <div class="steps">
         <div>
           <div class="stepnum">01</div>
-          <h3>Votre quartier</h3>
-          <p class="muted">Indiquez votre quartier et un repère précis. Les zones desservies seront confirmées par la librairie.</p>
+          <h3 data-i18n="delivery.1.title">Votre quartier</h3>
+          <p class="muted" data-i18n="delivery.1.text">Indiquez votre quartier et un repère précis. Les zones desservies seront confirmées par la librairie.</p>
         </div>
         <div>
           <div class="stepnum">02</div>
-          <h3>Votre créneau</h3>
-          <p class="muted">La disponibilité, le délai et les frais définitifs sont confirmés avant tout départ.</p>
+          <h3 data-i18n="delivery.2.title">Votre créneau</h3>
+          <p class="muted" data-i18n="delivery.2.text">La disponibilité, le délai et les frais définitifs sont confirmés avant tout départ.</p>
         </div>
         <div>
           <div class="stepnum">03</div>
-          <h3>Votre paiement</h3>
-          <p class="muted">Vérifiez votre colis puis payez à la réception. Aucun paiement en ligne n’est demandé sur cette version.</p>
+          <h3 data-i18n="delivery.3.title">Votre paiement</h3>
+          <p class="muted" data-i18n="delivery.3.text">Vérifiez votre colis puis payez à la réception. Aucun paiement en ligne n’est demandé sur cette version.</p>
         </div>
       </div>
     </section>
@@ -139,88 +146,88 @@
   <footer>
     <div>
       <strong>Librairie Papeterie du Centre</strong>
-      <p>Vente de fournitures de papeterie, livres et service de livraison.</p>
-      <address>
+      <p data-i18n="footer.services">Vente de fournitures de papeterie, livres et service de livraison.</p>
+      <address data-i18n="footer.address">
         Carrefour Abbia, face Manège<br>
         Yaoundé, Cameroun<br>
         Tél. : <a href="tel:+237693240396">+237 6 93 24 03 96</a>
       </address>
     </div>
     <div>
-      <strong>Horaires d’ouverture</strong>
+      <strong data-i18n="footer.hours">Horaires d’ouverture</strong>
       <ul class="hours">
-        <li><span>Lundi – vendredi</span><span>08:00 – 18:00</span></li>
-        <li><span>Samedi</span><span>09:00 – 15:00</span></li>
-        <li><span>Dimanche</span><span>Fermé</span></li>
+        <li><span data-i18n="footer.weekdays">Lundi – vendredi</span><span>08:00 – 18:00</span></li>
+        <li><span data-i18n="footer.saturday">Samedi</span><span>09:00 – 15:00</span></li>
+        <li><span data-i18n="footer.sunday">Dimanche</span><span data-i18n="footer.closed">Fermé</span></li>
       </ul>
     </div>
     <div>
-      <p><button type="button" class="btn light" id="termsBtn">Informations et confidentialité</button></p>
+      <p><button type="button" class="btn light" id="termsBtn" data-i18n="footer.terms">Informations et confidentialité</button></p>
     </div>
   </footer>
 
   <!-- Fenêtre : panier -->
   <dialog id="cart">
-    <button type="button" class="close" aria-label="Fermer">×</button>
-    <h2>Votre panier</h2>
+    <button type="button" class="close" aria-label="Fermer" data-i18n-attr="aria-label:common.close">×</button>
+    <h2 data-i18n="cart.title">Votre panier</h2>
     <div id="cartRows"></div>
-    <div class="total"><span>Articles</span><strong id="subtotal"></strong></div>
-    <p class="muted">Frais de livraison : à confirmer selon l’adresse et le colis.</p>
-    <button type="button" class="btn" id="checkoutBtn">Préparer ma commande</button>
+    <div class="total"><span data-i18n="cart.items">Articles</span><strong id="subtotal"></strong></div>
+    <p class="muted" data-i18n="cart.fees">Frais de livraison : à confirmer selon l’adresse et le colis.</p>
+    <button type="button" class="btn" id="checkoutBtn" data-i18n="cart.checkout">Préparer ma commande</button>
   </dialog>
 
   <!-- Fenêtre : commande / devis -->
   <dialog id="checkout">
-    <button type="button" class="close" aria-label="Fermer">×</button>
+    <button type="button" class="close" aria-label="Fermer" data-i18n-attr="aria-label:common.close">×</button>
     <h2 id="formTitle">Livraison à Yaoundé</h2>
-    <p class="alert">Votre récapitulatif est préparé ici. Il n’est envoyé à la librairie que si vous cliquez sur « Envoyer par WhatsApp ».</p>
+    <p class="alert" data-i18n="form.intro">Votre récapitulatif est préparé ici. Il n’est envoyé à la librairie que si vous cliquez sur « Envoyer par WhatsApp ».</p>
     <form id="orderForm">
-      <label for="name">Nom du destinataire</label>
+      <label for="name" data-i18n="form.name">Nom du destinataire</label>
       <input id="name" required maxlength="100" autocomplete="name">
 
-      <label for="phone">Téléphone</label>
+      <label for="phone" data-i18n="form.phone">Téléphone</label>
       <input id="phone" required type="tel" pattern="[+0-9 ()-]{8,20}" maxlength="20" autocomplete="tel">
 
-      <label for="area">Quartier</label>
-      <input id="area" required maxlength="100" placeholder="Ex. : Bastos, Melen, Essos…">
+      <label for="area" data-i18n="form.area">Quartier</label>
+      <input id="area" required maxlength="100" placeholder="Ex. : Bastos, Melen, Essos…" data-i18n-attr="placeholder:form.areaPlaceholder">
 
-      <label for="address">Adresse et repère</label>
-      <textarea id="address" required maxlength="500" placeholder="Rue, bâtiment, repère et indications utiles"></textarea>
+      <label for="address" data-i18n="form.address">Adresse et repère</label>
+      <textarea id="address" required maxlength="500" placeholder="Rue, bâtiment, repère et indications utiles" data-i18n-attr="placeholder:form.addressPlaceholder"></textarea>
 
-      <label for="slot">Créneau souhaité — à confirmer</label>
+      <label for="slot" data-i18n="form.slot">Créneau souhaité — à confirmer</label>
       <select id="slot">
-        <option>Matin</option>
-        <option>Après-midi</option>
-        <option>À convenir par téléphone</option>
+        <option data-i18n="form.slot.morning">Matin</option>
+        <option data-i18n="form.slot.afternoon">Après-midi</option>
+        <option data-i18n="form.slot.phone">À convenir par téléphone</option>
       </select>
 
-      <label for="payment">Paiement à la réception — sous réserve d’activation</label>
+      <label for="payment" data-i18n="form.payment">Paiement à la réception — sous réserve d’activation</label>
       <select id="payment">
-        <option>Espèces</option>
+        <option data-i18n="form.payment.cash">Espèces</option>
         <option>Orange Money</option>
         <option>MTN MoMo</option>
       </select>
 
-      <label for="notes">Liste scolaire ou instructions complémentaires</label>
-      <textarea id="notes" maxlength="3000" placeholder="Classe, références, édition, quantités…"></textarea>
+      <label for="notes" data-i18n="form.notes">Liste scolaire ou instructions complémentaires</label>
+      <textarea id="notes" maxlength="3000" placeholder="Classe, références, édition, quantités…" data-i18n-attr="placeholder:form.notesPlaceholder"></textarea>
 
-      <label class="check"><input type="checkbox" id="consent" required><span>Je comprends que les prix, le stock, la livraison et ses frais doivent être confirmés par la librairie.</span></label>
-      <button class="btn" type="submit">Créer mon récapitulatif</button>
+      <label class="check"><input type="checkbox" id="consent" required><span data-i18n="form.consent">Je comprends que les prix, le stock, la livraison et ses frais doivent être confirmés par la librairie.</span></label>
+      <button class="btn" type="submit" data-i18n="form.submit">Créer mon récapitulatif</button>
     </form>
     <div id="result" class="hidden">
-      <h3>Votre récapitulatif est prêt</h3>
-      <p class="muted">Envoyez-le à la librairie par WhatsApp : votre commande sera confirmée par message ou par téléphone.</p>
+      <h3 data-i18n="result.title">Votre récapitulatif est prêt</h3>
+      <p class="muted" data-i18n="result.text">Envoyez-le à la librairie par WhatsApp : votre commande sera confirmée par message ou par téléphone.</p>
       <div id="summary"></div>
       <div class="actions">
-        <a class="btn whatsapp" id="whatsapp" href="#" target="_blank" rel="noopener">Envoyer par WhatsApp</a>
-        <button type="button" class="btn light" id="download">Télécharger</button>
-        <button type="button" class="btn light" id="copy">Copier le texte</button>
+        <a class="btn whatsapp" id="whatsapp" href="#" target="_blank" rel="noopener" data-i18n="result.whatsapp">Envoyer par WhatsApp</a>
+        <button type="button" class="btn light" id="download" data-i18n="result.download">Télécharger</button>
+        <button type="button" class="btn light" id="copy" data-i18n="result.copy">Copier le texte</button>
       </div>
       <div id="afterSend" class="alert hidden" role="status">
-        <p>Votre message est parti sur WhatsApp ? Videz votre panier pour ne pas renvoyer la même commande par erreur.</p>
+        <p data-i18n="afterSend.text">Votre message est parti sur WhatsApp ? Videz votre panier pour ne pas renvoyer la même commande par erreur.</p>
         <div class="actions">
-          <button type="button" class="btn" id="clearAfterSend">Vider mon panier</button>
-          <button type="button" class="btn light" id="keepCart">Garder le panier</button>
+          <button type="button" class="btn" id="clearAfterSend" data-i18n="afterSend.clear">Vider mon panier</button>
+          <button type="button" class="btn light" id="keepCart" data-i18n="afterSend.keep">Garder le panier</button>
         </div>
       </div>
     </div>
@@ -228,12 +235,12 @@
 
   <!-- Fenêtre : informations -->
   <dialog id="terms">
-    <button type="button" class="close" aria-label="Fermer">×</button>
-    <h2>À propos de cette version</h2>
-    <p>Ce site est une présentation privée du futur service de la Librairie Papeterie du Centre. Les produits, prix et visuels sont illustratifs ; ils ne représentent pas un stock confirmé.</p>
-    <p>Le panier est mémorisé uniquement dans votre navigateur. Les informations du formulaire servent à produire votre récapitulatif ; elles ne sont transmises à la librairie que si vous l’envoyez vous-même par WhatsApp. Aucun paiement n’est encaissé en ligne.</p>
-    <p>Avant ouverture commerciale : compléter les mentions légales, intégrer les prix et le stock réels, définir les zones et les frais de livraison, et faire valider les conditions de vente et la politique de confidentialité.</p>
-    <button type="button" class="btn" id="clear">Effacer mon panier local</button>
+    <button type="button" class="close" aria-label="Fermer" data-i18n-attr="aria-label:common.close">×</button>
+    <h2 data-i18n="terms.title">À propos de cette version</h2>
+    <p data-i18n="terms.p1">Ce site est une présentation privée du futur service de la Librairie Papeterie du Centre. Les produits, prix et visuels sont illustratifs ; ils ne représentent pas un stock confirmé.</p>
+    <p data-i18n="terms.p2">Le panier est mémorisé uniquement dans votre navigateur. Les informations du formulaire servent à produire votre récapitulatif ; elles ne sont transmises à la librairie que si vous l’envoyez vous-même par WhatsApp. Aucun paiement n’est encaissé en ligne.</p>
+    <p data-i18n="terms.p3">Avant ouverture commerciale : compléter les mentions légales, intégrer les prix et le stock réels, définir les zones et les frais de livraison, et faire valider les conditions de vente et la politique de confidentialité.</p>
+    <button type="button" class="btn" id="clear" data-i18n="terms.clear">Effacer mon panier local</button>
   </dialog>
 
   <div id="toast" class="toast hidden" role="status"></div>

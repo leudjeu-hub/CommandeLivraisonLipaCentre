@@ -69,3 +69,26 @@ test('js/script.js : tout innerHTML avec données produit est échappé', () => 
     assert.doesNotMatch(js, new RegExp('\\$\\{p\\.' + field + '\\}'), `p.${field} inséré sans escapeHtml`);
   }
 });
+
+test('traductions : aucune clé manquante', () => {
+  const sandbox = { window: {} };
+  vm.runInNewContext(fs.readFileSync('src/js/products.js', 'utf8'), sandbox);
+  vm.runInNewContext(fs.readFileSync('src/js/i18n.js', 'utf8'), sandbox);
+  const { I18N, PRODUCTS, CATEGORIES } = sandbox.window;
+  const langs = Object.keys(I18N.LANGUAGES).filter((l) => l !== I18N.DEFAULT);
+
+  const markup = html.replace(/<!--[\s\S]*?-->/g, ''); // ignore les exemples en commentaire
+  const keys = new Set([...markup.matchAll(/data-i18n="([^"]+)"/g)].map((m) => m[1]));
+  for (const [, spec] of markup.matchAll(/data-i18n-attr="([^"]+)"/g)) {
+    for (const pair of spec.split(';')) keys.add(pair.split(':')[1].trim());
+  }
+  const fr = Object.keys(I18N.UI[I18N.DEFAULT]);
+  for (const lang of langs) {
+    for (const key of keys) assert.ok(key in I18N.PAGE[lang], `${lang} : clé de page manquante « ${key} »`);
+    for (const key of fr) assert.ok(key in I18N.UI[lang], `${lang} : clé d’interface manquante « ${key} »`);
+    for (const c of CATEGORIES) assert.ok(('cat.' + c) in I18N.UI[lang], `${lang} : catégorie ${c}`);
+    for (const p of PRODUCTS) {
+      for (const field of ['name', 'desc', 'label']) assert.ok(p[lang] && p[lang][field], `${lang} : produit ${p.id}, champ ${field}`);
+    }
+  }
+});

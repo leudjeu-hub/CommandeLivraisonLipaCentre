@@ -149,3 +149,57 @@ test('après envoi WhatsApp : proposer de vider le panier', async ({ page }) => 
   await page.reload();
   await expect(page.locator('#count')).toHaveText('0');
 });
+
+test('langue : passage en anglais, mémorisé, et récapitulatif en anglais', async ({ page, isMobile }) => {
+  await page.goto('/');
+  if (isMobile) await page.click('#menuBtn');
+  await expect(page.locator('#langBtn')).toHaveText('English');
+  await page.click('#langBtn');
+
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('h1')).toContainText('A page opens.');
+  await expect(page.locator('[data-cat="Bureau"]')).toHaveText('Office');
+  await expect(page.locator('#products h3').first()).toHaveText('A4 notebook · 200 pages');
+  await expect(page.locator('#products .buy strong').first()).toHaveText(/1,500 FCFA/);
+  await expect(page.locator('#search')).toHaveAttribute('placeholder', 'Search for a notebook, a pen…');
+
+  // Recherche dans la langue affichée
+  await page.fill('#search', 'pens');
+  await expect(page.locator('#products .card')).toHaveCount(1);
+  await page.fill('#search', '');
+
+  // Choix mémorisé après rechargement
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+
+  await page.click('[data-add="2"]');
+  await expect(page.locator('#toast')).toHaveText('Item added to basket');
+  await page.click('#cartBtn');
+  await expect(page.locator('#cart h2')).toHaveText('Your basket');
+  await page.click('#checkoutBtn');
+  await page.fill('#name', 'Test Customer');
+  await page.fill('#phone', '+237 600 00 00 00');
+  await page.fill('#area', 'Bastos');
+  await page.fill('#address', 'Near the roundabout');
+  await page.check('#consent');
+  await page.click('#orderForm button[type="submit"]');
+  const summary = page.locator('#summary');
+  await expect(summary).toContainText('ORDER REQUEST — TO BE CONFIRMED');
+  await expect(summary).toContainText('1 × Pack of 10 blue pens');
+  await expect(summary).toContainText('Payment on delivery: Cash');
+  await expect(summary).toContainText('Customer language: English');
+
+  // Retour au français
+  await page.keyboard.press('Escape');
+  if (isMobile) await page.click('#menuBtn');
+  await expect(page.locator('#langBtn')).toHaveText('Français');
+  await page.click('#langBtn');
+  await expect(page.locator('h1')).toContainText('Une page s’ouvre.');
+  await expect(page.locator('[data-cat="Bureau"]')).toHaveText('Bureau');
+});
+
+test('langue : lien direct ?lang=en', async ({ page }) => {
+  await page.goto('/?lang=en');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('#navLinks a[href="#catalogue"]')).toHaveText('Catalogue');
+});

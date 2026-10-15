@@ -29,6 +29,7 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   appliquer les styles dynamiques via `element.style` (voir `renderProducts`).
 - Ne pas charger de ressource externe (polices, CDN, analytics) sans mettre à jour la CSP et les tests.
 - Ne jamais committer de secrets (`.env` est ignoré).
-- Interface en français ; conserver les avertissements « version de présentation »
+- Site bilingue FR/EN : tout nouveau texte visible reçoit `data-i18n` et une traduction dans `src/js/i18n.js` (sinon `npm test` échoue).
+- Interface en français par défaut ; conserver les avertissements « version de présentation »
   tant que les commandes ne sont pas réellement transmises.
 - Après toute modification : `npm test` puis `npm run test:browser`.

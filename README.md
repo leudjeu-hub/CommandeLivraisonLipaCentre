@@ -18,6 +18,7 @@ livraison et **envoient leur commande par WhatsApp** à la librairie, qui la con
   (espèces, Orange Money, MTN MoMo)
 - Demande de devis pour les listes scolaires et les livres « sur devis »
 - Récapitulatif envoyé par WhatsApp à la librairie, ou téléchargé / copié
+- Site bilingue **français / anglais** (bouton de langue, choix mémorisé, lien direct `?lang=en`)
 - Mise en page responsive (mobile, tablette, ordinateur)
 
 ## Structure du projet
@@ -27,7 +28,8 @@ livraison et **envoient leur commande par WhatsApp** à la librairie, qui la con
 ├── src/                    # code source du site
 │   ├── index.html          # la page
 │   ├── css/style.css       # styles
-│   ├── js/products.js      # catalogue (articles, prix, catégories)
+│   ├── js/products.js      # catalogue (articles, prix, catégories, textes FR + EN)
+│   ├── js/i18n.js          # traductions anglaises de la page et de l’interface
 │   ├── js/script.js        # logique : catalogue, panier, formulaire
 │   └── img/favicon.svg
 ├── public/                 # fichiers copiés tels quels dans dist/
@@ -83,6 +85,14 @@ Tout se trouve dans `src/js/products.js` :
 - `price: null` → article affiché « Sur devis »
 - `cat` doit être une des catégories de `CATEGORIES`
 - `id` doit être unique — `npm test` le vérifie
+
+## Traductions
+
+Le français est écrit directement dans `src/index.html`. Chaque texte traduisible porte
+`data-i18n="clé"` ; sa version anglaise se trouve dans `src/js/i18n.js` (`PAGE.en`).
+Les textes générés par le JavaScript (boutons, messages, récapitulatif) sont dans `UI.fr` / `UI.en`,
+et les noms d’articles anglais dans le champ `en` de chaque produit.
+`npm test` échoue si une traduction manque.
 
 ## Avant l’ouverture commerciale
 

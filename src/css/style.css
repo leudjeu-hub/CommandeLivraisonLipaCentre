@@ -76,6 +76,17 @@ nav a {
   align-items: center;
 }
 
+/* Sélecteur de langue */
+.lang-toggle {
+  padding: 8px 14px;
+  border: 1px solid #ccd5ca;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--green);
+  font-size: 14px;
+  font-weight: bold;
+}
+
 /* Bouton « Menu » : visible uniquement sur mobile et tablette */
 .menu-toggle {
   display: none;
@@ -570,8 +581,14 @@ form textarea {
     font-size: 16px;
     border-bottom: 1px solid #e6e9e0;
   }
-  .nav-links a:last-child {
+  .nav-links a:last-of-type {
     border-bottom: 0;
+  }
+  .nav-links .lang-toggle {
+    align-self: flex-start;
+    margin: 6px 0 4px;
+    padding: 11px 18px;
+    font-size: 15px;
   }
 }
 
