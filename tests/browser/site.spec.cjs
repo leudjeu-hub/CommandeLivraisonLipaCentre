@@ -261,3 +261,26 @@ test('clavier : contour de focus visible', async ({ page, isMobile }) => {
   const outline = await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle);
   expect(outline).toBe('solid');
 });
+
+test('logo LIPACE affiché dans l’en-tête, traduit, avec favicon', async ({ page }) => {
+  await page.goto('/');
+  const logo = page.locator('header .brand-logo');
+  await expect(logo).toBeVisible();
+  await expect(logo).toHaveAttribute('alt', /LIPACE/);
+  expect(await logo.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', 'img/apple-touch-icon.png');
+  await page.goto('/?lang=en');
+  await expect(logo).toHaveAttribute('alt', /home/);
+});
+
+test('en-tête : rien ne dépasse de l’écran à 320 et 360 px', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'mobile uniquement');
+  for (const width of [320, 360]) {
+    await page.setViewportSize({ width, height: 700 });
+    await page.goto('/');
+    for (const sel of ['header .brand-logo', '#menuBtn', '#cartBtn']) {
+      const box = await page.locator(sel).boundingBox();
+      expect(box.x + box.width, `${sel} à ${width}px`).toBeLessThanOrEqual(width);
+    }
+  }
+});

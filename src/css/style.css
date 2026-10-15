@@ -49,20 +49,27 @@ header {
 
 .brand {
   display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: 14px;
   min-height: 44px;
-  font-family: Georgia,serif;
-  font-size: 23px;
   text-decoration: none;
-  font-weight: bold;
+}
+
+/* Logo LIPACE (bleu marine) — hauteur fixe, largeur proportionnelle */
+.brand-logo {
+  display: block;
+  height: 48px;
+  width: auto;
 }
 
 .brand small {
   display: block;
-  font: 11px Arial;
-  letter-spacing: 3px;
-  margin-top: 6px;
+  max-width: 160px;
+  padding-left: 14px;
+  border-left: 1px solid var(--border);
+  font: bold 10px/1.6 Arial, sans-serif;
+  letter-spacing: 2px;
+  color: #16325c;
 }
 
 nav {
@@ -684,8 +691,12 @@ form textarea {
   header {
     padding: 18px 5%;
   }
-  .brand {
-    font-size: 18px;
+  .brand-logo {
+    height: 32px;
+  }
+  /* Logo + Menu + Panier doivent tenir sur une ligne dès 320 px */
+  header {
+    gap: 8px;
   }
   nav {
     gap: 8px;
@@ -752,5 +763,21 @@ form textarea {
   }
   h2 {
     font-size: 31px;
+  }
+}
+
+/* Très petits écrans : bouton Menu réduit à l’icône ☰ (le mot reste lu par les lecteurs d’écran) */
+@media(max-width:380px) {
+  .menu-toggle .menu-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .menu-toggle {
+    min-width: 44px;
+    justify-content: center;
   }
 }

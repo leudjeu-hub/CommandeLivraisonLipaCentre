@@ -25,6 +25,7 @@ window.I18N = {
   PAGE: {
     en: {
       'brand.name': 'Librairie du Centre',
+      'brand.logoAlt': 'LIPACE — Librairie Papeterie du Centre, home',
       'brand.tagline': 'BOOKSHOP &amp; STATIONERY · YAOUNDÉ',
       'nav.label': 'Main navigation',
       'nav.menu': 'Menu',
