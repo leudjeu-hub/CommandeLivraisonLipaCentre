@@ -219,3 +219,45 @@ test('bouton flottant « Nous trouver » : visible et vers Google Maps', async (
   await page.goto('/?lang=en');
   await expect(btn).toHaveText(/Find us/);
 });
+
+test('fenêtres : fond sombre derrière le panier', async ({ page }) => {
+  await page.goto('/');
+  await page.click('#cartBtn');
+  const bg = await page.locator('#cart').evaluate((d) => getComputedStyle(d, '::backdrop').backgroundColor);
+  expect(bg).toBe('rgba(16, 43, 37, 0.69)');
+});
+
+test('panier vide : bouton « Préparer ma commande » visiblement désactivé', async ({ page }) => {
+  await page.goto('/');
+  await page.click('#cartBtn');
+  const btn = page.locator('#checkoutBtn');
+  await expect(btn).toBeDisabled();
+  expect(Number(await btn.evaluate((b) => getComputedStyle(b).opacity))).toBeLessThan(0.6);
+});
+
+test('mobile : cibles tactiles d’au moins 44 px', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'mobile uniquement');
+  await page.goto('/');
+  const selectors = ['#menuBtn', '#cartBtn', '.chip', '.buy button', '#mapBtn', 'footer address a'];
+  await page.click('[data-add="1"]');
+  await page.click('#cartBtn');
+  for (const sel of ['#cart .close', '#cartRows input', '#cartRows button']) {
+    const box = await page.locator(sel).boundingBox();
+    expect(box.height, `${sel} : hauteur ${box.height}px`).toBeGreaterThanOrEqual(44);
+  }
+  await page.locator('#cart .close').click();
+  for (const sel of selectors) {
+    for (const node of await page.locator(sel).all()) {
+      const box = await node.boundingBox();
+      expect(box.height, `${sel} : hauteur ${box.height}px`).toBeGreaterThanOrEqual(44);
+    }
+  }
+});
+
+test('clavier : contour de focus visible', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'clavier : ordinateur uniquement');
+  await page.goto('/');
+  await page.keyboard.press('Tab');
+  const outline = await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle);
+  expect(outline).toBe('solid');
+});

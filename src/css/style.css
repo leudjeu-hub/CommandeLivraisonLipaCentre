@@ -2,6 +2,8 @@
 
 :root {
   --green: #153e35;
+  --border: #7d8c80; /* 3,2 à 3,5:1 sur blanc / crème : bords de champs et filtres visibles */
+  --focus: #9b6631;  /* contour de focus clavier sur fond clair */
   --cream: #f7f4ec;
   --orange: #e5ab55;
   --muted: #67736b;
@@ -46,6 +48,10 @@ header {
 }
 
 .brand {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 44px;
   font-family: Georgia,serif;
   font-size: 23px;
   text-decoration: none;
@@ -76,6 +82,29 @@ nav a {
   align-items: center;
 }
 
+/* Focus clavier visible partout (WCAG 2.4.7) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Sur les fonds verts, contour ocre clair */
+footer a:focus-visible,
+footer button:focus-visible,
+.strip a:focus-visible {
+  outline-color: var(--orange);
+}
+
+/* Bouton désactivé (ex. « Préparer ma commande » avec panier vide) */
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* Bouton flottant « Nous trouver » (Google Maps) */
 .map-fab {
   position: fixed;
@@ -102,7 +131,7 @@ nav a {
 }
 
 .map-fab:focus-visible {
-  outline: 3px solid var(--orange);
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 
@@ -114,8 +143,9 @@ body > footer {
 
 /* Sélecteur de langue */
 .lang-toggle {
+  min-height: 44px;
   padding: 8px 14px;
-  border: 1px solid #ccd5ca;
+  border: 1px solid var(--border);
   border-radius: 20px;
   background: transparent;
   color: var(--green);
@@ -126,10 +156,11 @@ body > footer {
 /* Bouton « Menu » : visible uniquement sur mobile et tablette */
 .menu-toggle {
   display: none;
+  min-height: 44px;
   align-items: center;
   gap: 8px;
   padding: 13px 16px;
-  border: 1px solid #ccd5ca;
+  border: 1px solid var(--border);
   border-radius: 6px;
   background: #fff;
   color: var(--green);
@@ -154,6 +185,7 @@ main, section {
 }
 
 .btn {
+  min-height: 44px;
   background: var(--green);
   color: white;
   padding: 14px 20px;
@@ -164,7 +196,7 @@ main, section {
 .light {
   background: #fff;
   color: var(--green);
-  border: 1px solid #ccd5ca;
+  border: 1px solid var(--border);
 }
 
 .notice {
@@ -298,7 +330,7 @@ p {
   flex: 1;
   min-width: 180px;
   padding: 14px;
-  border: 1px solid #ccd5ca;
+  border: 1px solid var(--border);
   border-radius: 6px;
   background: white;
 }
@@ -310,7 +342,8 @@ p {
 }
 
 .chip {
-  border: 1px solid #ccd5ca;
+  min-height: 44px;
+  border: 1px solid var(--border);
   background: transparent;
   padding: 11px 15px;
   border-radius: 25px;
@@ -391,6 +424,7 @@ p {
 }
 
 .buy button {
+  min-height: 44px;
   padding: 9px 13px;
   border-radius: 5px;
   background: #e8eee4;
@@ -443,6 +477,13 @@ footer a {
   font-weight: bold;
 }
 
+/* Lien téléphone : zone tactile agrandie sans décaler le texte autour */
+footer address a {
+  display: inline-block;
+  padding: 14px 6px;
+  margin: -14px -6px;
+}
+
 .hours {
   list-style: none;
   padding: 0;
@@ -468,7 +509,7 @@ dialog {
   background: var(--cream);
 }
 
-dialog: :backdrop {
+dialog::backdrop {
   background: #102b25b0;
 }
 
@@ -476,8 +517,8 @@ dialog: :backdrop {
   float: right;
   background: #e3e8dd;
   border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  width: 44px;
+  height: 44px;
 }
 
 .row {
@@ -489,13 +530,24 @@ dialog: :backdrop {
 }
 
 .row button {
+  min-width: 44px;
+  min-height: 44px;
   background: #e4eadd;
   padding: 5px 10px;
   border-radius: 4px;
 }
 
+/* Quantité et bouton « retirer » côte à côte */
+.row > div:last-child {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .row input {
-  width: 55px;
+  width: 64px;
+  min-height: 44px;
+  margin-right: 6px;
 }
 
 .total {
@@ -514,7 +566,7 @@ label {
 form input,form select,form textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #bdcbbc;
+  border: 1px solid var(--border);
   border-radius: 5px;
   background: white;
 }

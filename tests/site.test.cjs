@@ -92,3 +92,20 @@ test('traductions : aucune clé manquante', () => {
     }
   }
 });
+
+test('style.css : pas de sélecteur cassé (ex. « dialog: :backdrop »)', () => {
+  const css = fs.readFileSync('src/css/style.css', 'utf8');
+  assert.match(css, /dialog::backdrop\s*\{/, 'fond des fenêtres manquant');
+  assert.doesNotMatch(css, /[a-z]: :[a-z]/, 'pseudo-élément mal écrit (« : : »)');
+});
+
+test('aperçu de partage (Open Graph) complet', () => {
+  for (const prop of ['og:title', 'og:description', 'og:url', 'og:image', 'og:image:width', 'og:image:height']) {
+    assert.match(html, new RegExp(`property="${prop}" content="[^"]+"`), `${prop} manquant`);
+  }
+  const image = html.match(/property="og:image" content="([^"]+)"/)[1];
+  assert.match(image, /^https:\/\//, 'og:image doit être une URL absolue');
+  const local = 'src/' + image.split('/CommandeLivraisonLipaCentre/')[1];
+  assert.ok(fs.existsSync(local), `image de partage introuvable : ${local}`);
+  assert.ok(fs.statSync(local).size < 300 * 1024, 'image de partage trop lourde (> 300 Ko)');
+});
