@@ -1,0 +1,21 @@
+# Dépendances et build
+node_modules/
+dist/
+
+# Tests
+playwright-report/
+test-results/
+
+# Environnement (ne jamais committer de secrets)
+.env
+.env.*
+
+# Système et éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Fichiers mis de côté, à supprimer à la main
+_to_delete/

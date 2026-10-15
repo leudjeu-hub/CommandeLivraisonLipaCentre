@@ -1,0 +1,3 @@
+# Version de présentation : ne pas indexer avant l'ouverture commerciale.
+User-agent: *
+Disallow: /

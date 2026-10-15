@@ -1,0 +1,20 @@
+{
+  "name": "commande-livraison-lipacentre",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Page de commande et de livraison de la Librairie Papeterie du Centre (Yaoundé)",
+  "scripts": {
+    "dev": "node scripts/serve.cjs src",
+    "build": "node scripts/build.cjs",
+    "start": "npm run build && node scripts/serve.cjs dist",
+    "test": "node --test tests/*.test.cjs",
+    "test:browser": "playwright test"
+  },
+  "author": "Alain Bienvenu Leudjeu",
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

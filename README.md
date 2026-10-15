@@ -1,51 +1,76 @@
-# Commande & Livraison – Librairie Papeterie du Centre (Yaoundé)
+# Commande & Livraison – Librairie Papeterie du Centre
 
-Prototyp einer Bestellseite für die **Librairie Papeterie du Centre** in Yaoundé, Kamerun.
-Kundinnen und Kunden stellen Bücher und Schreibwaren in einen Warenkorb, geben ihre
-Lieferadresse an und erhalten eine **Bestellzusammenfassung zum Herunterladen oder Kopieren**,
-die sie dann per Telefon/WhatsApp an die Buchhandlung schicken.
+Site statique en français pour la **Librairie Papeterie du Centre** à Yaoundé (Cameroun).
+Les clients composent un panier de livres et de fournitures, indiquent leur adresse de
+livraison et obtiennent un **récapitulatif à télécharger ou copier**, à transmettre à la
+librairie par téléphone ou WhatsApp.
 
-> **Status: Präsentationsversion.** Produkte und Preise sind Beispiele. Es werden keine
-> Bestellungen übertragen und keine Zahlungen abgewickelt.
+> **Statut : version de présentation.** Articles et prix illustratifs. Aucune commande
+> n’est transmise et aucun paiement n’est encaissé. Le site n’est pas indexé (`robots.txt`).
 
-## Funktionen
+## Fonctionnalités
 
-- **Katalog** mit Suche und Filtern (Scolaire, Bureau, Livres), Preise in FCFA
-- **Warenkorb** mit Mengenänderung; wird im Browser gespeichert (`localStorage`)
-- **Bestellformular** für die Lieferung in Yaoundé: Name, Telefon, Quartier, Adresse/Orientierungspunkt,
-  Wunsch-Zeitfenster, Zahlart bei Lieferung (Bargeld, Orange Money, MTN MoMo)
-- **Angebotsanfrage** für Schullisten und Bücher „sur devis“ (Titel, Klasse, Ausgabe)
-- **Zusammenfassung** als `.txt` herunterladen oder in die Zwischenablage kopieren
-- Responsive Layout für Smartphone, Tablet und Desktop
-- Oberfläche auf Französisch
+- Catalogue avec recherche et filtres (Scolaire, Bureau, Livres), prix en FCFA
+- Panier mémorisé dans le navigateur (`localStorage`)
+- Formulaire de livraison : quartier, repère, créneau, paiement à la réception
+  (espèces, Orange Money, MTN MoMo)
+- Demande de devis pour les listes scolaires et les livres « sur devis »
+- Récapitulatif en `.txt` (téléchargement ou copie)
+- Mise en page responsive (mobile, tablette, ordinateur)
 
-## Projektstruktur
+## Structure du projet
 
 ```
 .
-├── Librairie Papeterie du Centre · Yaoundé.html   # die komplette Seite (HTML, CSS, JS in einer Datei)
-├── README.md                                       # diese Datei
-└── DEV.md                                          # persönliche Lernnotizen (Tools & Themen)
+├── src/                    # code source du site
+│   ├── index.html          # la page
+│   ├── css/style.css       # styles
+│   ├── js/products.js      # catalogue (articles, prix, catégories)
+│   ├── js/script.js        # logique : catalogue, panier, formulaire
+│   └── img/favicon.svg
+├── public/                 # fichiers copiés tels quels dans dist/
+│   └── robots.txt
+├── scripts/
+│   ├── build.cjs           # construit dist/ (src/ + public/)
+│   └── serve.cjs           # serveur local avec en-têtes de sécurité (CSP)
+├── tests/
+│   ├── site.test.cjs       # tests statiques (Node, sans navigateur)
+│   └── browser/site.spec.cjs  # tests navigateur (Playwright, desktop + mobile)
+├── .github/workflows/main.yml # CI : tests à chaque push / pull request
+├── playwright.config.cjs
+├── package.json
+├── AGENTS.md               # consignes pour les assistants IA (Claude, etc.)
+└── dev.md                  # notes personnelles d’apprentissage
 ```
 
-## Lokal starten
+## Développement
 
-Kein Build, keine Abhängigkeiten. Die HTML-Datei einfach im Browser öffnen:
+Prérequis : **Node.js 22** ou plus récent. Aucune dépendance n’est nécessaire pour
+développer ; Playwright sert uniquement aux tests navigateur.
 
-```bash
-open "Librairie Papeterie du Centre · Yaoundé.html"
+```sh
+npm run dev        # sert src/ sur http://127.0.0.1:4200
 ```
 
-Oder über einen kleinen lokalen Server (empfohlen, damit „Kopieren“ zuverlässig funktioniert):
+On peut aussi ouvrir `src/index.html` directement dans le navigateur.
 
-```bash
-python3 -m http.server 8000
-# dann http://localhost:8000 im Browser öffnen
+## Vérification
+
+```sh
+npm test                     # tests statiques
+npm run build                # construit dist/
+npm install                  # une fois, pour Playwright
+npx playwright install chromium
+npm run test:browser         # tests navigateur sur dist/
 ```
 
-## Produkte anpassen
+Les tests vérifient notamment : un seul `<h1>`, aucune ressource externe ni code en ligne
+(compatibilité CSP), des identifiants et ancres valides, un catalogue cohérent, et le
+parcours complet panier → formulaire → récapitulatif.
 
-Die Produkte stehen im `<script>`-Block der HTML-Datei im Array `products`:
+## Modifier le catalogue
+
+Tout se trouve dans `src/js/products.js` :
 
 ```js
 { id: 1, name: 'Cahier A4 · 200 pages', cat: 'Scolaire',
@@ -53,19 +78,20 @@ Die Produkte stehen im `<script>`-Block der HTML-Datei im Array `products`:
   price: 1500, color: '#31574b', label: 'CAHIER\n200 PAGES' }
 ```
 
-- `price: null` → Artikel wird als „Sur devis“ (Angebotsanfrage) angezeigt
-- `cat` muss einer der Filter sein: `Scolaire`, `Bureau`, `Livres`
-- `id` muss eindeutig sein
+- `price: null` → article affiché « Sur devis »
+- `cat` doit être une des catégories de `CATEGORIES`
+- `id` doit être unique — `npm test` le vérifie
 
-## Bis zum echten Betrieb (To-do)
+## Avant l’ouverture commerciale
 
-- [ ] Adresse, Geschäftstelefon und WhatsApp-Nummer eintragen
-- [ ] Echte Produkte, Preise und Lagerbestand einpflegen
-- [ ] Bestellungen tatsächlich übermitteln (z. B. WhatsApp-Link, E-Mail oder Backend)
-- [ ] Liefergebiete und Lieferkosten festlegen
-- [ ] Impressum, Verkaufsbedingungen und Datenschutzerklärung prüfen lassen
-- [ ] Datei in `index.html` umbenennen und veröffentlichen (z. B. GitHub Pages)
+- [ ] Renseigner adresse, téléphone et numéro WhatsApp professionnels
+- [ ] Intégrer les vrais articles, prix et stocks
+- [ ] Transmettre réellement les commandes (lien WhatsApp, e-mail ou back-end)
+- [ ] Définir les zones et frais de livraison
+- [ ] Faire valider mentions légales, conditions de vente et confidentialité
+- [ ] Choisir un hébergement et autoriser l’indexation (`public/robots.txt`)
+- [ ] Choisir une licence
 
-## Lizenz
+## Auteur
 
-Noch nicht festgelegt.
+Alain Bienvenu Leudjeu
