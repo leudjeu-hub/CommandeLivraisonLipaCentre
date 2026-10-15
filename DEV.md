@@ -1,0 +1,9 @@
+- Homebrew
+- Github
+- Git
+    - clone
+    - add
+    - commit
+- Claude
+    - prompt engineering
+    - hardness engineering
