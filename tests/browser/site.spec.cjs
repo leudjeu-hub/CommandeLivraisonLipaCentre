@@ -73,3 +73,29 @@ test('article sur devis : ouvre la demande de devis', async ({ page }) => {
   await expect(page.locator('#formTitle')).toHaveText('Votre demande de devis');
   await expect(page.locator('#notes')).toHaveValue(/Livre scolaire sur demande/);
 });
+
+test('recherche insensible aux accents et aux majuscules', async ({ page }) => {
+  await page.goto('/');
+  await page.fill('#search', 'GEOMETRIE');
+  await expect(page.locator('#products .card')).toHaveCount(1);
+  await expect(page.locator('#products h3')).toHaveText('Kit de géométrie');
+});
+
+test('fenêtre : clic sur le fond la ferme, clic dans la marge non', async ({ page }) => {
+  await page.goto('/');
+  await page.click('#cartBtn');
+  const cart = page.locator('#cart');
+  await expect(cart).toBeVisible();
+  const box = await cart.boundingBox();
+  await page.mouse.click(box.x + 5, box.y + box.height / 2); // marge intérieure
+  await expect(cart).toBeVisible();
+  await page.mouse.click(2, 2); // fond assombri
+  await expect(cart).toBeHidden();
+});
+
+test('filtres : état annoncé aux lecteurs d’écran', async ({ page }) => {
+  await page.goto('/');
+  await page.click('[data-cat="Livres"]');
+  await expect(page.locator('[data-cat="Livres"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-cat="Tout"]')).toHaveAttribute('aria-pressed', 'false');
+});

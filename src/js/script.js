@@ -1,7 +1,7 @@
 /*
  * Logique de la page : catalogue, panier, formulaire de commande / devis.
- * Aucune donnée n’est envoyée : le formulaire produit un récapitulatif
- * à télécharger ou à copier.
+ * Le formulaire produit un récapitulatif que le client envoie lui-même
+ * par WhatsApp, télécharge ou copie. Rien n’est transmis automatiquement.
  */
 (function () {
   'use strict';
@@ -14,12 +14,21 @@
 
   const el = (id) => document.getElementById(id);
   const money = (n) => n.toLocaleString('fr-FR') + ' FCFA';
+
+  // Échappe le texte inséré via innerHTML (évite qu’un « < », « & » ou « " » casse la page)
+  const escapeHtml = (value) =>
+    String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+  // Recherche insensible à la casse et aux accents : « geometrie » trouve « Géométrie »
+  const normalize = (value) =>
+    String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr').trim();
   const findProduct = (id) => products.find((p) => p.id === Number(id));
 
   let basket = loadBasket();
   let category = 'Tout';
   let quote = false;
   let summaryText = '';
+  let toastTimer = null;
 
   /* ---------- Panier (mémorisé dans le navigateur) ---------- */
 
@@ -57,17 +66,19 @@
     const t = el('toast');
     t.textContent = message;
     t.classList.remove('hidden');
-    setTimeout(() => t.classList.add('hidden'), 2500);
+    // Un nouveau message relance le délai au lieu d’être masqué par l’ancien minuteur
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.add('hidden'), 2500);
   }
 
   /* ---------- Catalogue ---------- */
 
   function renderProducts() {
-    const q = el('search').value.toLocaleLowerCase('fr');
+    const q = normalize(el('search').value);
     const list = products.filter(
       (p) =>
         (category === 'Tout' || p.cat === category) &&
-        (p.name + ' ' + p.desc).toLocaleLowerCase('fr').includes(q)
+        normalize(p.name + ' ' + p.desc + ' ' + p.cat).includes(q)
     );
 
     if (!list.length) {
@@ -78,10 +89,10 @@
     el('products').innerHTML = list
       .map(
         (p) => `<article class="card">
-          <div class="art"><div class="object" data-color="${p.color}">${p.label.split('\n').join('<br>')}</div></div>
-          <small>${p.cat}</small>
-          <h3>${p.name}</h3>
-          <p>${p.desc}</p>
+          <div class="art"><div class="object" data-color="${escapeHtml(p.color)}">${p.label.split('\n').map(escapeHtml).join('<br>')}</div></div>
+          <small>${escapeHtml(p.cat)}</small>
+          <h3>${escapeHtml(p.name)}</h3>
+          <p>${escapeHtml(p.desc)}</p>
           <div class="buy">
             <strong>${p.price === null ? 'Sur devis' : money(p.price)}</strong>
             <button type="button" data-add="${p.id}">${p.price === null ? 'Demander' : 'Ajouter +'}</button>
@@ -98,7 +109,10 @@
 
   function renderFilters() {
     el('filters').innerHTML = categories
-      .map((c) => `<button type="button" class="chip${c === 'Tout' ? ' active' : ''}" data-cat="${c}">${c}</button>`)
+      .map(
+        (c) =>
+          `<button type="button" class="chip${c === 'Tout' ? ' active' : ''}" data-cat="${escapeHtml(c)}" aria-pressed="${c === 'Tout'}">${escapeHtml(c)}</button>`
+      )
       .join('');
   }
 
@@ -110,10 +124,10 @@
       ? items
           .map(
             (p) => `<div class="row">
-              <div><strong>${p.name}</strong><p class="muted">${money(p.price)}</p></div>
+              <div><strong>${escapeHtml(p.name)}</strong><p class="muted">${money(p.price)}</p></div>
               <div>
-                <input aria-label="Quantité : ${p.name}" type="number" min="1" max="${MAX_QTY}" value="${basket[p.id]}" data-qty="${p.id}">
-                <button type="button" aria-label="Retirer ${p.name}" data-remove="${p.id}">×</button>
+                <input aria-label="Quantité : ${escapeHtml(p.name)}" type="number" min="1" max="${MAX_QTY}" value="${basket[p.id]}" data-qty="${p.id}">
+                <button type="button" aria-label="Retirer ${escapeHtml(p.name)}" data-remove="${p.id}">×</button>
               </div>
             </div>`
           )
@@ -189,7 +203,10 @@
       const btn = e.target.closest('[data-cat]');
       if (!btn) return;
       category = btn.dataset.cat;
-      document.querySelectorAll('.chip').forEach((x) => x.classList.toggle('active', x === btn));
+      document.querySelectorAll('.chip').forEach((x) => {
+        x.classList.toggle('active', x === btn);
+        x.setAttribute('aria-pressed', String(x === btn));
+      });
       renderProducts();
     });
 
@@ -233,6 +250,17 @@
 
     document.querySelectorAll('.close').forEach((b) =>
       b.addEventListener('click', () => b.closest('dialog').close())
+    );
+
+    // Un clic sur le fond assombri ferme la fenêtre (comportement attendu sur mobile)
+    document.querySelectorAll('dialog').forEach((d) =>
+      d.addEventListener('click', (e) => {
+        if (e.target !== d) return;
+        // e.target vaut aussi le <dialog> dans sa marge intérieure : on vérifie la position du clic
+        const r = d.getBoundingClientRect();
+        const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+        if (outside) d.close();
+      })
     );
 
     el('checkoutBtn').addEventListener('click', () => openForm(false));

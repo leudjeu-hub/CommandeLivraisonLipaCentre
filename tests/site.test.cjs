@@ -62,3 +62,10 @@ test('dépôt : aucun secret ni fichier sensible committé', () => {
   assert.ok(!fs.existsSync('.env'), 'fichier .env présent');
   assert.match(fs.readFileSync('.gitignore', 'utf8'), /^node_modules\/$/m);
 });
+
+test('js/script.js : tout innerHTML avec données produit est échappé', () => {
+  const js = fs.readFileSync('src/js/script.js', 'utf8');
+  for (const field of ['name', 'desc', 'cat']) {
+    assert.doesNotMatch(js, new RegExp('\\$\\{p\\.' + field + '\\}'), `p.${field} inséré sans escapeHtml`);
+  }
+});
