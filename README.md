@@ -15,7 +15,7 @@ librairie par téléphone ou WhatsApp.
 - Formulaire de livraison : quartier, repère, créneau, paiement à la réception
   (espèces, Orange Money, MTN MoMo)
 - Demande de devis pour les listes scolaires et les livres « sur devis »
-- Récapitulatif en `.txt` (téléchargement ou copie)
+- Récapitulatif envoyé par WhatsApp à la librairie, ou téléchargé / copié
 - Mise en page responsive (mobile, tablette, ordinateur)
 
 ## Structure du projet
@@ -85,9 +85,8 @@ Tout se trouve dans `src/js/products.js` :
 ## Avant l’ouverture commerciale
 
 - [x] Renseigner adresse et téléphone professionnels
-- [ ] Confirmer si le +237 6 93 24 03 96 est aussi joignable sur WhatsApp
 - [ ] Intégrer les vrais articles, prix et stocks
-- [ ] Transmettre réellement les commandes (lien WhatsApp, e-mail ou back-end)
+- [x] Transmettre les commandes par WhatsApp (numéro dans `src/js/products.js` → `SHOP.whatsapp`)
 - [ ] Définir les zones et frais de livraison
 - [ ] Faire valider mentions légales, conditions de vente et confidentialité
 - [ ] Choisir un hébergement et autoriser l’indexation (`public/robots.txt`)

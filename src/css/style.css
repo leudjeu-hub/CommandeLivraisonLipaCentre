@@ -124,12 +124,18 @@ h1 em {
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin: 27px 0;
 }
 
 .actions a {
   text-decoration: none;
+}
+
+.btn.whatsapp {
+  background: #0b7a43;
+  color: #fff;
 }
 
 .scene {

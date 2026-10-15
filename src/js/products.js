@@ -20,3 +20,8 @@ window.PRODUCTS = [
 ];
 
 window.CATEGORIES = ['Tout', 'Scolaire', 'Bureau', 'Livres'];
+
+/* Coordonnées de la librairie. Numéro WhatsApp au format international, chiffres uniquement. */
+window.SHOP = {
+  whatsapp: '237693240396'
+};

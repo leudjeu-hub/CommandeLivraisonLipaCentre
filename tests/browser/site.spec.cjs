@@ -49,9 +49,18 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   await page.click('#orderForm button[type="submit"]');
 
   const summary = page.locator('#summary');
-  await expect(summary).toContainText('BROUILLON DE COMMANDE');
+  await expect(summary).toContainText('DEMANDE DE COMMANDE');
   await expect(summary).toContainText('2 × Cahier A4');
   await expect(summary).toContainText('Bastos');
+
+  // Lien WhatsApp vers la librairie, avec le récapitulatif complet
+  const wa = page.locator('#whatsapp');
+  await expect(wa).toBeVisible();
+  const href = await wa.getAttribute('href');
+  expect(href.startsWith('https://wa.me/237693240396?text=')).toBe(true);
+  const text = decodeURIComponent(href.split('?text=')[1]);
+  expect(text).toContain('2 × Cahier A4');
+  expect(text).toContain('Client Test');
 
   // Le panier survit au rechargement
   await page.reload();

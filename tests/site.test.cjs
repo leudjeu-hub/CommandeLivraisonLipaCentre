@@ -44,7 +44,8 @@ test('index.html : identifiants uniques et ancres valides', () => {
 test('js/products.js : catalogue valide', () => {
   const sandbox = { window: {} };
   vm.runInNewContext(fs.readFileSync('src/js/products.js', 'utf8'), sandbox);
-  const { PRODUCTS, CATEGORIES } = sandbox.window;
+  const { PRODUCTS, CATEGORIES, SHOP } = sandbox.window;
+  assert.match(SHOP.whatsapp, /^[1-9][0-9]{7,14}$/, 'numéro WhatsApp : format international, chiffres uniquement');
   assert.ok(Array.isArray(PRODUCTS) && PRODUCTS.length > 0);
   const ids = PRODUCTS.map((p) => p.id);
   assert.equal(ids.length, new Set(ids).size, 'id produit en double');

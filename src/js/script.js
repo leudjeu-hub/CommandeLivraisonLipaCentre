@@ -8,6 +8,7 @@
 
   const products = window.PRODUCTS || [];
   const categories = window.CATEGORIES || ['Tout'];
+  const shop = window.SHOP || {};
   const STORAGE_KEY = 'centre-cart';
   const MAX_QTY = 99;
 
@@ -136,7 +137,7 @@
   function buildSummary() {
     const lines = [
       'LIBRAIRIE PAPETERIE DU CENTRE',
-      (quote ? 'DEMANDE DE DEVIS' : 'BROUILLON DE COMMANDE') + ' — NON ENVOYÉ',
+      (quote ? 'DEMANDE DE DEVIS' : 'DEMANDE DE COMMANDE') + ' — À CONFIRMER',
       'Date : ' + new Date().toLocaleDateString('fr-FR'),
       '',
       'Destinataire : ' + el('name').value,
@@ -158,7 +159,7 @@
       '',
       'Informations complémentaires : ' + el('notes').value,
       '',
-      'Ce document doit être transmis à la librairie. Il ne constitue pas une commande confirmée.'
+      'Cette demande ne constitue pas une commande confirmée.'
     );
     return lines.join('\n');
   }
@@ -247,6 +248,7 @@
       e.preventDefault();
       summaryText = buildSummary();
       el('summary').textContent = summaryText;
+      el('whatsapp').href = 'https://wa.me/' + shop.whatsapp + '?text=' + encodeURIComponent(summaryText);
       el('orderForm').classList.add('hidden');
       el('result').classList.remove('hidden');
     });
