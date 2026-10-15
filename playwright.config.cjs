@@ -9,7 +9,7 @@ module.exports = defineConfig({
     { name: 'mobile', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } }
   ],
   webServer: {
-    command: 'node scripts/build.cjs && node scripts/serve.cjs dist',
+    command: 'node scripts/catalogue.cjs && node scripts/build.cjs && node scripts/serve.cjs dist',
     url: 'http://127.0.0.1:4200',
     reuseExistingServer: !process.env.CI
   }

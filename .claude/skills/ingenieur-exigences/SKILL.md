@@ -25,7 +25,7 @@ les clients de la librairie, dis-le clairement et propose mieux. Ne valide pas u
 - **Commande** : le client compose un panier ; un récapitulatif est envoyé par **WhatsApp**
   (lien `wa.me`) à la librairie, qui confirme prix, stock, délai et frais de livraison.
 - **Technique** : site statique (HTML/CSS/JS sans framework) dans `src/`, catalogue dans
-  `src/js/products.js`, hébergé sur GitHub Pages. CSP stricte : pas de script ou style en ligne,
+  `catalogue/catalogue.csv` (tableur ; `src/js/products.js` en est généré), hébergé sur GitHub Pages. CSP stricte : pas de script ou style en ligne,
   pas de ressource externe. Pas de serveur, pas de base de données.
   Voir `README.md` et `AGENTS.md`.
 
@@ -113,7 +113,7 @@ Chaque exigence doit être :
 - **Fiabilité de la commande** : le récapitulatif WhatsApp contient toujours le nom, le téléphone,
   le quartier, le repère, les articles, les quantités et le total indicatif.
 - **Langue et formats** : français ; dates JJ/MM/AAAA ; numéros +237 ; montants « 1 500 FCFA ».
-- **Maintenabilité** : le gérant doit pouvoir modifier articles et prix dans `products.js` seul.
+- **Maintenabilité** : le gérant doit pouvoir modifier articles et prix dans `catalogue/catalogue.csv` seul.
 
 ## Sujets ouverts connus (à challenger quand ils reviennent)
 

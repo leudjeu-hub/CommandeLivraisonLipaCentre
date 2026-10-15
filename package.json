@@ -4,9 +4,11 @@
   "private": true,
   "description": "Page de commande et de livraison de la Librairie Papeterie du Centre (Yaoundé)",
   "scripts": {
-    "dev": "node scripts/serve.cjs src",
-    "build": "node scripts/build.cjs",
+    "dev": "node scripts/catalogue.cjs && node scripts/serve.cjs src",
+    "catalogue": "node scripts/catalogue.cjs",
+    "build": "node scripts/catalogue.cjs && node scripts/build.cjs",
     "start": "npm run build && node scripts/serve.cjs dist",
+    "pretest": "node scripts/catalogue.cjs",
     "test": "node --test tests/*.test.cjs",
     "test:browser": "playwright test"
   },

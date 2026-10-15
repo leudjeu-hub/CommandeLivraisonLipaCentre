@@ -18,7 +18,7 @@ Adopte deux regards :
 ## Étapes
 
 1. **Contexte** : lis `README.md`, `AGENTS.md`, `CLAUDE.md`, puis `src/index.html`,
-   `src/css/style.css`, `src/js/script.js`, `src/js/products.js`, `src/js/i18n.js`.
+   `src/css/style.css`, `src/js/script.js`, `src/js/config.js`, `catalogue/catalogue.csv`, `src/js/i18n.js`.
 
 2. **Santé technique** : lance `npm test` puis `npm run test:browser`. Note tout échec.
    Si Playwright n'est pas installé : `npm install && npx playwright install chromium`.

@@ -43,6 +43,7 @@ test('index.html : identifiants uniques et ancres valides', () => {
 
 test('js/products.js : catalogue valide', () => {
   const sandbox = { window: {} };
+  vm.runInNewContext(fs.readFileSync('src/js/config.js', 'utf8'), sandbox);
   vm.runInNewContext(fs.readFileSync('src/js/products.js', 'utf8'), sandbox);
   const { PRODUCTS, CATEGORIES, SHOP } = sandbox.window;
   assert.match(SHOP.whatsapp, /^[1-9][0-9]{7,14}$/, 'numéro WhatsApp : format international, chiffres uniquement');
@@ -72,6 +73,7 @@ test('js/script.js : tout innerHTML avec données produit est échappé', () => 
 
 test('traductions : aucune clé manquante', () => {
   const sandbox = { window: {} };
+  vm.runInNewContext(fs.readFileSync('src/js/config.js', 'utf8'), sandbox);
   vm.runInNewContext(fs.readFileSync('src/js/products.js', 'utf8'), sandbox);
   vm.runInNewContext(fs.readFileSync('src/js/i18n.js', 'utf8'), sandbox);
   const { I18N, PRODUCTS, CATEGORIES } = sandbox.window;
@@ -87,8 +89,9 @@ test('traductions : aucune clé manquante', () => {
     for (const key of keys) assert.ok(key in I18N.PAGE[lang], `${lang} : clé de page manquante « ${key} »`);
     for (const key of fr) assert.ok(key in I18N.UI[lang], `${lang} : clé d’interface manquante « ${key} »`);
     for (const c of CATEGORIES) assert.ok(('cat.' + c) in I18N.UI[lang], `${lang} : catégorie ${c}`);
+    // Traduction des articles facultative (repli sur le français) ; si présente, elle doit être complète
     for (const p of PRODUCTS) {
-      for (const field of ['name', 'desc', 'label']) assert.ok(p[lang] && p[lang][field], `${lang} : produit ${p.id}, champ ${field}`);
+      if (p[lang]) for (const field of ['name', 'desc', 'label']) assert.ok(p[lang][field], `${lang} : produit ${p.id}, champ ${field}`);
     }
   }
 });
@@ -108,4 +111,38 @@ test('aperçu de partage (Open Graph) complet', () => {
   const local = 'src/' + image.split('/CommandeLivraisonLipaCentre/')[1];
   assert.ok(fs.existsSync(local), `image de partage introuvable : ${local}`);
   assert.ok(fs.statSync(local).size < 300 * 1024, 'image de partage trop lourde (> 300 Ko)');
+});
+
+test('catalogue : le tableau CSV génère products.js et refuse les erreurs', () => {
+  const { execFileSync } = require('node:child_process');
+  const os = require('node:os');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'catalogue-'));
+  const run = (csv) => {
+    fs.writeFileSync(path.join(dir, 'c.csv'), csv);
+    return execFileSync('node', ['scripts/catalogue.cjs', path.join(dir, 'c.csv'), path.join(dir, 'p.js')], { stdio: 'pipe' }).toString();
+  };
+  const head = 'id;categorie;prix;nom;description;disponible\n';
+
+  // Cas valide : prix avec espace, sans traduction, article masqué, vignette et couleur automatiques
+  run(head + '1;scolaire;1 500;Cahier;Desc;\n2;Livres;;Livre;Desc;oui\n3;Bureau;100;Caché;Desc;non\n');
+  const sb = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(dir, 'p.js'), 'utf8'), sb);
+  const [a, b] = sb.window.PRODUCTS;
+  assert.equal(sb.window.PRODUCTS.length, 2, 'l’article « non » disponible est masqué');
+  assert.equal(a.price, 1500);
+  assert.equal(a.cat, 'Scolaire');
+  assert.equal(b.price, null);
+  assert.ok(a.label && /^#[0-9a-f]{6}$/i.test(a.color));
+
+  // Cas invalides : la génération doit échouer
+  for (const bad of [
+    head + '1;Scolaire;1500;A;D;\n1;Scolaire;900;B;D;\n', // id en double
+    head + '1;Scolaire;douze;A;D;\n',                      // prix non numérique
+    head + '1;Jouets;1500;A;D;\n',                         // catégorie inconnue
+    head + '1;Scolaire;1500;;D;\n',                        // nom vide
+    'id;categorie;nom;description\n1;Scolaire;A;D\n'       // colonne prix manquante
+  ]) {
+    assert.throws(() => run(bad), undefined, bad);
+  }
+  fs.rmSync(dir, { recursive: true, force: true });
 });

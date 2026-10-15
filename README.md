@@ -28,13 +28,16 @@ livraison et **envoient leur commande par WhatsApp** à la librairie, qui la con
 ├── src/                    # code source du site
 │   ├── index.html          # la page
 │   ├── css/style.css       # styles
-│   ├── js/products.js      # catalogue (articles, prix, catégories, textes FR + EN)
+│   ├── js/config.js        # catégories et numéro WhatsApp
+│   ├── js/products.js      # GÉNÉRÉ depuis catalogue/catalogue.csv
 │   ├── js/i18n.js          # traductions anglaises de la page et de l’interface
 │   ├── js/script.js        # logique : catalogue, panier, formulaire
 │   └── img/favicon.svg
 ├── public/                 # fichiers copiés tels quels dans dist/
 │   └── robots.txt
+├── catalogue/            # catalogue.csv (articles et prix) + LISEZMOI.md
 ├── scripts/
+│   ├── catalogue.cjs       # tableau CSV → src/js/products.js (avec vérifications)
 │   ├── build.cjs           # construit dist/ (src/ + public/)
 │   └── serve.cjs           # serveur local avec en-têtes de sécurité (CSP)
 ├── tests/
@@ -74,17 +77,19 @@ parcours complet panier → formulaire → récapitulatif.
 
 ## Modifier le catalogue
 
-Tout se trouve dans `src/js/products.js` :
+Les articles se gèrent dans **`catalogue/catalogue.csv`**, un tableau à ouvrir avec Excel, Numbers
+ou Google Sheets (mode d’emploi : [`catalogue/LISEZMOI.md`](catalogue/LISEZMOI.md)).
 
-```js
-{ id: 1, name: 'Cahier A4 · 200 pages', cat: 'Scolaire',
-  desc: 'Quadrillé, pour les cours et les exercices.',
-  price: 1500, color: '#31574b', label: 'CAHIER\n200 PAGES' }
+```sh
+# après avoir modifié et enregistré le tableau :
+npm test       # régénère src/js/products.js et vérifie le catalogue (ligne exacte en cas d’erreur)
+git add -A && git commit -m "catalogue : mise à jour" && git push
 ```
 
-- `price: null` → article affiché « Sur devis »
-- `cat` doit être une des catégories de `CATEGORIES`
-- `id` doit être unique — `npm test` le vérifie
+- Prix vide → article « sur devis » ; `disponible` = `non` → article masqué.
+- Traduction anglaise facultative (repli sur le français).
+- `src/js/products.js` est **généré** : ne pas le modifier à la main.
+- Catégories et numéro WhatsApp : `src/js/config.js`.
 
 ## Traductions
 

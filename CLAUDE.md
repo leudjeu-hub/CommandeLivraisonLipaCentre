@@ -10,7 +10,8 @@ Les règles détaillées (build, tests, architecture, à faire / à ne pas faire
   Pas de TypeScript, pas de React : c’est un choix délibéré (une page, clients mobiles en 3G).
   N’en ajoute pas sans accord explicite.
 - **Fichiers** : `src/index.html`, `src/css/style.css`, `src/js/script.js` (logique),
-  `src/js/products.js` (catalogue et numéro WhatsApp dans `SHOP`).
+  `catalogue/catalogue.csv` (articles et prix, source unique ; `src/js/products.js` en est généré),
+  `src/js/config.js` (catégories, numéro WhatsApp), `src/js/i18n.js` (traductions).
 - **Commandes** : `npm run dev` · `npm test` · `npm run build` · `npm run test:browser`.
 - **Avant de dire « terminé »** : `npm test` et `npm run test:browser` passent.
 - **Interface en français**, montants en FCFA, numéros au format +237.

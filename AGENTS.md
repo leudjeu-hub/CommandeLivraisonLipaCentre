@@ -19,7 +19,7 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 ## Architecture
 
 - Une seule page : `src/index.html`. Pas de framework, pas de bundler.
-- `src/js/products.js` définit `window.PRODUCTS` et `window.CATEGORIES` ; `src/js/script.js`
+- `src/js/config.js` définit `window.CATEGORIES` et `window.SHOP` ; `src/js/products.js` (généré) définit `window.PRODUCTS` ; `src/js/script.js`
   contient toute la logique (IIFE, scripts classiques `defer` — fonctionne aussi en `file://`).
 - CSP stricte (`script-src 'self'; style-src 'self'`) dans la balise meta et dans `scripts/serve.cjs`.
 
@@ -29,6 +29,7 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   appliquer les styles dynamiques via `element.style` (voir `renderProducts`).
 - Ne pas charger de ressource externe (polices, CDN, analytics) sans mettre à jour la CSP et les tests.
 - Ne jamais committer de secrets (`.env` est ignoré).
+- Catalogue : source unique `catalogue/catalogue.csv` ; `src/js/products.js` est GÉNÉRÉ par `scripts/catalogue.cjs` (lancé par `pretest` et `build`) — ne jamais l’éditer à la main. Catégories et WhatsApp : `src/js/config.js`.
 - Site bilingue FR/EN : tout nouveau texte visible reçoit `data-i18n` et une traduction dans `src/js/i18n.js` (sinon `npm test` échoue).
 - Interface en français par défaut ; conserver les avertissements « version de présentation »
   tant que les commandes ne sont pas réellement transmises.
