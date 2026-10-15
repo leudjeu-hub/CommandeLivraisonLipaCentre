@@ -22,5 +22,8 @@ Les règles détaillées (build, tests, architecture, à faire / à ne pas faire
 
 - Comprendre avant de modifier ; suivre les conventions existantes ; changements petits et ciblés.
 - Être honnête : si quelque chose n’a pas été testé, le dire.
-- Pour analyser une nouvelle fonctionnalité avant de coder : skill `/ingenieur-exigences`.
+- Outils du projet (voir `.claude/README.md`) :
+  - `/ingenieur-exigences` : analyser une nouvelle fonctionnalité avant de coder ;
+  - `/designer-web` : décisions et revues UI/UX avant de modifier le CSS ;
+  - `/analyser-site` : audit complet du site avec rapport priorisé.
 - Commits au format Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`…).

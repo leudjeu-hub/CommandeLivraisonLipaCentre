@@ -122,7 +122,10 @@ window.I18N = {
       'terms.p1': 'This site is a private preview of the upcoming service of the Librairie Papeterie du Centre. Products, prices and visuals are illustrative; they do not represent confirmed stock.',
       'terms.p2': 'Your basket is stored only in your browser. The form information is used to create your summary; it is only sent to the bookshop if you send it yourself via WhatsApp. No payment is collected online.',
       'terms.p3': 'Before commercial launch: complete the legal notice, add real prices and stock, define delivery areas and fees, and have the terms of sale and privacy policy approved.',
-      'terms.clear': 'Clear my local basket'
+      'terms.clear': 'Clear my local basket',
+
+      'map.text': 'Find us',
+      'map.label': 'See the bookshop on Google Maps (new tab)'
     }
   },
 

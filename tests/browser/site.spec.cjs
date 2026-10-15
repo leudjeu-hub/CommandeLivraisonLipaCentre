@@ -203,3 +203,19 @@ test('langue : lien direct ?lang=en', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('#navLinks a[href="#catalogue"]')).toHaveText('Catalogue');
 });
+
+test('bouton flottant « Nous trouver » : visible et vers Google Maps', async ({ page }) => {
+  await page.goto('/');
+  const btn = page.locator('#mapBtn');
+  await expect(btn).toBeVisible();
+  await expect(btn).toHaveText(/Nous trouver/);
+  await expect(btn).toHaveAttribute('href', /^https:\/\/www\.google\.com\/maps\/search\/\?api=1&.*query_place_id=/);
+  await expect(btn).toHaveAttribute('target', '_blank');
+  // Reste visible en bas de page sans cacher le pied de page
+  await page.locator('footer').scrollIntoViewIfNeeded();
+  await expect(btn).toBeInViewport();
+  const box = await btn.boundingBox();
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  await page.goto('/?lang=en');
+  await expect(btn).toHaveText(/Find us/);
+});

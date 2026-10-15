@@ -19,3 +19,6 @@ Thumbs.db
 
 # Fichiers mis de côté, à supprimer à la main
 _to_delete/
+
+# Captures d’écran de /analyser-site
+captures/
