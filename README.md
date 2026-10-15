@@ -1,12 +1,14 @@
 # Commande & Livraison – Librairie Papeterie du Centre
 
+**🌐 Voir le site : [leudjeu-hub.github.io/CommandeLivraisonLipaCentre](https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/)**
+
 Site statique en français pour la **Librairie Papeterie du Centre** à Yaoundé (Cameroun).
 Les clients composent un panier de livres et de fournitures, indiquent leur adresse de
-livraison et obtiennent un **récapitulatif à télécharger ou copier**, à transmettre à la
-librairie par téléphone ou WhatsApp.
+livraison et **envoient leur commande par WhatsApp** à la librairie, qui la confirme.
 
-> **Statut : version de présentation.** Articles et prix illustratifs. Aucune commande
-> n’est transmise et aucun paiement n’est encaissé. Le site n’est pas indexé (`robots.txt`).
+> **Statut : version de présentation.** Articles et prix illustratifs. Les commandes sont
+> confirmées par la librairie ; aucun paiement n’est encaissé en ligne. Le site n’est pas
+> indexé par les moteurs de recherche (`robots.txt`).
 
 ## Fonctionnalités
 
@@ -99,7 +101,7 @@ Alain Bienvenu Leudjeu
 ## Mise en ligne (GitHub Pages)
 
 Le workflow `.github/workflows/deploy.yml` teste, construit puis publie `dist/` à chaque
-push sur `main`. Adresse : https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/
+push sur `main`. Adresse : <https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/>
 
 Configuration initiale (une seule fois) : **Settings → Pages → Build and deployment →
 Source : GitHub Actions**.
