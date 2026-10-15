@@ -84,7 +84,8 @@ Tout se trouve dans `src/js/products.js` :
 
 ## Avant l’ouverture commerciale
 
-- [ ] Renseigner adresse, téléphone et numéro WhatsApp professionnels
+- [x] Renseigner adresse et téléphone professionnels
+- [ ] Confirmer si le +237 6 93 24 03 96 est aussi joignable sur WhatsApp
 - [ ] Intégrer les vrais articles, prix et stocks
 - [ ] Transmettre réellement les commandes (lien WhatsApp, e-mail ou back-end)
 - [ ] Définir les zones et frais de livraison
