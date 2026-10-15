@@ -15,10 +15,13 @@
 <body>
   <header>
     <a class="brand" href="#top">Librairie du Centre<small>LIBRAIRIE &amp; PAPETERIE · YAOUNDÉ</small></a>
-    <nav>
-      <a href="#catalogue">Le catalogue</a>
-      <a href="#listes">Listes scolaires</a>
-      <a href="#livraison">Livraison</a>
+    <nav aria-label="Navigation principale">
+      <button type="button" class="menu-toggle" id="menuBtn" aria-expanded="false" aria-controls="navLinks"><span aria-hidden="true">☰</span> Menu</button>
+      <div class="nav-links" id="navLinks">
+        <a href="#catalogue">Le catalogue</a>
+        <a href="#listes">Listes scolaires</a>
+        <a href="#livraison">Livraison</a>
+      </div>
       <button type="button" class="btn" id="cartBtn">Panier <span id="count">0</span></button>
     </nav>
   </header>
@@ -212,6 +215,13 @@
         <a class="btn whatsapp" id="whatsapp" href="#" target="_blank" rel="noopener">Envoyer par WhatsApp</a>
         <button type="button" class="btn light" id="download">Télécharger</button>
         <button type="button" class="btn light" id="copy">Copier le texte</button>
+      </div>
+      <div id="afterSend" class="alert hidden" role="status">
+        <p>Votre message est parti sur WhatsApp ? Videz votre panier pour ne pas renvoyer la même commande par erreur.</p>
+        <div class="actions">
+          <button type="button" class="btn" id="clearAfterSend">Vider mon panier</button>
+          <button type="button" class="btn light" id="keepCart">Garder le panier</button>
+        </div>
       </div>
     </div>
   </dialog>

@@ -70,6 +70,42 @@ nav a {
   font-size: 14px;
 }
 
+.nav-links {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+/* Bouton « Menu » : visible uniquement sur mobile et tablette */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 16px;
+  border: 1px solid #ccd5ca;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--green);
+  font-weight: bold;
+}
+
+/* Laisse la place à l’en-tête collant quand on suit une ancre */
+main, section {
+  scroll-margin-top: 90px;
+}
+
+#afterSend {
+  margin-top: 18px;
+}
+
+#afterSend p {
+  margin: 0;
+}
+
+#afterSend .actions {
+  margin: 12px 0 0;
+}
+
 .btn {
   background: var(--green);
   color: white;
@@ -501,8 +537,41 @@ form textarea {
   .scene {
     height: 290px;
   }
-  nav a {
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  nav {
+    gap: 10px;
+  }
+  .menu-toggle {
+    display: inline-flex;
+  }
+  .nav-links {
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 4px 6% 10px;
+    background: #fffdf7;
+    border-bottom: 1px solid #d8ded4;
+    box-shadow: 0 14px 24px #153e3520;
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .nav-links a {
+    padding: 15px 0;
+    font-size: 16px;
+    border-bottom: 1px solid #e6e9e0;
+  }
+  .nav-links a:last-child {
+    border-bottom: 0;
   }
 }
 
@@ -514,7 +583,21 @@ form textarea {
     font-size: 18px;
   }
   nav {
-    gap: 0;
+    gap: 8px;
+  }
+  .nav-links {
+    padding: 4px 5% 10px;
+  }
+  .menu-toggle, nav .btn {
+    padding: 11px 13px;
+    white-space: nowrap;
+  }
+  /* En-tête collant compact : le sous-titre prendrait trop de hauteur sur téléphone */
+  header {
+    padding: 10px 5%;
+  }
+  .brand small {
+    display: none;
   }
   .hero {
     grid-template-columns: 1fr;

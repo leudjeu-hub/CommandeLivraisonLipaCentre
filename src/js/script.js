@@ -107,6 +107,31 @@
     });
   }
 
+  /* ---------- Menu mobile ---------- */
+
+  function setMenu(open) {
+    el('navLinks').classList.toggle('open', open);
+    el('menuBtn').setAttribute('aria-expanded', String(open));
+  }
+
+  function bindMenu() {
+    el('menuBtn').addEventListener('click', () => setMenu(!el('navLinks').classList.contains('open')));
+    // Ferme le menu après le choix d’une section
+    el('navLinks').addEventListener('click', (e) => {
+      if (e.target.closest('a')) setMenu(false);
+    });
+    // Ferme le menu au clic en dehors ou avec Échap
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) setMenu(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && el('navLinks').classList.contains('open')) {
+        setMenu(false);
+        el('menuBtn').focus();
+      }
+    });
+  }
+
   function renderFilters() {
     el('filters').innerHTML = categories
       .map(
@@ -144,6 +169,7 @@
     el('cart').close();
     el('orderForm').classList.remove('hidden');
     el('result').classList.add('hidden');
+    el('afterSend').classList.add('hidden');
     el('formTitle').textContent = quote ? 'Votre demande de devis' : 'Livraison à Yaoundé';
     el('checkout').showModal();
   }
@@ -281,6 +307,20 @@
       el('result').classList.remove('hidden');
     });
 
+    // Après l’envoi WhatsApp, proposer de vider le panier (jamais automatiquement :
+    // le client peut encore annuler l’envoi dans WhatsApp)
+    el('whatsapp').addEventListener('click', () => {
+      if (!quote && Object.keys(basket).length) el('afterSend').classList.remove('hidden');
+    });
+    el('clearAfterSend').addEventListener('click', () => {
+      basket = {};
+      saveBasket();
+      el('afterSend').classList.add('hidden');
+      el('checkout').close();
+      toast('Panier vidé. Merci pour votre commande !');
+    });
+    el('keepCart').addEventListener('click', () => el('afterSend').classList.add('hidden'));
+
     el('download').addEventListener('click', download);
     el('copy').addEventListener('click', copy);
   }
@@ -288,6 +328,7 @@
   /* ---------- Démarrage ---------- */
 
   renderFilters();
+  bindMenu();
   bindEvents();
   saveBasket();
   renderProducts();

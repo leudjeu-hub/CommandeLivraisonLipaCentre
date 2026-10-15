@@ -99,3 +99,53 @@ test('filtres : état annoncé aux lecteurs d’écran', async ({ page }) => {
   await expect(page.locator('[data-cat="Livres"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('[data-cat="Tout"]')).toHaveAttribute('aria-pressed', 'false');
 });
+
+test('menu mobile : ouvre, mène à la section, se referme', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'menu compact uniquement sur mobile');
+  await page.goto('/');
+  const menu = page.locator('#menuBtn');
+  const links = page.locator('#navLinks');
+  await expect(menu).toBeVisible();
+  await expect(links).toBeHidden();
+  await menu.click();
+  await expect(menu).toHaveAttribute('aria-expanded', 'true');
+  await expect(links).toBeVisible();
+  await page.locator('#navLinks a[href="#livraison"]').click();
+  await expect(links).toBeHidden();
+  await expect(menu).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('#livraison h2')).toBeInViewport();
+  // Le panier reste accessible en haut de l’écran
+  await expect(page.locator('#cartBtn')).toBeInViewport();
+});
+
+test('desktop : liens visibles, pas de bouton Menu', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'ordinateur uniquement');
+  await page.goto('/');
+  await expect(page.locator('#menuBtn')).toBeHidden();
+  await expect(page.locator('#navLinks a')).toHaveCount(3);
+  await expect(page.locator('#navLinks a').first()).toBeVisible();
+});
+
+test('après envoi WhatsApp : proposer de vider le panier', async ({ page }) => {
+  await page.goto('/');
+  await page.click('[data-add="3"]');
+  await page.click('#cartBtn');
+  await page.click('#checkoutBtn');
+  await page.fill('#name', 'Client Test');
+  await page.fill('#phone', '+237 600 00 00 00');
+  await page.fill('#area', 'Melen');
+  await page.fill('#address', 'Face école');
+  await page.check('#consent');
+  await page.click('#orderForm button[type="submit"]');
+
+  await expect(page.locator('#afterSend')).toBeHidden();
+  // Empêche l’ouverture réelle de WhatsApp pendant le test
+  await page.locator('#whatsapp').evaluate((a) => a.addEventListener('click', (e) => e.preventDefault()));
+  await page.click('#whatsapp');
+  await expect(page.locator('#afterSend')).toBeVisible();
+  await page.click('#clearAfterSend');
+  await expect(page.locator('#checkout')).toBeHidden();
+  await expect(page.locator('#count')).toHaveText('0');
+  await page.reload();
+  await expect(page.locator('#count')).toHaveText('0');
+});
