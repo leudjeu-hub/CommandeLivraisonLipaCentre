@@ -95,3 +95,11 @@ Tout se trouve dans `src/js/products.js` :
 ## Auteur
 
 Alain Bienvenu Leudjeu
+
+## Mise en ligne (GitHub Pages)
+
+Le workflow `.github/workflows/deploy.yml` teste, construit puis publie `dist/` à chaque
+push sur `main`. Adresse : https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/
+
+Configuration initiale (une seule fois) : **Settings → Pages → Build and deployment →
+Source : GitHub Actions**.
