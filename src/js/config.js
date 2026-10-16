@@ -11,3 +11,10 @@ window.CATEGORIES = ['Tout', 'Scolaire', 'Bureau', 'Livres'];
 window.SHOP = {
   whatsapp: '237693240396'
 };
+
+/* Règles de livraison. La grille (zones, quartiers, frais) est dans catalogue/livraison.csv. */
+window.DELIVERY_RULES = {
+  freeFrom: 25000,      // livraison offerte à partir de ce montant d’articles (FCFA)…
+  freeZones: [1, 2],    // …dans ces zones uniquement
+  minOrder: 2000        // montant minimum d’articles pour une commande livrée (FCFA)
+};

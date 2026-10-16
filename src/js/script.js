@@ -9,6 +9,9 @@
   const products = window.PRODUCTS || [];
   const categories = window.CATEGORIES || ['Tout'];
   const shop = window.SHOP || {};
+  const delivery = window.DELIVERY || [];
+  const rules = Object.assign({ freeFrom: 0, freeZones: [], minOrder: 0 }, window.DELIVERY_RULES || {});
+  const OTHER_AREA = '__autre';
   const i18n = window.I18N;
   const STORAGE_KEY = 'centre-cart';
   const LANG_KEY = 'centre-lang';
@@ -105,6 +108,9 @@
 
     renderFilters();
     renderProducts();
+    renderZones();
+    renderAreaOptions();
+    updateFeeLine();
     if (el('cart').open) renderCart();
   }
 
@@ -136,6 +142,73 @@
 
   function basketTotal() {
     return products.reduce((sum, p) => sum + (p.price || 0) * (basket[p.id] || 0), 0);
+  }
+
+  /* ---------- Livraison par quartier ---------- */
+
+  const zt = (z, field) => (lang !== i18n.DEFAULT && z[lang] && z[lang][field]) || z[field];
+  const zoneOfArea = (area) => delivery.find((z) => z.areas.includes(area));
+  const isFree = (z, subtotal) => rules.freeFrom > 0 && rules.freeZones.includes(z.zone) && subtotal >= rules.freeFrom;
+  // Frais pour une zone : 0 si livraison offerte (commande, pas devis), sinon le tarif de la zone
+  const feeFor = (z, subtotal) => (!quote && isFree(z, subtotal) ? 0 : z.fee);
+
+  // « 1, 2 et 3 » / « 1, 2 and 3 »
+  const listWords = (xs) => (xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' ' + t('and') + ' ' + xs.at(-1));
+
+  function rulesText() {
+    const parts = [];
+    if (rules.freeFrom > 0 && rules.freeZones.length) parts.push(t('freeRule', { from: money(rules.freeFrom), zones: listWords(rules.freeZones) }));
+    if (rules.minOrder > 0) parts.push(t('minRule', { min: money(rules.minOrder) }));
+    return parts.join(' ');
+  }
+
+  function renderZones() {
+    el('zones').innerHTML = delivery
+      .map((z) => `<div class="zone">
+          <h4>${escapeHtml(t('zone'))} ${z.zone} — ${escapeHtml(zt(z, 'name'))}</h4>
+          <p class="zone-fee">${money(z.fee)}</p>
+          <p class="muted">${escapeHtml(zt(z, 'delay'))}</p>
+          <p><strong>${escapeHtml(t('zoneAreas'))}</strong> ${z.areas.map(escapeHtml).join(', ')}</p>
+        </div>`)
+      .join('');
+    el('deliveryRules').textContent = rulesText();
+  }
+
+  function renderAreaOptions() {
+    const select = el('area');
+    const current = select.value;
+    select.innerHTML =
+      `<option value="" disabled>${escapeHtml(t('chooseArea'))}</option>` +
+      delivery
+        .map((z) => `<optgroup label="${escapeHtml(`${t('zone')} ${z.zone} — ${zt(z, 'name')} · ${money(z.fee)}`)}">${z.areas
+          .map((a) => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('')}</optgroup>`)
+        .join('') +
+      `<optgroup label="${escapeHtml(t('otherGroup'))}"><option value="${OTHER_AREA}">${escapeHtml(t('otherArea'))}</option></optgroup>`;
+    select.value = current || '';
+    if (!select.value) select.selectedIndex = 0;
+  }
+
+  // Ligne d’information sous le quartier : frais, délai, total à payer
+  function updateFeeLine() {
+    const area = el('area').value;
+    const other = area === OTHER_AREA;
+    el('areaOtherWrap').classList.toggle('hidden', !other);
+    el('areaOther').required = other;
+    const line = el('feeLine');
+    if (!area) { line.classList.add('hidden'); return; }
+    const subtotal = basketTotal();
+    let text;
+    if (other) text = t('feeLineOther');
+    else {
+      const z = zoneOfArea(area);
+      const fee = feeFor(z, subtotal);
+      text = fee === 0
+        ? t('feeLineFree', { zone: z.zone, from: money(rules.freeFrom), delay: zt(z, 'delay') })
+        : t('feeLine', { zone: z.zone, name: zt(z, 'name'), fee: money(fee), delay: zt(z, 'delay') });
+      if (!quote) text += '\n' + t('totalLine', { total: money(subtotal + fee) });
+    }
+    line.textContent = text;
+    line.classList.remove('hidden');
   }
 
   /* ---------- Notifications ---------- */
@@ -237,8 +310,16 @@
           })
           .join('')
       : `<p>${escapeHtml(t('cartEmpty'))}</p>`;
-    el('subtotal').textContent = money(basketTotal());
-    el('checkoutBtn').disabled = !items.length;
+    const subtotal = basketTotal();
+    el('subtotal').textContent = money(subtotal);
+    if (delivery.length) {
+      const fees = delivery.map((z) => z.fee);
+      el('cartFees').textContent = t('cartFees', { min: money(Math.min(...fees)), max: money(Math.max(...fees)) }) + ' ' + rulesText();
+    }
+    const missing = items.length ? rules.minOrder - subtotal : 0;
+    el('minOrderMsg').textContent = missing > 0 ? t('minOrder', { missing: money(missing), min: money(rules.minOrder) }) : '';
+    el('minOrderMsg').classList.toggle('hidden', !(missing > 0));
+    el('checkoutBtn').disabled = !items.length || missing > 0;
   }
 
   /* ---------- Formulaire commande / devis ---------- */
@@ -250,6 +331,7 @@
     el('result').classList.add('hidden');
     el('afterSend').classList.add('hidden');
     el('formTitle').textContent = quote ? t('formQuote') : t('formOrder');
+    updateFeeLine();
     el('checkout').showModal();
   }
 
@@ -262,17 +344,27 @@
       '',
       t('sum.name') + el('name').value,
       t('sum.phone') + el('phone').value,
-      t('sum.area') + el('area').value,
+      t('sum.area') + (el('area').value === OTHER_AREA ? el('areaOther').value : el('area').value),
       t('sum.address') + el('address').value,
       t('sum.slot') + el('slot').value,
       t('sum.payment') + el('payment').value,
       ''
     ];
+    const area = el('area').value;
+    const z = area === OTHER_AREA ? null : zoneOfArea(area);
+    const subtotal = basketTotal();
     if (!quote) {
       products
         .filter((p) => basket[p.id])
         .forEach((p) => lines.push(basket[p.id] + ' × ' + pt(p, 'name') + ' : ' + money(p.price * basket[p.id])));
-      lines.push(t('sum.total') + money(basketTotal()));
+      lines.push(t('sum.total') + money(subtotal));
+    }
+    if (z) {
+      const fee = feeFor(z, subtotal);
+      lines.push(t('sum.delivery', { zone: z.zone, name: zt(z, 'name') }) + (fee === 0 ? t('free') : money(fee)));
+      if (!quote) lines.push(t('sum.toPay') + money(subtotal + fee));
+    } else {
+      lines.push(t('sum.deliveryOther'));
     }
     lines.push(t('sum.confirm'), '', t('sum.notes') + el('notes').value, '', t('sum.disclaimer'));
     if (t('sum.language')) lines.push(t('sum.language'));
@@ -317,6 +409,7 @@
     });
 
     el('search').addEventListener('input', renderProducts);
+    el('area').addEventListener('change', updateFeeLine);
 
     el('products').addEventListener('click', (e) => {
       const btn = e.target.closest('[data-add]');

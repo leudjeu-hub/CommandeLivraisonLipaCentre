@@ -146,3 +146,33 @@ test('catalogue : le tableau CSV génère products.js et refuse les erreurs', ()
   }
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('livraison : grille valide et générateur qui refuse les erreurs', () => {
+  const sb = { window: {} };
+  vm.runInNewContext(fs.readFileSync('src/js/config.js', 'utf8'), sb);
+  vm.runInNewContext(fs.readFileSync('src/js/delivery.js', 'utf8'), sb);
+  const { DELIVERY, DELIVERY_RULES } = sb.window;
+  assert.ok(Array.isArray(DELIVERY) && DELIVERY.length > 0, 'grille vide');
+  for (const z of DELIVERY) {
+    assert.ok(Number.isInteger(z.fee) && z.fee >= 0, `frais invalides zone ${z.zone}`);
+    assert.ok(z.areas.length > 0, `zone ${z.zone} sans quartier`);
+  }
+  for (const zone of DELIVERY_RULES.freeZones) assert.ok(DELIVERY.some((z) => z.zone === zone), `zone ${zone} inconnue dans freeZones`);
+
+  const { execFileSync } = require('node:child_process');
+  const os = require('node:os');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'livraison-'));
+  const run = (csv) => {
+    fs.writeFileSync(path.join(dir, 'l.csv'), csv);
+    return execFileSync('node', ['scripts/catalogue.cjs', 'catalogue/catalogue.csv', path.join(dir, 'p.js'), path.join(dir, 'l.csv'), path.join(dir, 'd.js')], { stdio: 'pipe' }).toString();
+  };
+  const head = 'zone;nom;frais;quartiers\n';
+  run(head + '1;Centre;1 000;A, B\n2;Proche;2000;C\n');
+  for (const bad of [
+    head + '1;Centre;1000;A, B\n2;Proche;2000;B\n', // quartier dans deux zones
+    head + '1;Centre;mille;A\n',                     // frais non numériques
+    head + '1;Centre;1000;\n',                       // aucun quartier
+    head + '1;Centre;1000;A\n1;Bis;2000;C\n'        // zone en double
+  ]) assert.throws(() => run(bad), undefined, bad);
+  fs.rmSync(dir, { recursive: true, force: true });
+});

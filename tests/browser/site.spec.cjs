@@ -43,7 +43,7 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
 
   await page.fill('#name', 'Client Test');
   await page.fill('#phone', '+237 600 00 00 00');
-  await page.fill('#area', 'Bastos');
+  await page.selectOption('#area', 'Bastos');
   await page.fill('#address', 'Près du rond-point');
   await page.check('#consent');
   await page.click('#orderForm button[type="submit"]');
@@ -133,7 +133,7 @@ test('après envoi WhatsApp : proposer de vider le panier', async ({ page }) => 
   await page.click('#checkoutBtn');
   await page.fill('#name', 'Client Test');
   await page.fill('#phone', '+237 600 00 00 00');
-  await page.fill('#area', 'Melen');
+  await page.selectOption('#area', 'Melen');
   await page.fill('#address', 'Face école');
   await page.check('#consent');
   await page.click('#orderForm button[type="submit"]');
@@ -174,18 +174,19 @@ test('langue : passage en anglais, mémorisé, et récapitulatif en anglais', as
 
   await page.click('[data-add="2"]');
   await expect(page.locator('#toast')).toHaveText('Item added to basket');
+  await page.click('[data-add="2"]'); // 2 × 1 000 FCFA = minimum de commande
   await page.click('#cartBtn');
   await expect(page.locator('#cart h2')).toHaveText('Your basket');
   await page.click('#checkoutBtn');
   await page.fill('#name', 'Test Customer');
   await page.fill('#phone', '+237 600 00 00 00');
-  await page.fill('#area', 'Bastos');
+  await page.selectOption('#area', 'Bastos');
   await page.fill('#address', 'Near the roundabout');
   await page.check('#consent');
   await page.click('#orderForm button[type="submit"]');
   const summary = page.locator('#summary');
   await expect(summary).toContainText('ORDER REQUEST — TO BE CONFIRMED');
-  await expect(summary).toContainText('1 × Pack of 10 blue pens');
+  await expect(summary).toContainText('2 × Pack of 10 blue pens');
   await expect(summary).toContainText('Payment on delivery: Cash');
   await expect(summary).toContainText('Customer language: English');
 
@@ -283,4 +284,73 @@ test('en-tête : rien ne dépasse de l’écran à 320 et 360 px', async ({ page
       expect(box.x + box.width, `${sel} à ${width}px`).toBeLessThanOrEqual(width);
     }
   }
+});
+
+// ---------- Livraison par quartier ----------
+async function fillOrder(page, area) {
+  await page.fill('#name', 'Client Test');
+  await page.fill('#phone', '+237 600 00 00 00');
+  await page.selectOption('#area', area);
+  await page.fill('#address', 'Près du rond-point');
+  await page.check('#consent');
+}
+
+test('livraison : frais du quartier affichés et inclus dans le récapitulatif', async ({ page }) => {
+  await page.goto('/');
+  await page.click('[data-add="4"]'); // 4 000 FCFA
+  await page.click('#cartBtn');
+  await expect(page.locator('#cartFees')).toContainText(/1\s000 FCFA à 5\s000 FCFA/);
+  await page.click('#checkoutBtn');
+  await fillOrder(page, 'Biyem-Assi'); // zone 3
+  await expect(page.locator('#feeLine')).toContainText(/zone 3.*3\s000 FCFA/);
+  await expect(page.locator('#feeLine')).toContainText(/Total à payer : 7\s000 FCFA/);
+  await page.click('#orderForm button[type="submit"]');
+  await expect(page.locator('#summary')).toContainText(/Livraison \(zone 3, Éloigné\) : 3\s000 FCFA/);
+  await expect(page.locator('#summary')).toContainText(/Total à payer à la livraison : 7\s000 FCFA/);
+  const href = await page.locator('#whatsapp').getAttribute('href');
+  expect(decodeURIComponent(href)).toMatch(/Total à payer à la livraison : 7\s000 FCFA/);
+});
+
+test('livraison : offerte dès 25 000 FCFA en zone 1–2, pas en zone 3', async ({ page }) => {
+  await page.goto('/');
+  for (let i = 0; i < 3; i++) await page.click('[data-add="7"]'); // 3 × 8 500 = 25 500 FCFA
+  await page.click('#cartBtn');
+  await page.click('#checkoutBtn');
+  await page.selectOption('#area', 'Bastos'); // zone 2
+  await expect(page.locator('#feeLine')).toContainText('Livraison offerte');
+  await expect(page.locator('#feeLine')).toContainText(/Total à payer : 25\s500 FCFA/);
+  await page.selectOption('#area', 'Mendong'); // zone 3
+  await expect(page.locator('#feeLine')).toContainText(/3\s000 FCFA/);
+});
+
+test('livraison : commande minimum de 2 000 FCFA', async ({ page }) => {
+  await page.goto('/');
+  await page.click('[data-add="6"]'); // 750 FCFA
+  await page.click('#cartBtn');
+  await expect(page.locator('#checkoutBtn')).toBeDisabled();
+  await expect(page.locator('#minOrderMsg')).toContainText(/1\s250 FCFA/);
+});
+
+test('livraison : quartier hors grille à préciser, frais à confirmer', async ({ page }) => {
+  await page.goto('/');
+  await page.click('[data-add="4"]');
+  await page.click('#cartBtn');
+  await page.click('#checkoutBtn');
+  await fillOrder(page, '__autre');
+  await expect(page.locator('#areaOther')).toBeVisible();
+  await expect(page.locator('#feeLine')).toContainText('la librairie vous confirmera');
+  await page.fill('#areaOther', 'Nkoabang');
+  await page.click('#orderForm button[type="submit"]');
+  await expect(page.locator('#summary')).toContainText('Quartier : Nkoabang');
+  await expect(page.locator('#summary')).toContainText('frais à confirmer');
+});
+
+test('livraison : grille affichée dans la section Livraison, traduite', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#zones .zone')).toHaveCount(4);
+  await expect(page.locator('#zones .zone').first()).toContainText(/Zone 1 — Centre/);
+  await expect(page.locator('#deliveryRules')).toContainText(/25\s000 FCFA/);
+  await page.goto('/?lang=en');
+  await expect(page.locator('#zones .zone').nth(1)).toContainText('Nearby');
+  await expect(page.locator('#area option').first()).toHaveText('Choose your neighbourhood');
 });

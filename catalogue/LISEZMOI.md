@@ -52,3 +52,22 @@ est bloquée : un tableau faux ne peut pas arriver sur le site public.
   réenregistrer en **CSV UTF-8**.
 - Ajouter une **nouvelle catégorie** demande un petit changement dans `src/js/config.js` et
   `src/js/i18n.js` (demander à Claude : `/ingenieur-exigences` ou directement).
+
+# Grille de livraison (`livraison.csv`)
+
+Une ligne par zone. Les frais s’affichent automatiquement dans le formulaire, le panier
+et le message WhatsApp, selon le quartier choisi par le client.
+
+| Colonne | Obligatoire | À remplir | Exemple |
+|---|---|---|---|
+| `zone` | oui | Numéro de la zone (unique) | `2` |
+| `nom` | oui | Nom de la zone | `Proche` |
+| `nom_en` | non | Nom en anglais | `Nearby` |
+| `frais` | oui | Frais en FCFA (`0` = gratuit) | `2000` |
+| `delai` / `delai_en` | non | Délai annoncé | `Le jour même` |
+| `quartiers` | oui | Quartiers de la zone, **séparés par des virgules** | `Bastos, Essos, Melen` |
+
+- Un quartier ne peut être que dans **une seule** zone (`npm test` le vérifie).
+- Le client peut toujours choisir « Autre quartier » : il le précise, et les frais sont à confirmer.
+- **Livraison offerte**, zones concernées et **commande minimum** se règlent dans `src/js/config.js`
+  (`DELIVERY_RULES`) : actuellement offerte dès 25 000 FCFA en zones 1 et 2, minimum 2 000 FCFA.

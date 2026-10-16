@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="js/config.js" defer></script>
   <script src="js/products.js" defer></script>
+  <script src="js/delivery.js" defer></script>
   <script src="js/i18n.js" defer></script>
   <script src="js/script.js" defer></script>
 </head>
@@ -147,7 +148,7 @@
         <div>
           <div class="stepnum">02</div>
           <h3 data-i18n="delivery.2.title">Votre créneau</h3>
-          <p class="muted" data-i18n="delivery.2.text">La disponibilité, le délai et les frais définitifs sont confirmés avant tout départ.</p>
+          <p class="muted" data-i18n="delivery.2.text">Les frais dépendent de votre quartier (grille ci-dessous). La disponibilité et le délai sont confirmés avant tout départ.</p>
         </div>
         <div>
           <div class="stepnum">03</div>
@@ -155,6 +156,10 @@
           <p class="muted" data-i18n="delivery.3.text">Vérifiez votre colis puis payez à la réception. Aucun paiement en ligne n’est demandé sur cette version.</p>
         </div>
       </div>
+      <!-- Grille des frais par zone (remplie par js/script.js à partir de catalogue/livraison.csv) -->
+      <h3 class="zones-title" data-i18n="delivery.zonesTitle">Frais de livraison par quartier</h3>
+      <div class="zones" id="zones"></div>
+      <p class="muted" id="deliveryRules"></p>
     </section>
   </main>
 
@@ -187,7 +192,8 @@
     <h2 data-i18n="cart.title">Votre panier</h2>
     <div id="cartRows"></div>
     <div class="total"><span data-i18n="cart.items">Articles</span><strong id="subtotal"></strong></div>
-    <p class="muted" data-i18n="cart.fees">Frais de livraison : à confirmer selon l’adresse et le colis.</p>
+    <p class="muted" id="cartFees"></p>
+    <p class="alert hidden" id="minOrderMsg" role="status"></p>
     <button type="button" class="btn" id="checkoutBtn" data-i18n="cart.checkout">Préparer ma commande</button>
   </dialog>
 
@@ -204,7 +210,12 @@
       <input id="phone" required type="tel" pattern="[+0-9 ()-]{8,20}" maxlength="20" autocomplete="tel">
 
       <label for="area" data-i18n="form.area">Quartier</label>
-      <input id="area" required maxlength="100" placeholder="Ex. : Bastos, Melen, Essos…" data-i18n-attr="placeholder:form.areaPlaceholder">
+      <select id="area" required></select>
+      <div id="areaOtherWrap" class="hidden">
+        <label for="areaOther" data-i18n="form.areaOther">Précisez votre quartier</label>
+        <input id="areaOther" maxlength="100">
+      </div>
+      <p class="fee-line hidden" id="feeLine" aria-live="polite"></p>
 
       <label for="address" data-i18n="form.address">Adresse et repère</label>
       <textarea id="address" required maxlength="500" placeholder="Rue, bâtiment, repère et indications utiles" data-i18n-attr="placeholder:form.addressPlaceholder"></textarea>
@@ -226,7 +237,7 @@
       <label for="notes" data-i18n="form.notes">Liste scolaire ou instructions complémentaires</label>
       <textarea id="notes" maxlength="3000" placeholder="Classe, références, édition, quantités…" data-i18n-attr="placeholder:form.notesPlaceholder"></textarea>
 
-      <label class="check"><input type="checkbox" id="consent" required><span data-i18n="form.consent">Je comprends que les prix, le stock, la livraison et ses frais doivent être confirmés par la librairie.</span></label>
+      <label class="check"><input type="checkbox" id="consent" required><span data-i18n="form.consent">Je comprends que les prix, le stock et le délai de livraison doivent être confirmés par la librairie.</span></label>
       <button class="btn" type="submit" data-i18n="form.submit">Créer mon récapitulatif</button>
     </form>
     <div id="result" class="hidden">
@@ -254,7 +265,7 @@
     <h2 data-i18n="terms.title">À propos de cette version</h2>
     <p data-i18n="terms.p1">Ce site est une présentation privée du futur service de la Librairie Papeterie du Centre. Les produits, prix et visuels sont illustratifs ; ils ne représentent pas un stock confirmé.</p>
     <p data-i18n="terms.p2">Le panier est mémorisé uniquement dans votre navigateur. Les informations du formulaire servent à produire votre récapitulatif ; elles ne sont transmises à la librairie que si vous l’envoyez vous-même par WhatsApp. Aucun paiement n’est encaissé en ligne.</p>
-    <p data-i18n="terms.p3">Avant ouverture commerciale : compléter les mentions légales, intégrer les prix et le stock réels, définir les zones et les frais de livraison, et faire valider les conditions de vente et la politique de confidentialité.</p>
+    <p data-i18n="terms.p3">Avant ouverture commerciale : compléter les mentions légales, intégrer les prix et le stock réels, valider la grille de livraison, et faire valider les conditions de vente et la politique de confidentialité.</p>
     <button type="button" class="btn" id="clear" data-i18n="terms.clear">Effacer mon panier local</button>
   </dialog>
 

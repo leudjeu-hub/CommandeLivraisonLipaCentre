@@ -17,6 +17,7 @@ livraison et **envoient leur commande par WhatsApp** à la librairie, qui la con
 - Formulaire de livraison : quartier, repère, créneau, paiement à la réception
   (espèces, Orange Money, MTN MoMo)
 - Demande de devis pour les listes scolaires et les livres « sur devis »
+- **Frais de livraison par quartier** (4 zones, 1 000 à 5 000 FCFA), affichés avant l’envoi ; grille modifiable dans `catalogue/livraison.csv`
 - Récapitulatif envoyé par WhatsApp à la librairie, ou téléchargé / copié
 - Site bilingue **français / anglais** (bouton de langue, choix mémorisé, lien direct `?lang=en`)
 - Mise en page responsive (mobile, tablette, ordinateur)
@@ -28,7 +29,8 @@ livraison et **envoient leur commande par WhatsApp** à la librairie, qui la con
 ├── src/                    # code source du site
 │   ├── index.html          # la page
 │   ├── css/style.css       # styles
-│   ├── js/config.js        # catégories et numéro WhatsApp
+│   ├── js/config.js        # catégories, numéro WhatsApp, règles de livraison
+│   ├── js/delivery.js      # GÉNÉRÉ depuis catalogue/livraison.csv
 │   ├── js/products.js      # GÉNÉRÉ depuis catalogue/catalogue.csv
 │   ├── js/i18n.js          # traductions anglaises de la page et de l’interface
 │   ├── js/script.js        # logique : catalogue, panier, formulaire
@@ -104,7 +106,7 @@ et les noms d’articles anglais dans le champ `en` de chaque produit.
 - [x] Renseigner adresse et téléphone professionnels
 - [ ] Intégrer les vrais articles, prix et stocks
 - [x] Transmettre les commandes par WhatsApp (numéro dans `src/js/products.js` → `SHOP.whatsapp`)
-- [ ] Définir les zones et frais de livraison
+- [x] Définir les zones et frais de livraison (à valider avec le livreur)
 - [ ] Faire valider mentions légales, conditions de vente et confidentialité
 - [ ] Choisir un hébergement et autoriser l’indexation (`public/robots.txt`)
 - [ ] Choisir une licence

@@ -1,6 +1,8 @@
-// Génère src/js/products.js à partir du tableau catalogue/catalogue.csv.
+// Génère src/js/products.js à partir du tableau catalogue/catalogue.csv,
+// et src/js/delivery.js à partir de la grille catalogue/livraison.csv.
 //
-// Usage : node scripts/catalogue.cjs [fichier.csv] [sortie.js]
+// Usage : node scripts/catalogue.cjs [catalogue.csv] [products.js] [livraison.csv] [delivery.js]
+// (sans argument : les fichiers du projet ; avec seulement les 2 premiers : pas de grille de livraison)
 // Lancé automatiquement par `npm test` et `npm run build` : il suffit de modifier le tableau.
 // En cas d’erreur dans le tableau, le script s’arrête avec un message indiquant la ligne,
 // ce qui bloque la mise en ligne au lieu de publier un catalogue faux.
@@ -11,6 +13,9 @@ const vm = require('node:vm');
 const csvPath = process.argv[2] || 'catalogue/catalogue.csv';
 const outPath = process.argv[3] || 'src/js/products.js';
 const configPath = 'src/js/config.js';
+const deliveryCsv = process.argv[4] || (process.argv[2] ? null : 'catalogue/livraison.csv');
+const deliveryOut = process.argv[5] || 'src/js/delivery.js';
+let currentFile = csvPath;
 
 // Couleur de vignette par défaut selon la catégorie (si la colonne « couleur » est vide)
 const DEFAULT_COLORS = { Scolaire: '#31574b', Bureau: '#c6a157', Livres: '#a95540' };
@@ -18,7 +23,7 @@ const REQUIRED = ['id', 'categorie', 'prix', 'nom', 'description'];
 const OPTIONAL = ['vignette', 'nom_en', 'description_en', 'vignette_en', 'couleur', 'disponible'];
 
 function fail(message) {
-  console.error('\n✖ Catalogue invalide (' + csvPath + ')\n  ' + message + '\n');
+  console.error('\n✖ Tableau invalide (' + currentFile + ')\n  ' + message + '\n');
   process.exit(1);
 }
 
@@ -156,3 +161,50 @@ let msg = `✔ Catalogue : ${products.length} article(s) → ${outPath}`;
 if (hidden) msg += `, ${hidden} masqué(s) (disponible = non)`;
 console.log(msg);
 if (missingEn) console.warn(`  ⚠ ${missingEn} article(s) sans traduction anglaise : le texte français sera affiché en anglais.`);
+
+// ---------- Grille de livraison (catalogue/livraison.csv) ----------
+if (deliveryCsv) {
+  currentFile = deliveryCsv;
+  if (!fs.existsSync(deliveryCsv)) fail('fichier introuvable.');
+  const drows = parseCsv(fs.readFileSync(deliveryCsv, 'utf8'));
+  if (drows.length < 2) fail('la grille est vide.');
+  const dh = drows[0].map((h) => h.trim().toLowerCase());
+  const DREQ = ['zone', 'nom', 'frais', 'quartiers'];
+  const DOPT = ['nom_en', 'delai', 'delai_en'];
+  for (const col of DREQ) if (!dh.includes(col)) fail(`colonne obligatoire manquante : « ${col} ».`);
+  for (const col of dh) if (col && !DREQ.includes(col) && !DOPT.includes(col)) fail(`colonne inconnue : « ${col} ». Colonnes possibles : ${[...DREQ, ...DOPT].join(', ')}.`);
+
+  const zones = [];
+  const areaSeen = new Map();
+  drows.slice(1).forEach((cells, index) => {
+    const where = `ligne ${index + 2}`;
+    const get = (col) => (cells[dh.indexOf(col)] ?? '').trim();
+    const zone = Number(get('zone'));
+    if (!Number.isInteger(zone) || zone < 1) fail(`${where} : « zone » doit être un nombre entier positif.`);
+    if (zones.some((z) => z.zone === zone)) fail(`${where} : la zone ${zone} existe déjà.`);
+    const fee = Number(get('frais').replace(/[\s\u00a0\u202f.]/g, '').replace(/fcfa$/i, ''));
+    if (get('frais') === '' || !Number.isInteger(fee) || fee < 0) fail(`${where} : frais « ${get('frais')} » invalides (nombre entier en FCFA, 0 = gratuit).`);
+    if (!get('nom')) fail(`${where} : « nom » est vide.`);
+    const areas = get('quartiers').split(',').map((a) => a.trim()).filter(Boolean);
+    if (!areas.length) fail(`${where} : aucun quartier (séparer les quartiers par des virgules).`);
+    for (const a of areas) {
+      const key = a.toLocaleLowerCase('fr');
+      if (areaSeen.has(key)) fail(`${where} : le quartier « ${a} » est déjà dans la zone ${areaSeen.get(key)}.`);
+      areaSeen.set(key, zone);
+    }
+    zones.push({
+      zone,
+      name: get('nom'),
+      fee,
+      delay: get('delai'),
+      areas,
+      en: { name: get('nom_en') || get('nom'), delay: get('delai_en') || get('delai') }
+    });
+  });
+  zones.sort((a, b) => a.zone - b.zone);
+  fs.writeFileSync(deliveryOut,
+    '/*\n * FICHIER GÉNÉRÉ AUTOMATIQUEMENT — ne pas modifier à la main.\n' +
+    ' * Source : catalogue/livraison.csv. Règles (seuil de gratuité, minimum) : src/js/config.js.\n */\n' +
+    'window.DELIVERY = ' + JSON.stringify(zones, null, 2) + ';\n');
+  console.log(`✔ Livraison : ${zones.length} zone(s), ${areaSeen.size} quartier(s) → ${deliveryOut}`);
+}
