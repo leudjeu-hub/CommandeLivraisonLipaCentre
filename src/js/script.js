@@ -240,7 +240,11 @@
     el('products').innerHTML = list
       .map(
         (p) => `<article class="card">
-          <div class="art"><div class="object" data-color="${escapeHtml(p.color)}">${pt(p, 'label').split('\n').map(escapeHtml).join('<br>')}</div></div>
+          <div class="art${p.image ? ' has-photo' : ''}">${
+            p.image
+              ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(pt(p, 'name'))}" width="480" height="480" loading="lazy" decoding="async">`
+              : `<div class="object" data-color="${escapeHtml(p.color)}">${pt(p, 'label').split('\n').map(escapeHtml).join('<br>')}</div>`
+          }</div>
           <small>${escapeHtml(t('cat.' + p.cat))}</small>
           <h3>${escapeHtml(pt(p, 'name'))}</h3>
           <p>${escapeHtml(pt(p, 'desc'))}</p>

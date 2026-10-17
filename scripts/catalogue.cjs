@@ -13,6 +13,8 @@ const vm = require('node:vm');
 const csvPath = process.argv[2] || 'catalogue/catalogue.csv';
 const outPath = process.argv[3] || 'src/js/products.js';
 const configPath = 'src/js/config.js';
+// Racine du site servi : les photos doivent y être copiées (CSP : img-src 'self')
+const srcRoot = path.resolve(__dirname, '..', 'src');
 const deliveryCsv = process.argv[4] || (process.argv[2] ? null : 'catalogue/livraison.csv');
 const deliveryOut = process.argv[5] || 'src/js/delivery.js';
 let currentFile = csvPath;
@@ -20,7 +22,7 @@ let currentFile = csvPath;
 // Couleur de vignette par défaut selon la catégorie (si la colonne « couleur » est vide)
 const DEFAULT_COLORS = { Scolaire: '#31574b', Bureau: '#c6a157', Livres: '#a95540' };
 const REQUIRED = ['id', 'categorie', 'prix', 'nom', 'description'];
-const OPTIONAL = ['vignette', 'nom_en', 'description_en', 'vignette_en', 'couleur', 'disponible', 'statut', 'image', 'credit_photo'];
+const OPTIONAL = ['vignette', 'nom_en', 'description_en', 'vignette_en', 'couleur', 'disponible', 'statut', 'image'];
 
 function fail(message) {
   console.error('\n✖ Tableau invalide (' + currentFile + ')\n  ' + message + '\n');
@@ -131,6 +133,20 @@ rows.slice(1).forEach((cells, index) => {
     desc,
     label: get('vignette') ? label(get('vignette')) : autoLabel(name)
   };
+
+  // Photo du produit : chemin local uniquement (la CSP interdit les images distantes)
+  const image = get('image');
+  if (image) {
+    if (!/^img\/[\w./-]+\.(webp|avif|png|jpe?g|svg)$/i.test(image)) {
+      fail(`${where} : « image » doit être un chemin local du site (ex. img/produits/cahier.webp), pas « ${image} ».`);
+    }
+    const file = path.resolve(srcRoot, image);
+    if (!file.startsWith(srcRoot + path.sep)) fail(`${where} : « image » sort du dossier src : ${image}.`);
+    if (!fs.existsSync(file)) {
+      fail(`${where} : image introuvable : src/${image} — copiez la photo dans src/img/ avant de la référencer.`);
+    }
+    product.image = image;
+  }
 
   const nameEn = get('nom_en');
   const descEn = get('description_en');

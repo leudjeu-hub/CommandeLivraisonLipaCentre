@@ -19,6 +19,21 @@ test('la page se charge sans erreur et affiche le catalogue', async ({ page }) =
   expect(errors).toEqual([]);
 });
 
+test('photos produit : images locales chargées dans les fiches', async ({ page }) => {
+  await page.goto('/');
+  const photos = page.locator('#products .card img');
+  const count = await photos.count();
+  expect(count).toBeGreaterThan(0);
+  for (let i = 0; i < count; i++) {
+    const img = photos.nth(i);
+    const src = await img.getAttribute('src');
+    expect(src.startsWith('img/')).toBe(true);
+    expect(await img.getAttribute('alt')).toBeTruthy();
+    await img.scrollIntoViewIfNeeded(); // les photos sont en chargement différé
+    await expect.poll(() => img.evaluate((el) => el.complete && el.naturalWidth > 0)).toBe(true);
+  }
+});
+
 test('recherche et filtres', async ({ page }) => {
   await page.goto('/');
   await page.fill('#search', 'stylo');

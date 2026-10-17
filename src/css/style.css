@@ -444,6 +444,22 @@ p {
   position: relative;
 }
 
+/* Photo du produit (colonne « image » du tableau) : carrée comme la source,
+   donc aucun recadrage ; repli sur la vignette dessinée sans photo */
+.art.has-photo {
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #edeadf;
+}
+
 .object {
   width: 75px;
   height: 105px;

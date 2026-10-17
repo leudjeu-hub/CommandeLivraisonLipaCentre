@@ -56,6 +56,12 @@ test('js/products.js : catalogue valide', () => {
     assert.ok(CATEGORIES.includes(p.cat), `catégorie inconnue : ${p.cat}`);
     assert.ok(p.price === null || (Number.isInteger(p.price) && p.price > 0), `prix invalide : ${p.name}`);
     assert.match(p.color, /^#[0-9a-f]{6}$/i);
+    if (p.image) {
+      assert.doesNotMatch(p.image, /^(https?:)?\/\//, `image externe (CSP) : ${p.image}`);
+      const file = path.resolve('src', p.image);
+      assert.ok(fs.existsSync(file), `image manquante : src/${p.image}`);
+      assert.ok(fs.statSync(file).size < 100 * 1024, `photo trop lourde (> 100 Ko) : ${p.image}`);
+    }
   }
 });
 
@@ -135,12 +141,15 @@ test('catalogue : le tableau CSV génère products.js et refuse les erreurs', ()
   assert.ok(a.label && /^#[0-9a-f]{6}$/i.test(a.color));
 
   // Cas invalides : la génération doit échouer
+  const headImg = 'id;categorie;prix;nom;description;image\n';
   for (const bad of [
     head + '1;Scolaire;1500;A;D;\n1;Scolaire;900;B;D;\n', // id en double
     head + '1;Scolaire;douze;A;D;\n',                      // prix non numérique
     head + '1;Jouets;1500;A;D;\n',                         // catégorie inconnue
     head + '1;Scolaire;1500;;D;\n',                        // nom vide
-    'id;categorie;nom;description\n1;Scolaire;A;D\n'       // colonne prix manquante
+    'id;categorie;nom;description\n1;Scolaire;A;D\n',      // colonne prix manquante
+    headImg + '1;Scolaire;1500;A;D;img/produits/zzz.webp\n',          // photo absente de src/img
+    headImg + '1;Scolaire;1500;A;D;https://example.com/photo.jpg\n'   // photo distante (CSP)
   ]) {
     assert.throws(() => run(bad), undefined, bad);
   }

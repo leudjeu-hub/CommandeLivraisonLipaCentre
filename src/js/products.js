@@ -12,6 +12,7 @@ window.PRODUCTS = [
     "name": "Cahier A4 · 200 pages",
     "desc": "Quadrillé, pour les cours et les exercices.",
     "label": "CAHIER\n200 PAGES",
+    "image": "img/produits/cahier-a4-200.webp",
     "en": {
       "name": "A4 notebook · 200 pages",
       "desc": "Squared paper, for lessons and exercises.",
@@ -26,6 +27,7 @@ window.PRODUCTS = [
     "name": "Lot de 10 stylos bleus",
     "desc": "L’essentiel pour écrire au quotidien.",
     "label": "STYLOS\nBLEUS",
+    "image": "img/produits/lot-de-10.webp",
     "en": {
       "name": "Pack of 10 blue pens",
       "desc": "The essentials for everyday writing.",
@@ -40,6 +42,7 @@ window.PRODUCTS = [
     "name": "Kit de géométrie",
     "desc": "Règle, équerre, rapporteur et compas.",
     "label": "GÉOMÉTRIE",
+    "image": "img/produits/kit-de-geometrie.webp",
     "en": {
       "name": "Geometry set",
       "desc": "Ruler, set square, protractor and compass.",
@@ -54,6 +57,7 @@ window.PRODUCTS = [
     "name": "Ramette de papier A4",
     "desc": "500 feuilles · grammage à confirmer.",
     "label": "PAPIER A4\n500 FEUILLES",
+    "image": "img/produits/ramette-de-papier.webp",
     "en": {
       "name": "Ream of A4 paper",
       "desc": "500 sheets · paper weight to be confirmed.",
@@ -68,6 +72,7 @@ window.PRODUCTS = [
     "name": "Classeur à levier",
     "desc": "Pour organiser et conserver vos documents.",
     "label": "ARCHIVES",
+    "image": "img/produits/classeur-a-levier.webp",
     "en": {
       "name": "Lever arch file",
       "desc": "To organise and store your documents.",
@@ -82,6 +87,7 @@ window.PRODUCTS = [
     "name": "Notes adhésives",
     "desc": "Un bloc pour vos rappels et vos idées.",
     "label": "MES NOTES",
+    "image": "img/produits/notes-adhesives.webp",
     "en": {
       "name": "Sticky notes",
       "desc": "A pad for your reminders and ideas.",
@@ -96,6 +102,7 @@ window.PRODUCTS = [
     "name": "Dictionnaire de français",
     "desc": "Référence illustrative · édition à confirmer.",
     "label": "DICTIONNAIRE\nFRANÇAIS",
+    "image": "img/produits/dictionnaire-de-francais.webp",
     "en": {
       "name": "French dictionary",
       "desc": "Illustrative reference · edition to be confirmed.",
@@ -110,6 +117,7 @@ window.PRODUCTS = [
     "name": "Livre scolaire sur demande",
     "desc": "Précisez le titre, la classe et l’édition.",
     "label": "APPRENDRE",
+    "image": "img/produits/livre-scolaire-sur.webp",
     "en": {
       "name": "School book on request",
       "desc": "Specify the title, class and edition.",

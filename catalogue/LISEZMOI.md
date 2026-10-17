@@ -21,6 +21,8 @@ avec Excel, Numbers, LibreOffice ou Google Sheets. Inutile de toucher au code.
 | `vignette_en` | non | Vignette en anglais | `NOTEBOOK / 200 PAGES` |
 | `couleur` | non | Couleur de la vignette (`#RRGGBB`). Vide = couleur de la catégorie. | `#31574b` |
 | `disponible` | non | `non` pour **masquer** un article (rupture de stock) sans le supprimer. Vide = `oui`. | `non` |
+| `statut` | non | Réservé (non utilisé par le site aujourd’hui). Ignoré par la génération. | `disponible` |
+| `image` | non | Photo du produit : **chemin local**, l’image doit exister dans `src/img/produits/`. Vide = vignette dessinée. Les adresses externes (`https://…`) sont refusées par la sécurité du site. | `img/produits/cahier-a4-200.webp` |
 
 \* La colonne doit exister, mais la case peut être vide (= sur devis).
 
