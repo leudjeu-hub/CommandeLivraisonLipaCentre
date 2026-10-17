@@ -18,5 +18,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "@opencode/cli": "^2.0.32"
   }
 }

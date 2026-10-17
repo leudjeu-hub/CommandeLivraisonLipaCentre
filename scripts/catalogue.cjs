@@ -20,7 +20,7 @@ let currentFile = csvPath;
 // Couleur de vignette par défaut selon la catégorie (si la colonne « couleur » est vide)
 const DEFAULT_COLORS = { Scolaire: '#31574b', Bureau: '#c6a157', Livres: '#a95540' };
 const REQUIRED = ['id', 'categorie', 'prix', 'nom', 'description'];
-const OPTIONAL = ['vignette', 'nom_en', 'description_en', 'vignette_en', 'couleur', 'disponible'];
+const OPTIONAL = ['vignette', 'nom_en', 'description_en', 'vignette_en', 'couleur', 'disponible', 'statut', 'image', 'credit_photo'];
 
 function fail(message) {
   console.error('\n✖ Tableau invalide (' + currentFile + ')\n  ' + message + '\n');
