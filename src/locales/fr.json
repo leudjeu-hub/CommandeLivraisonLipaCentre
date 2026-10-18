@@ -1,0 +1,166 @@
+{
+  "brand": {
+    "name": "Librairie Papeterie du Centre",
+    "tagline": "LIBRAIRIE & PAPETERIE · YAOUNDÉ"
+  },
+  "nav": {
+    "catalogue": "Le catalogue",
+    "lists": "Listes scolaires",
+    "delivery": "Livraison",
+    "cart": "Panier"
+  },
+  "notice": "Version de présentation · Articles et prix illustratifs · Chaque commande est confirmée par la librairie.",
+  "hero": {
+    "eyebrow": "Vos essentiels, à votre porte",
+    "title": "Une page s'ouvre. Nous vous la livrons.",
+    "intro": "Livres, fournitures scolaires et papeterie de bureau. Préparez votre panier en quelques clics, pour une livraison à domicile à Yaoundé et un paiement à la réception.",
+    "cta": "Découvrir le catalogue ↗",
+    "list": "Ma liste scolaire",
+    "channels": "Téléphone · WhatsApp · Commande en ligne"
+  },
+  "strip": {
+    "step1": "01 / Choisissez vos articles — Un catalogue simple, pour l'école et le bureau.",
+    "step2": "02 / Précisez votre adresse — Quartier, repère et créneau souhaité.",
+    "step3": "03 / Payez à la réception — Espèces, Orange Money ou MTN MoMo, après activation."
+  },
+  "catalogue": {
+    "eyebrow": "La sélection du Centre",
+    "title": "Tout commence ici.",
+    "note": "Catalogue de démonstration · Prix en FCFA",
+    "searchPlaceholder": "Rechercher un cahier, un stylo…",
+    "searchLabel": "Rechercher un produit"
+  },
+  "lists": {
+    "eyebrow": "Parents, simplifiez la rentrée",
+    "title": "Une liste scolaire ? Nous préparons le reste.",
+    "text": "Rassemblez les livres et fournitures demandés par l'école. Préparez votre demande de devis avec la classe, les références et les quantités.",
+    "cta": "Préparer une demande de devis ↗",
+    "editionTitle": "Le bon article, la bonne édition.",
+    "editionText": "Chaque livre doit être confirmé par son titre, son auteur et son édition. Toute substitution nécessite votre accord.",
+    "businessTitle": "Pour les entreprises aussi.",
+    "businessText": "Papier, classeurs, stylos et fournitures : indiquez vos besoins récurrents dans votre demande de devis.",
+    "whatsapp": "Envoyez votre liste directement par WhatsApp depuis le formulaire de devis."
+  },
+  "delivery": {
+    "eyebrow": "Un service de proximité",
+    "title": "La livraison, en toute clarté.",
+    "step1Title": "Votre quartier",
+    "step1Text": "Indiquez votre quartier et un repère précis. Les zones desservies seront confirmées par la librairie.",
+    "step2Title": "Votre créneau",
+    "step2Text": "Les frais dépendent de votre quartier (grille ci-dessous). La disponibilité et le délai sont confirmés avant tout départ.",
+    "step3Title": "Votre paiement",
+    "step3Text": "Vérifiez votre colis puis payez à la réception. Aucun paiement en ligne n'est demandé sur cette version.",
+    "zonesTitle": "Frais de livraison par quartier"
+  },
+  "footer": {
+    "services": "Vente de fournitures de papeterie, livres et service de livraison.",
+    "address": "Carrefour Abbia, face Manège, Yaoundé, Cameroun",
+    "phone": "Tél. : +237 6 93 24 03 96",
+    "hours": "Horaires d'ouverture",
+    "weekdays": "Lundi – vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche",
+    "closed": "Fermé",
+    "terms": "Informations et confidentialité"
+  },
+  "cart": {
+    "title": "Votre panier",
+    "empty": "Votre panier est vide. Découvrez notre sélection.",
+    "fees": "Livraison : de {{min}} à {{max}} selon le quartier.",
+    "minimum": "Il manque {{missing}} pour atteindre le minimum de commande ({{min}}).",
+    "checkout": "Préparer ma commande"
+  },
+  "form": {
+    "orderTitle": "Livraison à Yaoundé",
+    "quoteTitle": "Votre demande de devis",
+    "intro": "Votre récapitulatif est préparé ici. Il n'est envoyé à la librairie que si vous cliquez sur « Envoyer par WhatsApp ».",
+    "name": "Nom du destinataire",
+    "phone": "Téléphone",
+    "area": "Quartier",
+    "areaOther": "Précisez votre quartier",
+    "address": "Adresse et repère",
+    "slot": "Créneau souhaité — à confirmer",
+    "slotMorning": "Matin",
+    "slotAfternoon": "Après-midi",
+    "slotPhone": "À convenir par téléphone",
+    "payment": "Paiement à la réception — sous réserve d'activation",
+    "paymentCash": "Espèces",
+    "notes": "Liste scolaire ou instructions complémentaires",
+    "consent": "Je comprends que les prix, le stock et le délai de livraison doivent être confirmés par la librairie.",
+    "submit": "Créer mon récapitulatif"
+  },
+  "result": {
+    "title": "Votre récapitulatif est prêt",
+    "text": "Envoyez-le à la librairie par WhatsApp : votre commande sera confirmée par message ou par téléphone.",
+    "whatsapp": "Envoyer par WhatsApp",
+    "download": "Télécharger",
+    "copy": "Copier le texte",
+    "afterSend": "Votre message est parti sur WhatsApp ? Videz votre panier pour ne pas renvoyer la même commande par erreur.",
+    "clearCart": "Vider mon panier",
+    "keepCart": "Garder le panier"
+  },
+  "terms": {
+    "title": "À propos de cette version",
+    "p1": "Ce site est une présentation privée du futur service de la Librairie Papeterie du Centre. Les produits, prix et visuels sont illustratifs.",
+    "p2": "Le panier est mémorisé uniquement dans votre navigateur. Les informations du formulaire servent à produire votre récapitulatif.",
+    "p3": "Avant ouverture commerciale : compléter les mentions légales, intégrer les prix et le stock réels, valider la grille de livraison.",
+    "clear": "Effacer mon panier local"
+  },
+  "map": {
+    "text": "Nous trouver",
+    "label": "Voir la librairie sur Google Maps (nouvel onglet)"
+  },
+  "toast": {
+    "added": "Article ajouté au panier",
+    "cleared": "Panier effacé",
+    "copied": "Récapitulatif copié",
+    "copyFailed": "Copie indisponible : téléchargez le document.",
+    "thanks": "Panier vidé. Merci pour votre commande !"
+  },
+  "common": {
+    "close": "Fermer",
+    "add": "Ajouter +",
+    "request": "Demander",
+    "onQuote": "Sur devis",
+    "noResults": "Aucun article trouvé. Essayez un autre mot.",
+    "zone": "Zone",
+    "chooseArea": "Choisissez votre quartier",
+    "otherArea": "Autre quartier (à préciser)",
+    "otherGroup": "Autre",
+    "free": "offerte",
+    "feeLine": "Livraison zone {{zone}} ({{name}}) : {{fee}} · {{delay}}",
+    "feeLineFree": "Livraison offerte (zone {{zone}}, dès {{from}} d'articles) · {{delay}}",
+    "feeLineOther": "Quartier hors grille : la librairie vous confirmera les frais.",
+    "totalLine": "Total à payer : {{total}}",
+    "freeRule": "Livraison offerte dès {{from}} d'articles en zones {{zones}}.",
+    "minRule": "Commande minimum : {{min}} d'articles.",
+    "zoneAreas": "Quartiers :",
+    "and": "et",
+    "quantity": "Quantité : {{name}}",
+    "remove": "Retirer {{name}}",
+    "sumQuote": "DEMANDE DE DEVIS",
+    "sumOrder": "DEMANDE DE COMMANDE",
+    "sumPending": " — À CONFIRMER",
+    "sumDate": "Date : ",
+    "sumName": "Destinataire : ",
+    "sumPhone": "Téléphone : ",
+    "sumArea": "Quartier : ",
+    "sumAddress": "Adresse / repère : ",
+    "sumSlot": "Créneau souhaité : ",
+    "sumPayment": "Paiement à réception : ",
+    "sumTotal": "Total indicatif des articles : ",
+    "sumConfirm": "Disponibilité et prix définitifs à confirmer par la librairie.",
+    "sumDelivery": "Livraison (zone {{zone}}, {{name}}) : ",
+    "sumDeliveryOther": "Livraison : frais à confirmer (quartier hors grille)",
+    "sumToPay": "Total à payer à la livraison : ",
+    "sumNotes": "Informations complémentaires : ",
+    "sumDisclaimer": "Cette demande ne constitue pas une commande confirmée.",
+    "sumLanguage": ""
+  },
+  "cat": {
+    "Tout": "Tout",
+    "Scolaire": "Scolaire",
+    "Bureau": "Bureau",
+    "Livres": "Livres"
+  }
+}

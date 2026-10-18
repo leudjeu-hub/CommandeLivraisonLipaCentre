@@ -1,0 +1,166 @@
+{
+  "brand": {
+    "name": "Librairie du Centre",
+    "tagline": "BOOKSHOP & STATIONERY · YAOUNDÉ"
+  },
+  "nav": {
+    "catalogue": "Catalogue",
+    "lists": "School lists",
+    "delivery": "Delivery",
+    "cart": "Basket"
+  },
+  "notice": "Preview version · Illustrative items and prices · Every order is confirmed by the bookshop.",
+  "hero": {
+    "eyebrow": "Your essentials, at your door",
+    "title": "A page opens. We deliver it to you.",
+    "intro": "Books, school supplies and office stationery. Fill your basket in a few clicks for home delivery in Yaoundé, with payment on delivery.",
+    "cta": "Browse the catalogue ↗",
+    "list": "My school list",
+    "channels": "Phone · WhatsApp · Online order"
+  },
+  "strip": {
+    "step1": "01 / Choose your items — A simple catalogue for school and office.",
+    "step2": "02 / Give your address — Neighbourhood, landmark and preferred time slot.",
+    "step3": "03 / Pay on delivery — Cash, Orange Money or MTN MoMo, once activated."
+  },
+  "catalogue": {
+    "eyebrow": "The Centre's selection",
+    "title": "It all starts here.",
+    "note": "Demo catalogue · Prices in FCFA",
+    "searchPlaceholder": "Search for a notebook, a pen…",
+    "searchLabel": "Search for a product"
+  },
+  "lists": {
+    "eyebrow": "Parents, make back-to-school easy",
+    "title": "A school list? We'll handle the rest.",
+    "text": "Gather the books and supplies requested by the school. Prepare your quote request with the class, references and quantities.",
+    "cta": "Request a quote ↗",
+    "editionTitle": "The right item, the right edition.",
+    "editionText": "Each book must be confirmed by its title, author and edition. Any substitution requires your approval.",
+    "businessTitle": "For businesses too.",
+    "businessText": "Paper, binders, pens and supplies: list your recurring needs in your quote request.",
+    "whatsapp": "Send your list directly via WhatsApp from the quote form."
+  },
+  "delivery": {
+    "eyebrow": "A local service",
+    "title": "Delivery, made clear.",
+    "step1Title": "Your neighbourhood",
+    "step1Text": "Give your neighbourhood and a precise landmark. Delivery areas will be confirmed by the bookshop.",
+    "step2Title": "Your time slot",
+    "step2Text": "Fees depend on your neighbourhood (table below). Availability and lead time are confirmed before dispatch.",
+    "step3Title": "Your payment",
+    "step3Text": "Check your parcel, then pay on delivery. No online payment is requested in this version.",
+    "zonesTitle": "Delivery fees by neighbourhood"
+  },
+  "footer": {
+    "services": "Stationery, books and delivery service.",
+    "address": "Carrefour Abbia, opposite the Manège, Yaoundé, Cameroon",
+    "phone": "Tel.: +237 6 93 24 03 96",
+    "hours": "Opening hours",
+    "weekdays": "Monday – Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "closed": "Closed",
+    "terms": "Information & privacy"
+  },
+  "cart": {
+    "title": "Your basket",
+    "empty": "Your basket is empty. Browse our selection.",
+    "fees": "Delivery: {{min}} to {{max}} depending on the neighbourhood.",
+    "minimum": "Add {{missing}} more to reach the minimum order ({{min}}).",
+    "checkout": "Prepare my order"
+  },
+  "form": {
+    "orderTitle": "Delivery in Yaoundé",
+    "quoteTitle": "Your quote request",
+    "intro": "Your summary is prepared here. It is only sent to the bookshop if you click \"Send via WhatsApp\".",
+    "name": "Recipient's name",
+    "phone": "Phone",
+    "area": "Neighbourhood",
+    "areaOther": "Please specify your neighbourhood",
+    "address": "Address and landmark",
+    "slot": "Preferred time slot — to be confirmed",
+    "slotMorning": "Morning",
+    "slotAfternoon": "Afternoon",
+    "slotPhone": "To be arranged by phone",
+    "payment": "Payment on delivery — subject to activation",
+    "paymentCash": "Cash",
+    "notes": "School list or additional instructions",
+    "consent": "I understand that prices, stock and delivery time must be confirmed by the bookshop.",
+    "submit": "Create my summary"
+  },
+  "result": {
+    "title": "Your summary is ready",
+    "text": "Send it to the bookshop via WhatsApp: your order will be confirmed by message or phone.",
+    "whatsapp": "Send via WhatsApp",
+    "download": "Download",
+    "copy": "Copy text",
+    "afterSend": "Has your message been sent on WhatsApp? Empty your basket so you don't send the same order again by mistake.",
+    "clearCart": "Empty my basket",
+    "keepCart": "Keep my basket"
+  },
+  "terms": {
+    "title": "About this version",
+    "p1": "This site is a private preview of the upcoming service of the Librairie Papeterie du Centre. Products, prices and visuals are illustrative.",
+    "p2": "Your basket is stored only in your browser. The form information is used to create your summary.",
+    "p3": "Before commercial launch: complete the legal notice, add real prices and stock, validate the delivery table.",
+    "clear": "Clear my local basket"
+  },
+  "map": {
+    "text": "Find us",
+    "label": "See the bookshop on Google Maps (new tab)"
+  },
+  "toast": {
+    "added": "Item added to basket",
+    "cleared": "Basket cleared",
+    "copied": "Summary copied",
+    "copyFailed": "Copy unavailable: please download the document.",
+    "thanks": "Basket emptied. Thank you for your order!"
+  },
+  "common": {
+    "close": "Close",
+    "add": "Add +",
+    "request": "Request",
+    "onQuote": "On quote",
+    "noResults": "No items found. Try another word.",
+    "zone": "Zone",
+    "chooseArea": "Choose your neighbourhood",
+    "otherArea": "Other neighbourhood (please specify)",
+    "otherGroup": "Other",
+    "free": "free",
+    "feeLine": "Delivery zone {{zone}} ({{name}}): {{fee}} · {{delay}}",
+    "feeLineFree": "Free delivery (zone {{zone}}, from {{from}} of items) · {{delay}}",
+    "feeLineOther": "Neighbourhood not listed: the bookshop will confirm the fee.",
+    "totalLine": "Total to pay: {{total}}",
+    "freeRule": "Free delivery from {{from}} of items in zones {{zones}}.",
+    "minRule": "Minimum order: {{min}} of items.",
+    "zoneAreas": "Neighbourhoods:",
+    "and": "and",
+    "quantity": "Quantity: {{name}}",
+    "remove": "Remove {{name}}",
+    "sumQuote": "QUOTE REQUEST",
+    "sumOrder": "ORDER REQUEST",
+    "sumPending": " — TO BE CONFIRMED",
+    "sumDate": "Date: ",
+    "sumName": "Recipient: ",
+    "sumPhone": "Phone: ",
+    "sumArea": "Neighbourhood: ",
+    "sumAddress": "Address / landmark: ",
+    "sumSlot": "Preferred time slot: ",
+    "sumPayment": "Payment on delivery: ",
+    "sumTotal": "Indicative item total: ",
+    "sumConfirm": "Availability and final prices to be confirmed by the bookshop.",
+    "sumDelivery": "Delivery (zone {{zone}}, {{name}}): ",
+    "sumDeliveryOther": "Delivery: fee to be confirmed (neighbourhood not listed)",
+    "sumToPay": "Total to pay on delivery: ",
+    "sumNotes": "Additional information: ",
+    "sumDisclaimer": "This request is not a confirmed order.",
+    "sumLanguage": "Customer language: English"
+  },
+  "cat": {
+    "Tout": "All",
+    "Scolaire": "School",
+    "Bureau": "Office",
+    "Livres": "Books"
+  }
+}

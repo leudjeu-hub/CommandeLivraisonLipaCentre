@@ -1,25 +1,36 @@
 {
   "name": "commande-livraison-lipacentre",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Page de commande et de livraison de la Librairie Papeterie du Centre (Yaoundé)",
+  "type": "module",
   "scripts": {
-    "dev": "node scripts/catalogue-api.cjs && node scripts/serve.cjs src",
-    "dev:csv": "node scripts/catalogue.cjs && node scripts/serve.cjs src",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
     "catalogue": "node scripts/catalogue.cjs",
-    "build": "node scripts/catalogue.cjs && node scripts/build.cjs",
-    "start": "npm run build && node scripts/serve.cjs dist",
-    "pretest": "node scripts/catalogue.cjs",
     "test": "node --test tests/*.test.cjs",
     "test:browser": "playwright test"
   },
   "author": "Alain Bienvenu Leudjeu",
   "devDependencies": {
     "@playwright/test": "^1.56.0",
-    "@opencode/cli": "^2.0.32"
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.4.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^6.4.0",
+    "@mui/material": "^6.4.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.0"
   },
   "engines": {
     "node": ">=22"
-  },
-  "dependencies": {}
+  }
 }
