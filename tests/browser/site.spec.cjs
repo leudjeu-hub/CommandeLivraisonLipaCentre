@@ -33,7 +33,7 @@ test('recherche et filtres', async ({ page }) => {
   await page.fill('input[type="search"]', 'xyz');
   await expect(page.locator('text=Aucun article trouvé')).toBeVisible();
   await page.fill('input[type="search"]', '');
-  await page.click('button:has-text("Bureau")');
+  await page.getByRole('button', { name: 'Bureau' }).click();
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(3);
 });
 
@@ -41,16 +41,18 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   await page.goto('/catalogue');
   await page.click('button:has-text("Ajouter")');
   await page.click('button:has-text("Ajouter")');
-  await page.click('button:has-text("Panier")');
+  await page.getByRole('button', { name: 'Panier' }).click();
   await expect(page.locator('h1')).toContainText('Votre panier');
   await page.click('text=Préparer ma commande');
   await expect(page).toHaveURL(/\/commander/);
 
-  await page.fill('input[label*="Nom"]', 'Client Test');
-  await page.fill('input[type="tel"]', '+237 600 00 00 00');
-  await page.selectOption('select', 'Bastos');
-  await page.fill('textarea', 'Près du rond-point');
-  await page.check('input[type="checkbox"]');
+  await page.getByLabel('Nom du destinataire').fill('Client Test');
+  await page.getByLabel('Téléphone').fill('+237 600 00 00 00');
+  await page.getByRole('combobox', { name: 'Quartier' }).click();
+  await page.getByRole('option', { name: 'Essos', exact: true }).click();
+  await expect(page.locator('text=Livraison zone 2 (Proche)')).toBeVisible();
+  await page.getByLabel('Adresse et repère').fill('Près du rond-point');
+  await page.getByRole('checkbox').check();
   await page.click('button:has-text("Créer mon récapitulatif")');
 
   await expect(page.locator('text=Votre récapitulatif est prêt')).toBeVisible();
@@ -60,7 +62,7 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   expect(href.startsWith('https://wa.me/237693240396?text=')).toBe(true);
   const text = decodeURIComponent(href.split('?text=')[1]);
   expect(text).toContain('Client Test');
-  expect(text).toContain('Bastos');
+  expect(text).toContain('Essos');
 });
 
 test('article sur devis : ouvre la demande de devis', async ({ page }) => {
@@ -70,9 +72,10 @@ test('article sur devis : ouvre la demande de devis', async ({ page }) => {
   await expect(page.locator('h1')).toContainText('Votre demande de devis');
 });
 
-test('langue : passage en anglais', async ({ page }) => {
+test('langue : passage en anglais', async ({ page, isMobile }) => {
   await page.goto('/');
-  await page.click('button:has-text("English")');
+  if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: 'English' }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('h1')).toContainText('A page opens');
   await page.goto('/catalogue');
@@ -82,17 +85,17 @@ test('langue : passage en anglais', async ({ page }) => {
 test('menu mobile : ouvre et navigue', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'menu compact uniquement sur mobile');
   await page.goto('/');
-  await page.click('button[aria-label="Menu"]');
-  await expect(page.locator('text=Le catalogue')).toBeVisible();
-  await page.click('text=Livraison');
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await expect(page.getByRole('link', { name: 'Le catalogue', exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Livraison', exact: true }).click();
   await expect(page).toHaveURL(/\/livraison/);
 });
 
 test('desktop : navigation visible', async ({ page, isMobile }) => {
   test.skip(isMobile, 'ordinateur uniquement');
   await page.goto('/');
-  await expect(page.locator('text=Le catalogue')).toBeVisible();
-  await expect(page.locator('text=Livraison')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Le catalogue', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Livraison', exact: true })).toBeVisible();
 });
 
 test('livraison : grille affichée', async ({ page }) => {

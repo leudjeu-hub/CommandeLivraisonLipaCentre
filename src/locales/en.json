@@ -12,7 +12,8 @@
   "notice": "Preview version · Illustrative items and prices · Every order is confirmed by the bookshop.",
   "hero": {
     "eyebrow": "Your essentials, at your door",
-    "title": "A page opens. We deliver it to you.",
+    "title": "A page opens.",
+    "titleEm": "We deliver it to you.",
     "intro": "Books, school supplies and office stationery. Fill your basket in a few clicks for home delivery in Yaoundé, with payment on delivery.",
     "cta": "Browse the catalogue ↗",
     "list": "My school list",

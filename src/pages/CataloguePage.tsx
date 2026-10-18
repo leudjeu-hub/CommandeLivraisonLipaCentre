@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Container, Typography, TextField, Chip, Grid, Card, CardContent, CardMedia, CardActions, Button, Box, Typography as MuiTypography } from '@mui/material';
 import { CATEGORIES, money } from '../data/catalogue';
 import { useProducts } from '../data/useProducts';
@@ -9,6 +10,7 @@ import { showToast } from '../components/Toast';
 export default function CataloguePage() {
   const { t, i18n } = useTranslation();
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const products = useProducts();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Tout');
@@ -28,7 +30,7 @@ export default function CataloguePage() {
     const p = products.find((x) => x.id === productId);
     if (!p) return;
     if (p.price === null) {
-      window.location.href = `/commander?type=quote&product=${productId}`;
+      navigate(`/commander?type=quote&product=${productId}`);
       return;
     }
     addItem(productId);
@@ -47,6 +49,7 @@ export default function CataloguePage() {
 
       <TextField
         fullWidth
+        type="search"
         variant="outlined"
         placeholder={t('catalogue.searchPlaceholder')}
         label={t('catalogue.searchLabel')}
@@ -80,7 +83,7 @@ export default function CataloguePage() {
               <Grid xs={12} sm={6} md={4} key={p.id}>
                 <Card data-testid="product-card" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   {p.image && (
-                    <CardMedia component="img" height="200" image={p.image} alt={name} loading="lazy" />
+                    <CardMedia component="img" height="200" image={import.meta.env.BASE_URL + p.image} alt={name} loading="lazy" />
                   )}
                   <CardContent sx={{ flexGrow: 1 }}>
                     <MuiTypography variant="caption" color="text.secondary">

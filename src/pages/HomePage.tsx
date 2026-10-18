@@ -12,8 +12,8 @@ export default function HomePage() {
           {t('hero.eyebrow')}
         </Typography>
         <Typography variant="h1" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 3, fontSize: { xs: '2rem', md: '3rem' } }}>
-          Une page s'ouvre.<br />
-          <em style={{ color: 'secondary.main' }}>Nous vous la livrons.</em>
+          {t('hero.title')}<br />
+          <Box component="em" sx={{ color: 'secondary.main' }}>{t('hero.titleEm')}</Box>
         </Typography>
         <Typography variant="body1" sx={{ maxWidth: 600, mx: 'auto', mb: 4, fontSize: '1.1rem' }}>
           {t('hero.intro')}

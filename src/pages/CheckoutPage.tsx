@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { Container, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
+import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../data/catalogue';
 import { useProducts } from '../data/useProducts';
@@ -138,14 +138,17 @@ export default function CheckoutPage() {
           <TextField fullWidth required type="tel" label={t('form.phone')} value={phone} onChange={(e) => setPhone(e.target.value)} sx={{ mb: 2 }} />
 
           <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>{t('form.area')}</InputLabel>
-            <Select value={area} onChange={(e) => setArea(e.target.value)} label={t('form.area')} required>
+            <InputLabel id="area-label">{t('form.area')}</InputLabel>
+            <Select labelId="area-label" value={area} onChange={(e) => setArea(e.target.value)} label={t('form.area')} required>
               <MenuItem value="" disabled>{t('common.chooseArea')}</MenuItem>
-              {DELIVERY.map((z) => (
-                <MenuItem key={z.zone} value={z.areas[0]}>
+              {/* Tous les quartiers, groupés par zone (MUI Select n'accepte pas de Fragment : liste à plat) */}
+              {DELIVERY.flatMap((z) => [
+                <ListSubheader key={`zone-${z.zone}`}>
                   {t('common.zone')} {z.zone} — {i18n.language === 'fr' ? z.name : z.en.name} · {money(z.fee, locale)}
-                </MenuItem>
-              ))}
+                </ListSubheader>,
+                ...z.areas.map((a) => <MenuItem key={a} value={a}>{a}</MenuItem>),
+              ])}
+              <ListSubheader>{t('common.otherGroup')}</ListSubheader>
               <MenuItem value={OTHER_AREA}>{t('common.otherArea')}</MenuItem>
             </Select>
           </FormControl>
@@ -161,8 +164,8 @@ export default function CheckoutPage() {
           <TextField fullWidth required multiline rows={2} label={t('form.address')} value={address} onChange={(e) => setAddress(e.target.value)} sx={{ mb: 2 }} />
 
           <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>{t('form.slot')}</InputLabel>
-            <Select value={slot} onChange={(e) => setSlot(e.target.value)} label={t('form.slot')}>
+            <InputLabel id="slot-label">{t('form.slot')}</InputLabel>
+            <Select labelId="slot-label" value={slot} onChange={(e) => setSlot(e.target.value)} label={t('form.slot')}>
               <MenuItem value="morning">{t('form.slotMorning')}</MenuItem>
               <MenuItem value="afternoon">{t('form.slotAfternoon')}</MenuItem>
               <MenuItem value="phone">{t('form.slotPhone')}</MenuItem>
@@ -170,8 +173,8 @@ export default function CheckoutPage() {
           </FormControl>
 
           <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>{t('form.payment')}</InputLabel>
-            <Select value={payment} onChange={(e) => setPayment(e.target.value)} label={t('form.payment')}>
+            <InputLabel id="payment-label">{t('form.payment')}</InputLabel>
+            <Select labelId="payment-label" value={payment} onChange={(e) => setPayment(e.target.value)} label={t('form.payment')}>
               <MenuItem value="cash">{t('form.paymentCash')}</MenuItem>
               <MenuItem value="orange">Orange Money</MenuItem>
               <MenuItem value="mtn">MTN MoMo</MenuItem>
