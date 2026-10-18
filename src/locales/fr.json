@@ -122,6 +122,7 @@
     "add": "Ajouter +",
     "request": "Demander",
     "onQuote": "Sur devis",
+    "quoteNote": "{{name}} : titre, classe et édition à préciser.",
     "noResults": "Aucun article trouvé. Essayez un autre mot.",
     "zone": "Zone",
     "chooseArea": "Choisissez votre quartier",

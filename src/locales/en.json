@@ -122,6 +122,7 @@
     "add": "Add +",
     "request": "Request",
     "onQuote": "On quote",
+    "quoteNote": "{{name}}: please specify the title, class and edition.",
     "noResults": "No items found. Try another word.",
     "zone": "Zone",
     "chooseArea": "Choose your neighbourhood",
