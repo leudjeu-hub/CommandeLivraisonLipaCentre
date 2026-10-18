@@ -26,11 +26,16 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^6.4.0",
     "@mui/material": "^6.4.0",
+    "i18next": "^24.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-i18next": "^15.4.0",
     "react-router-dom": "^7.6.0"
   },
   "engines": {
     "node": ">=22"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true
   }
 }

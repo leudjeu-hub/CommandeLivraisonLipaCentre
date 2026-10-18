@@ -21,7 +21,7 @@ export default function DeliveryPage() {
 
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {steps.map((s, i) => (
-          <Grid size={{ xs: 12, md: 4 }} key={i}>
+          <Grid xs={12} md={4} key={i}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Typography variant="h4" color="primary" sx={{ fontFamily: 'Georgia, serif' }}>
                 {String(i + 1).padStart(2, '0')}
@@ -39,7 +39,7 @@ export default function DeliveryPage() {
 
       <Grid container spacing={3}>
         {DELIVERY.map((z) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={z.zone}>
+          <Grid xs={12} sm={6} md={3} key={z.zone}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Typography variant="h6" color="primary" gutterBottom>
                 {t('common.zone')} {z.zone} — {i18n.language === 'fr' ? z.name : z.en.name}

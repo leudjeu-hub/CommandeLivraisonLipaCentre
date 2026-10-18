@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { Container, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Button, Box, Paper, Divider, Checkbox, FormControlLabel, Alert } from '@mui/material';
+import { Container, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
 import { PRODUCTS, DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../data/catalogue';
 import { showToast } from '../components/Toast';
@@ -47,8 +47,8 @@ export default function CheckoutPage() {
     if (area === OTHER_AREA) return t('common.feeLineOther');
     if (!zone) return '';
     if (fee === 0) return t('common.feeLineFree', { zone: zone.zone, from: money(DELIVERY_RULES.freeFrom, locale), delay: i18n.language === 'fr' ? zone.delay : zone.en.delay });
-    let text = t('common.feeLine', { zone: zone.zone, name: i18n.language === 'fr' ? zone.name : zone.en.name, fee: money(fee, locale), delay: i18n.language === 'fr' ? zone.delay : zone.en.delay });
-    if (type !== 'quote') text += '\n' + t('common.totalLine', { total: money(subtotal + fee, locale) });
+    let text = t('common.feeLine', { zone: zone.zone, name: i18n.language === 'fr' ? zone.name : zone.en.name, fee: money(fee ?? 0, locale), delay: i18n.language === 'fr' ? zone.delay : zone.en.delay });
+    if (type !== 'quote') text += '\n' + t('common.totalLine', { total: money(subtotal + (fee ?? 0), locale) });
     return text;
   }, [area, zone, fee, subtotal, i18n.language, t, locale, type]);
 

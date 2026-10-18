@@ -33,13 +33,13 @@ export default function HomePage() {
 
       <Paper sx={{ p: 3, mb: 4, bgcolor: 'primary.main', color: 'white' }}>
         <Grid container spacing={2} textAlign="center">
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid xs={12} md={4}>
             <Typography variant="h6">{t('strip.step1')}</Typography>
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid xs={12} md={4}>
             <Typography variant="h6">{t('strip.step2')}</Typography>
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid xs={12} md={4}>
             <Typography variant="h6">{t('strip.step3')}</Typography>
           </Grid>
         </Grid>

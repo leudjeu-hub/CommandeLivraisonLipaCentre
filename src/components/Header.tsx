@@ -65,7 +65,7 @@ export default function Header() {
                     <ListItemText primary={l.label} />
                   </ListItem>
                 ))}
-                <ListItem button onClick={toggleLang}>
+                <ListItem onClick={toggleLang}>
                   <ListItemText primary={i18n.language === 'fr' ? 'English' : 'Français'} />
                 </ListItem>
               </List>

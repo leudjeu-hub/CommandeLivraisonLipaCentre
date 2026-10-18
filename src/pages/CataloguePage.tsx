@@ -75,8 +75,8 @@ export default function CataloguePage() {
             const name = i18n.language === 'fr' ? p.name : p.en?.name || p.name;
             const desc = i18n.language === 'fr' ? p.desc : p.en?.desc || p.desc;
             return (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={p.id}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <Grid xs={12} sm={6} md={4} key={p.id}>
+                <Card data-testid="product-card" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   {p.image && (
                     <CardMedia component="img" height="200" image={p.image} alt={name} loading="lazy" />
                   )}

@@ -7,7 +7,7 @@ import { PRODUCTS, DELIVERY, DELIVERY_RULES, money } from '../data/catalogue';
 
 export default function CartPage() {
   const { t, i18n } = useTranslation();
-  const { items, removeItem, updateQuantity, clearCart, totalItems } = useCart();
+  const { items, removeItem, updateQuantity, clearCart } = useCart();
   const navigate = useNavigate();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
 
