@@ -58,8 +58,13 @@ Prérequis : **Node.js 22** ou plus récent. Aucune dépendance n’est nécessa
 développer ; Playwright sert uniquement aux tests navigateur.
 
 ```sh
-npm run dev        # sert src/ sur http://127.0.0.1:4200
+npm run dev        # catalogue lu depuis l’API http://localhost:8000/, sert src/ sur http://127.0.0.1:4200
+npm run dev:csv    # idem, mais catalogue lu depuis catalogue/catalogue.csv (sans API)
 ```
+
+En développement, les articles viennent de l’API (`GET /products/`, adresse modifiable avec
+`CATALOGUE_API=http://… npm run dev`) et passent par les mêmes vérifications que le tableau.
+`npm test` et `npm run build` utilisent toujours `catalogue/catalogue.csv`.
 
 On peut aussi ouvrir `src/index.html` directement dans le navigateur.
 

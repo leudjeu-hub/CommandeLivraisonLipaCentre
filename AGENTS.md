@@ -5,7 +5,7 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 ## Build & dev
 
 - Node >= 22. Aucune dépendance d’exécution ; seul `@playwright/test` est en devDependency.
-- Dev : `npm run dev` sert `src/` sur http://127.0.0.1:4200.
+- Dev : `npm run dev` génère `src/js/products.js` depuis l’API http://localhost:8000/ (`scripts/catalogue-api.cjs`, variable `CATALOGUE_API`) puis sert `src/` sur http://127.0.0.1:4200. Sans API : `npm run dev:csv`. Tests et build restent sur `catalogue/catalogue.csv`.
 - Build : `npm run build` (`scripts/build.cjs`) copie `src/` puis `public/` dans `dist/`.
 - `npm start` construit puis sert `dist/` avec les en-têtes de production.
 

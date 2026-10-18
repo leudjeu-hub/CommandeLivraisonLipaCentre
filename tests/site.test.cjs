@@ -185,3 +185,30 @@ test('livraison : grille valide et générateur qui refuse les erreurs', () => {
   ]) assert.throws(() => run(bad), undefined, bad);
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('catalogue (dev) : les articles de l’API passent par les mêmes vérifications que le tableau', () => {
+  const { execFileSync } = require('node:child_process');
+  const os = require('node:os');
+  const { toCsv } = require('../scripts/catalogue-api.cjs');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'catalogue-api-'));
+  const article = {
+    id: 1, category: 'Scolaire', price: 1500.0, name: 'Cahier « A4 »; 200 p.', description: 'Dit "quadrillé".',
+    label: 'CAHIER / A4', name_en: null, description_en: null, label_en: null, color: null, available: true, status: null, image: null
+  };
+  const run = (products) => {
+    fs.writeFileSync(path.join(dir, 'c.csv'), toCsv(products));
+    execFileSync('node', ['scripts/catalogue.cjs', path.join(dir, 'c.csv'), path.join(dir, 'p.js')], { stdio: 'pipe' });
+    const sandbox = { window: {} };
+    vm.runInNewContext(fs.readFileSync(path.join(dir, 'p.js'), 'utf8'), sandbox);
+    return sandbox.window.PRODUCTS;
+  };
+  const all = run([article, { ...article, id: 2, available: false }, { ...article, id: 3, price: null }]);
+  assert.equal(all.map((x) => x.id).join(), '1,3', 'available = false → article masqué');
+  assert.equal(all[0].price, 1500);
+  assert.equal(all[0].name, 'Cahier « A4 »; 200 p.', 'guillemets et « ; » conservés');
+  assert.equal(all[0].desc, 'Dit "quadrillé".');
+  assert.equal(all[0].label, 'CAHIER\nA4');
+  assert.equal(all[1].price, null, 'prix null → sur devis');
+  assert.throws(() => run([{ ...article, category: 'Inconnue' }]), undefined, 'catégorie inconnue refusée');
+  fs.rmSync(dir, { recursive: true, force: true });
+});
