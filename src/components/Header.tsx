@@ -32,13 +32,9 @@ export default function Header() {
   const navLinks = [
     { to: '/catalogue', label: t('nav.catalogue') },
     { to: '/livraison', label: t('nav.delivery') },
-    // Développement uniquement (API locale) : gestion pour les administrateurs, compte ou connexion
-    ...(import.meta.env.DEV
-      ? [
-          ...(user?.role === 'admin' ? [{ to: '/gestion', label: t('nav.admin') }] : []),
-          user ? { to: '/compte', label: t('nav.account') } : { to: '/connexion', label: t('nav.login') },
-        ]
-      : []),
+    // Gestion pour les administrateurs ; « Mon compte » si connecté, sinon « Connexion »
+    ...(user?.role === 'admin' ? [{ to: '/gestion', label: t('nav.admin') }] : []),
+    user ? { to: '/compte', label: t('nav.account') } : { to: '/connexion', label: t('nav.login') },
   ];
 
   return (

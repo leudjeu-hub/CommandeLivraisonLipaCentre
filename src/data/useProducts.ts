@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { PRODUCTS, type Product } from './catalogue';
 import { listProducts, type ApiProduct } from './productsApi';
 
-// En développement (`npm run dev`), les articles viennent de l'API (GET /products/,
-// relayée par le proxy Vite vers http://localhost:8000). En production, PRODUCTS (catalogue.ts).
+// Les articles viennent de l'API (GET /products/ : API locale en développement, Render sur le site
+// publié). En attendant sa réponse (jusqu'à ~40 s si le serveur Render est en veille) ou si elle
+// échoue, le site affiche PRODUCTS (src/data/catalogue.ts).
 
 const DEFAULT_COLORS: Record<string, string> = { Scolaire: '#31574b', Bureau: '#c6a157', Livres: '#a95540' };
 
@@ -46,9 +47,8 @@ export function invalidateProducts() {
 }
 
 export function useProducts(): Product[] {
-  const [products, setProducts] = useState<Product[]>(import.meta.env.DEV ? [] : PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(PRODUCTS);
   useEffect(() => {
-    if (!import.meta.env.DEV) return;
     let active = true;
     loadFromApi().then((list) => active && setProducts(list));
     return () => {

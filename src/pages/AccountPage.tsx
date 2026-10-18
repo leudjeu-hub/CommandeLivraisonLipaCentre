@@ -4,7 +4,7 @@ import { Button, Chip, Container, Paper, Typography } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { showToast } from '../components/Toast';
 
-// Mon compte (/compte). Développement uniquement (App.tsx).
+// Mon compte (/compte).
 export default function AccountPage() {
   const { t, i18n } = useTranslation();
   const { user, ready, logout } = useAuth();
@@ -21,7 +21,7 @@ export default function AccountPage() {
 
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Typography variant="overline" color="secondary">{t('auth.devOnly')}</Typography>
+      <Typography variant="overline" color="secondary">{t('auth.eyebrow')}</Typography>
       <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 3 }}>
         {t('auth.accountTitle')}
       </Typography>

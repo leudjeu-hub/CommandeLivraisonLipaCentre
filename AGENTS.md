@@ -15,24 +15,26 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 
 ## Catalogue et API
 
-- Production : articles, zones de livraison, catégories et numéro WhatsApp dans `src/data/catalogue.ts`.
-- Développement : les pages lisent les articles via `useProducts()` (`src/data/useProducts.ts`),
-  qui appelle `GET /products/`. Vite relaie `/products/` vers l’API http://localhost:8000
-  (`vite.config.ts`, modifiable : `CATALOGUE_API=http://… npm run dev`). En dev seulement, la CSP
-  passe à `connect-src 'self'` (plugin `dev-csp`). API injoignable → avertissement console et
-  repli sur `catalogue.ts`. Le code d’appel à l’API est retiré du build de production.
+- API (dépôt `CommandeLivraisonLipaCentreBackend`) : en développement l'API locale, relayée par le
+  proxy Vite (`CATALOGUE_API=http://… npm run dev`) ; sur le site publié l'API Render
+  https://papeterie-api-kshr.onrender.com, appelée directement (`PROD_API_URL` au build). Le préfixe
+  est `import.meta.env.VITE_API_URL` (défini dans `vite.config.ts`, vide en dev) ; le plugin `api-csp`
+  ajoute l'API à `connect-src` du build, et `scripts/serve.cjs` reprend la CSP du `index.html` construit.
+- Articles : `useProducts()` (`src/data/useProducts.ts`) affiche d'abord `src/data/catalogue.ts`, puis les
+  articles de `GET /products/` dès qu'ils arrivent (serveur Render en veille : ~40 s). API injoignable →
+  avertissement console, `catalogue.ts` reste affiché. Zones de livraison, catégories et WhatsApp :
+  `src/data/catalogue.ts`.
 - Ne pas importer `PRODUCTS` directement dans une page : passer par `useProducts()`.
-- Comptes (développement uniquement, l'API ne tourne qu'en local) : `/connexion`, `/inscription`,
+- Comptes : `/connexion`, `/inscription`,
   `/compte` (`src/pages/AuthPage.tsx`, `AccountPage.tsx`), session dans `src/context/AuthContext.tsx`
   (jeton `centre-auth-token` dans localStorage, envoyé en `Authorization: Bearer` par `request()` de
   `src/data/productsApi.ts`). Rôles : `user` (client) et `admin`. Commander reste possible sans compte.
 - Gestion (articles et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
   uniquement** (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
   dans le dépôt de l'API ; un admin peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).
-- Ces routes et liens n'existent que si `import.meta.env.DEV` ; en production `AuthProvider` est un
-  fournisseur statique (personne n'est connecté) et `npm test` vérifie que le build ne contient ni
-  `/products/`, ni `/auth/`, ni `/users/`. Tests : projet Playwright `admin` (Vite sur 4201, API simulée :
-  `admin.spec.cjs`, `auth.spec.cjs`).
+- Tests : projet Playwright `admin` (Vite sur 4201, API simulée : `admin.spec.cjs`, `auth.spec.cjs`) ;
+  `site.spec.cjs` (build de production) simule l'API Render (indisponible par défaut, `mockApi()`).
+  `npm test` vérifie que le build n'appelle que l'API Render (CSP, pas de `localhost:8000`).
 - Les zones de livraison ne viennent pas de l’API (elle n’en fournit pas).
 
 ## Tests

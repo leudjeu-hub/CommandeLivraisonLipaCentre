@@ -7,13 +7,10 @@ import DeliveryPage from './pages/DeliveryPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 
-// Connexion, compte et gestion (articles, utilisateurs) : développement uniquement, car l'API
-// ne tourne qu'en local pour l'instant. En production, import.meta.env.DEV vaut false et ces pages
-// sont absentes du build.
-const dev = import.meta.env.DEV;
-const AdminPage = dev ? lazy(() => import('./pages/AdminPage')) : null;
-const AuthPage = dev ? lazy(() => import('./pages/AuthPage')) : null;
-const AccountPage = dev ? lazy(() => import('./pages/AccountPage')) : null;
+// Connexion, compte et gestion : chargées à la demande (les visiteurs qui commandent ne les téléchargent pas)
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const AccountPage = lazy(() => import('./pages/AccountPage'));
 
 export default function App() {
   return (
@@ -24,10 +21,10 @@ export default function App() {
         <Route path="livraison" element={<DeliveryPage />} />
         <Route path="panier" element={<CartPage />} />
         <Route path="commander" element={<CheckoutPage />} />
-        {AdminPage && <Route path="gestion" element={<Suspense><AdminPage /></Suspense>} />}
-        {AuthPage && <Route path="connexion" element={<Suspense><AuthPage mode="login" /></Suspense>} />}
-        {AuthPage && <Route path="inscription" element={<Suspense><AuthPage mode="register" /></Suspense>} />}
-        {AccountPage && <Route path="compte" element={<Suspense><AccountPage /></Suspense>} />}
+        <Route path="gestion" element={<Suspense><AdminPage /></Suspense>} />
+        <Route path="connexion" element={<Suspense><AuthPage mode="login" /></Suspense>} />
+        <Route path="inscription" element={<Suspense><AuthPage mode="register" /></Suspense>} />
+        <Route path="compte" element={<Suspense><AccountPage /></Suspense>} />
       </Route>
     </Routes>
   );

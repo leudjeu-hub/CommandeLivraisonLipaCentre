@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../data/productsApi';
 import { showToast } from '../components/Toast';
 
-// Connexion (/connexion) et création de compte (/inscription). Développement uniquement (App.tsx).
+// Connexion (/connexion) et création de compte (/inscription).
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -61,7 +61,7 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
 
   return (
     <Container maxWidth="xs" sx={{ py: 4 }}>
-      <Typography variant="overline" color="secondary">{t('auth.devOnly')}</Typography>
+      <Typography variant="overline" color="secondary">{t('auth.eyebrow')}</Typography>
       <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>
         {isRegister ? t('auth.registerTitle') : t('auth.loginTitle')}
       </Typography>
@@ -105,6 +105,7 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
             />
           )}
           {error && <Alert severity="error">{error}</Alert>}
+          {busy && <Alert severity="info">{t('auth.slow')}</Alert>}
           <Button type="submit" variant="contained" size="large" disabled={busy} fullWidth>
             {isRegister ? t('auth.registerSubmit') : t('auth.loginSubmit')}
           </Button>

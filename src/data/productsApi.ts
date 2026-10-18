@@ -1,5 +1,5 @@
-// Accès à l'API du catalogue (développement uniquement : /products/ est relayé par Vite
-// vers http://localhost:8000, voir vite.config.ts). Le site publié n'appelle pas l'API.
+// Accès à l'API (articles, connexion, comptes). En développement, /products/… est relayé par Vite
+// vers l'API locale ; sur le site publié, les appels vont à l'API sur Render (vite.config.ts).
 
 export const API_CATEGORIES = ['Scolaire', 'Bureau', 'Livres'] as const;
 
@@ -61,9 +61,13 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (token) headers.Authorization = `Bearer ${token}`;
   let res: Response;
   try {
-    res = await fetch(path, { ...init, headers });
+    res = await fetch(import.meta.env.VITE_API_URL + path, { ...init, headers });
   } catch {
-    throw new ApiError('API injoignable (http://localhost:8000). Est-elle démarrée ?');
+    throw new ApiError(
+      import.meta.env.DEV
+        ? 'API injoignable (http://localhost:8000). Est-elle démarrée ?'
+        : 'Serveur injoignable. Vérifiez votre connexion et réessayez.'
+    );
   }
   if (res.status === 401 && token) onUnauthorized?.();
   if (res.status === 204) return undefined as T;

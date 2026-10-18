@@ -169,15 +169,15 @@
     "Livres": "Books"
   },
   "admin": {
-    "eyebrow": "Development · local API",
+    "eyebrow": "Administration",
     "title": "Manage items",
-    "intro": "Changes are saved to the API (http://localhost:8000). The published site is not affected: it uses src/data/catalogue.ts.",
+    "intro": "Changes are saved on the server and show up straight away in the site's catalogue.",
     "new": "New item",
     "edit": "Edit",
     "delete": "Delete",
     "editTitle": "Edit item",
     "newTitle": "New item",
-    "loading": "Loading…",
+    "loading": "Loading… (up to a minute if the server was asleep)",
     "empty": "No items in the API.",
     "hidden": "Hidden",
     "stock": "Stock: {{count}}",
@@ -246,6 +246,7 @@
     "welcome": "Welcome!",
     "forbiddenTitle": "Restricted access",
     "forbiddenText": "This page is for administrators only.",
-    "devOnly": "Development · local API"
+    "eyebrow": "Customer area",
+    "slow": "Contacting the server… The first access can take up to a minute."
   }
 }

@@ -169,15 +169,15 @@
     "Livres": "Livres"
   },
   "admin": {
-    "eyebrow": "Développement · API locale",
+    "eyebrow": "Administration",
     "title": "Gestion des articles",
-    "intro": "Les modifications sont enregistrées dans l'API (http://localhost:8000). Le site publié n'est pas concerné : il utilise src/data/catalogue.ts.",
+    "intro": "Les modifications sont enregistrées sur le serveur et apparaissent aussitôt dans le catalogue du site.",
     "new": "Nouvel article",
     "edit": "Modifier",
     "delete": "Supprimer",
     "editTitle": "Modifier l'article",
     "newTitle": "Nouvel article",
-    "loading": "Chargement…",
+    "loading": "Chargement… (jusqu'à une minute si le serveur était en veille)",
     "empty": "Aucun article dans l'API.",
     "hidden": "Masqué",
     "stock": "Stock : {{count}}",
@@ -246,6 +246,7 @@
     "welcome": "Bienvenue !",
     "forbiddenTitle": "Accès réservé",
     "forbiddenText": "Cette page est réservée aux administrateurs.",
-    "devOnly": "Développement · API locale"
+    "eyebrow": "Espace client",
+    "slow": "Connexion au serveur… Le premier accès peut prendre jusqu'à une minute."
   }
 }

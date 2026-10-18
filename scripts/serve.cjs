@@ -21,7 +21,14 @@ const types = {
   '.xml': 'application/xml',
   '.txt': 'text/plain; charset=utf-8'
 };
-const csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+// Même CSP que la balise meta du index.html construit (qui autorise l'API, voir vite.config.ts),
+// plus frame-ancestors, qui ne fonctionne qu'en en-tête HTTP
+function readCsp() {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const meta = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/);
+  if (!meta) throw new Error('CSP introuvable dans index.html');
+  return meta[1] + "; frame-ancestors 'none'";
+}
 
 if (!fs.existsSync(root)) {
   console.error(`Dossier introuvable : ${root}. Lancez d'abord "npm run build".`);
@@ -44,7 +51,7 @@ http.createServer((req, res) => {
 
   const ext = path.extname(filename);
   res.setHeader('Content-Type', types[ext] || 'application/octet-stream');
-  res.setHeader('Content-Security-Policy', csp);
+  res.setHeader('Content-Security-Policy', readCsp());
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'no-referrer');
   // HTML ne se met jamais en cache (catalogue et prix toujours à jour).

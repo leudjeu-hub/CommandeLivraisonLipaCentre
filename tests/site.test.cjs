@@ -58,10 +58,12 @@ test('build : dist/ existe avec index.html', () => {
   assert.ok(fs.existsSync('dist/index.html'), 'dist/index.html manquant — lancez npm run build');
 });
 
-test('build : gestion et connexion (développement) absentes du site publié', () => {
-  const dir = 'dist/assets';
-  for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.js'))) {
-    const js = fs.readFileSync(path.join(dir, f), 'utf8');
-    assert.doesNotMatch(js, /\/products\/|\/auth\/|\/users\/|admin-row/, `${f} contient la gestion, la connexion ou l’accès à l’API`);
-  }
+test('build : le site publié appelle l’API Render et rien d’autre', () => {
+  const built = fs.readFileSync('dist/index.html', 'utf8');
+  const csp = built.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/)[1];
+  assert.match(csp, /connect-src 'self' https:\/\/papeterie-api-kshr\.onrender\.com;/);
+  const js = fs.readdirSync('dist/assets').filter((f) => f.endsWith('.js'))
+    .map((f) => fs.readFileSync(path.join('dist/assets', f), 'utf8')).join('\n');
+  assert.match(js, /https:\/\/papeterie-api-kshr\.onrender\.com/);
+  assert.doesNotMatch(js, /localhost:8000/, 'adresse de l’API locale dans le build');
 });

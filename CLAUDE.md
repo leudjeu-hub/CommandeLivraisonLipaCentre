@@ -11,13 +11,14 @@ Les règles détaillées (build, tests, architecture, à faire / à ne pas faire
 - **Fichiers** : `index.html` (racine, CSP), `src/main.tsx`, `src/App.tsx` (routes), `src/pages/`,
   `src/components/`, `src/context/CartContext.tsx` (panier),
   `src/data/catalogue.ts` (articles, livraison, catégories, WhatsApp — source en production),
-  `src/data/useProducts.ts` (articles : API en développement), `src/locales/{fr,en}.json` (traductions).
+  `src/data/useProducts.ts` (articles de l'API), `src/locales/{fr,en}.json` (traductions).
 - **Commandes** : `npm run dev` · `npm test` · `npm run build` · `npm run test:browser`.
 - **Avant de dire « terminé »** : `npm test` et `npm run test:browser` passent.
 - **Interface en français**, montants en FCFA, numéros au format +237.
 - **CSP stricte** (`index.html`, `scripts/serve.cjs`) : pas de script en ligne, pas de ressource
-  externe, `connect-src 'none'` en production. Pas de `dangerouslySetInnerHTML`.
-- **API en développement** : `npm run dev` lit les articles sur http://localhost:8000/ (voir AGENTS.md).
+  externe ; `connect-src` limité au site et à l'API Render. Pas de `dangerouslySetInnerHTML`.
+- **API** : locale en développement (`npm run dev`, http://localhost:8000), Render sur le site publié
+  (connexion, comptes, articles ; voir AGENTS.md).
 - **Déploiement** : GitHub Pages, automatiquement à chaque push sur `main`.
 
 ## Façon de travailler

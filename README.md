@@ -34,7 +34,7 @@ livraison et **envoient leur commande par WhatsApp** à la librairie, qui la con
 │   ├── components/         # en-tête, pied de page, notifications…
 │   ├── context/CartContext.tsx  # panier (mémorisé dans localStorage)
 │   ├── data/catalogue.ts   # articles, zones de livraison, catégories, WhatsApp, calcul des frais
-│   ├── data/useProducts.ts # articles : API en développement, catalogue.ts en production
+│   ├── data/useProducts.ts # articles de l'API (catalogue.ts en attendant ou en secours)
 │   ├── i18n.ts             # configuration i18next
 │   └── locales/            # traductions fr.json / en.json
 ├── public/                 # copié tel quel dans dist/ : img/ (photos, logo, favicon), robots.txt
@@ -58,18 +58,21 @@ npm install
 npm run dev        # http://127.0.0.1:4200, articles lus depuis l’API http://localhost:8000/
 ```
 
-En développement, les articles viennent de l’API (`GET /products/`, relayée par Vite ; adresse
-modifiable avec `CATALOGUE_API=http://… npm run dev`). Si l’API est arrêtée, le site affiche les
-articles de `src/data/catalogue.ts` (avertissement dans la console). Le site publié utilise
-toujours `src/data/catalogue.ts`.
+Les articles, la connexion et les comptes viennent de l'API (dépôt `CommandeLivraisonLipaCentreBackend`) :
+- en développement, l'API locale (relayée par Vite ; adresse modifiable avec `CATALOGUE_API=http://… npm run dev`) ;
+- sur le site publié, l'API sur Render (https://papeterie-api-kshr.onrender.com ; autre adresse :
+  `PROD_API_URL=https://… npm run build`).
 
-**Comptes** (en développement seulement) : « Connexion » dans le menu pour se connecter ou créer
-un compte client ; commander reste possible sans compte.
+En attendant la réponse de l'API (jusqu'à ~40 s si le serveur Render est en veille), ou si elle est
+injoignable, le catalogue affiche les articles de `src/data/catalogue.ts`.
 
-**Gérer les articles et les comptes** : http://127.0.0.1:4200/gestion, réservé aux
-administrateurs. Premier administrateur, dans le dépôt de l'API :
-`uv run python -m app.scripts.create_admin votre@email`. Un administrateur peut ensuite en
-promouvoir d'autres (onglet « Utilisateurs »).
+**Comptes** : « Connexion » dans le menu pour se connecter ou créer un compte client ; commander
+reste possible sans compte.
+
+**Gérer les articles et les comptes** : page « Gestion » (`/gestion`), réservée aux administrateurs.
+Premier administrateur, dans le dépôt de l'API (avec l'adresse de la base de production pour le site
+publié) : `DATABASE_URL=… uv run python -m app.scripts.create_admin votre@email`. Un administrateur
+peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).
 
 ## Vérification
 

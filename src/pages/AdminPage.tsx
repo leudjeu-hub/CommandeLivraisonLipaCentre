@@ -20,7 +20,6 @@ import { useAuth } from '../context/AuthContext';
 import { listUsers, setRole, type User } from '../data/authApi';
 
 // Gestion des articles et des comptes : administrateurs uniquement (l'API le vérifie aussi).
-// Développement uniquement (route ajoutée dans App.tsx si import.meta.env.DEV) : l'API tourne en local.
 
 type FormValues = Record<
   'category' | 'name' | 'description' | 'price' | 'label' | 'name_en' | 'description_en' | 'label_en' | 'color' | 'image' | 'stock',

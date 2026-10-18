@@ -1,12 +1,28 @@
 // Tests navigateur (Playwright) : npm run test:browser
 const { test, expect } = require('@playwright/test');
 
+// Le site publié appelle l'API sur Render (vite.config.ts). Dans les tests, elle est simulée :
+// par défaut « indisponible » (le site affiche alors src/data/catalogue.ts) ; un test peut la
+// remplacer avec mockApi(). Toute autre requête externe fait échouer le test.
+const API = 'https://papeterie-api-kshr.onrender.com';
+
 test.beforeEach(async ({ page }) => {
-  await page.route('**/*', (route) =>
-    route.request().url().startsWith('http://127.0.0.1:4200') ? route.continue() : route.abort()
-  );
+  await page.route('**/*', (route) => {
+    const url = route.request().url();
+    if (url.startsWith('http://127.0.0.1:4200')) return route.continue();
+    if (url.startsWith(API)) return route.fulfill({ status: 503, contentType: 'application/json', body: '{"detail":"indisponible"}' });
+    return route.abort();
+  });
   page.on('requestfailed', (r) => { throw new Error('Requête bloquée : ' + r.url()); });
 });
+
+async function mockApi(page, handler) {
+  await page.route(`${API}/**`, async (route) => {
+    const req = route.request();
+    const { status = 200, body } = await handler(new URL(req.url()).pathname, req);
+    return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body ?? null) });
+  });
+}
 
 test('la page se charge sans erreur et affiche le catalogue', async ({ page }) => {
   const errors = [];
@@ -134,4 +150,40 @@ test('navigation : la page active est signalée', async ({ page, isMobile }) => 
   await expect(page.getByRole('link', { name: 'Le catalogue', exact: true })).not.toHaveAttribute('aria-current', 'page');
   await page.goto('/panier');
   await expect(page.getByRole('button', { name: 'Panier' })).toHaveAttribute('aria-current', 'page');
+});
+
+test('site publié : le catalogue affiche les articles de l’API', async ({ page }) => {
+  await mockApi(page, (path) => ({
+    body: path === '/products/'
+      ? [{ id: 1, category: 'Scolaire', price: 1800, name: 'Cahier API', description: 'Depuis Render.', label: null,
+          name_en: null, description_en: null, label_en: null, color: null, available: true, status: null, image: null, stock: 4 }]
+      : null
+  }));
+  await page.goto('/catalogue');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(1);
+  await expect(page.locator('[data-testid="product-card"]')).toContainText('1 800 FCFA');
+});
+
+test('site publié : un administrateur se connecte depuis la barre de navigation', async ({ page, isMobile }) => {
+  const admin = { id: 3, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00' };
+  await mockApi(page, (path, req) => {
+    if (path === '/auth/login') {
+      const { password } = req.postDataJSON();
+      return password === 'admin-123' ? { body: { token: 'jeton', token_type: 'bearer', user: admin } } : { status: 401, body: { detail: 'Invalid e-mail or password' } };
+    }
+    if (path === '/auth/me') return req.headers().authorization === 'Bearer jeton' ? { body: admin } : { status: 401, body: {} };
+    if (path === '/products/') return { body: [] };
+    return { status: 404, body: {} };
+  });
+  await page.goto('/');
+  if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('link', { name: 'Connexion', exact: true }).click();
+  await expect(page).toHaveURL(/\/connexion$/);
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page.getByText('Connecté en tant que admin@exemple.cm')).toBeVisible();
+  if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('link', { name: 'Gestion', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Gestion des articles' })).toBeVisible();
 });

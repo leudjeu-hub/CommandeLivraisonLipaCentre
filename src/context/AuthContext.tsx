@@ -2,8 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import * as authApi from '../data/authApi';
 import { getToken, setToken, setUnauthorizedHandler } from '../data/productsApi';
 
-// Session de l'utilisateur connecté. Développement uniquement : le site publié n'a pas d'API,
-// il utilise StaticAuthProvider (personne n'est connecté) et le code de connexion est retiré du build.
+// Session de l'utilisateur connecté (jeton dans localStorage, vérifié auprès de l'API au démarrage).
 
 interface AuthContextType {
   user: authApi.User | null;
@@ -16,7 +15,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function DevAuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<authApi.User | null>(null);
   const [ready, setReady] = useState(!getToken());
 
@@ -56,15 +55,6 @@ function DevAuthProvider({ children }: { children: ReactNode }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-const noApi = () => Promise.reject(new Error('API indisponible sur le site publié'));
-const STATIC_AUTH: AuthContextType = { user: null, ready: true, login: noApi, register: noApi, logout: noApi };
-
-function StaticAuthProvider({ children }: { children: ReactNode }) {
-  return <AuthContext.Provider value={STATIC_AUTH}>{children}</AuthContext.Provider>;
-}
-
-export const AuthProvider = import.meta.env.DEV ? DevAuthProvider : StaticAuthProvider;
 
 export function useAuth() {
   const context = useContext(AuthContext);
