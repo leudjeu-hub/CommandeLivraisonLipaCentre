@@ -2,7 +2,7 @@
 
 **🌐 Voir le site : [leudjeu-hub.github.io/CommandeLivraisonLipaCentre](https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/)**
 
-Site statique en français pour la **Librairie Papeterie du Centre** à Yaoundé (Cameroun).
+Site en français (React + TypeScript, Vite, MUI) pour la **Librairie Papeterie du Centre** à Yaoundé (Cameroun).
 Les clients composent un panier de livres et de fournitures, indiquent leur adresse de
 livraison et **envoient leur commande par WhatsApp** à la librairie, qui la confirme.
 
@@ -17,44 +17,41 @@ livraison et **envoient leur commande par WhatsApp** à la librairie, qui la con
 - Formulaire de livraison : quartier, repère, créneau, paiement à la réception
   (espèces, Orange Money, MTN MoMo)
 - Demande de devis pour les listes scolaires et les livres « sur devis »
-- **Frais de livraison par quartier** (4 zones, 1 000 à 5 000 FCFA), affichés avant l’envoi ; grille modifiable dans `catalogue/livraison.csv`
+- **Frais de livraison par quartier** (4 zones, 1 000 à 5 000 FCFA), affichés avant l’envoi ; grille modifiable dans `src/data/catalogue.ts`
 - Récapitulatif envoyé par WhatsApp à la librairie, ou téléchargé / copié
-- Site bilingue **français / anglais** (bouton de langue, choix mémorisé, lien direct `?lang=en`)
+- Site bilingue **français / anglais** (bouton de langue, choix mémorisé)
 - Mise en page responsive (mobile, tablette, ordinateur)
 
 ## Structure du projet
 
 ```
 .
-├── src/                    # code source du site
-│   ├── index.html          # la page
-│   ├── css/style.css       # styles
-│   ├── js/config.js        # catégories, numéro WhatsApp, règles de livraison
-│   ├── js/delivery.js      # GÉNÉRÉ depuis catalogue/livraison.csv
-│   ├── js/products.js      # GÉNÉRÉ depuis catalogue/catalogue.csv
-│   ├── js/i18n.js          # traductions anglaises de la page et de l’interface
-│   ├── js/script.js        # logique : catalogue, panier, formulaire
-│   └── img/favicon.svg
-├── public/                 # fichiers copiés tels quels dans dist/
-│   └── robots.txt
-├── catalogue/            # catalogue.csv (articles et prix) + LISEZMOI.md
-├── scripts/
-│   ├── catalogue.cjs       # tableau CSV → src/js/products.js (avec vérifications)
-│   ├── build.cjs           # construit dist/ (src/ + public/)
-│   └── serve.cjs           # serveur local avec en-têtes de sécurité (CSP)
+├── index.html              # page d'entrée (CSP, métadonnées)
+├── src/
+│   ├── main.tsx            # démarrage : thème MUI, routeur, panier
+│   ├── App.tsx             # routes : /, /catalogue, /livraison, /panier, /commander
+│   ├── pages/              # une page par route
+│   ├── components/         # en-tête, pied de page, notifications…
+│   ├── context/CartContext.tsx  # panier (mémorisé dans localStorage)
+│   ├── data/catalogue.ts   # articles, zones de livraison, catégories, WhatsApp, calcul des frais
+│   ├── data/useProducts.ts # articles : API en développement, catalogue.ts en production
+│   ├── i18n.ts             # configuration i18next
+│   └── locales/            # traductions fr.json / en.json
+├── public/                 # copié tel quel dans dist/ : img/ (photos, logo, favicon), robots.txt
+├── scripts/serve.cjs       # sert dist/ avec les en-têtes de sécurité (tests navigateur)
 ├── tests/
 │   ├── site.test.cjs       # tests statiques (Node, sans navigateur)
+│   ├── fees.test.cjs       # calcul des frais de livraison
 │   └── browser/site.spec.cjs  # tests navigateur (Playwright, desktop + mobile)
-├── .github/workflows/main.yml # CI : tests à chaque push / pull request
-├── playwright.config.cjs
-├── package.json
+├── .github/workflows/      # main.yml : vérifications ; deploy.yml : GitHub Pages
+├── vite.config.ts · tsconfig.json · playwright.config.cjs · package.json
 ├── AGENTS.md               # consignes pour les assistants IA (Claude, etc.)
 └── dev.md                  # notes personnelles d’apprentissage
 ```
 
 ## Développement
 
-Prérequis : **Node.js 22** ou plus récent.
+Prérequis : **Node.js 22.18** ou plus récent.
 
 ```sh
 npm install
@@ -69,46 +66,34 @@ toujours `src/data/catalogue.ts`.
 ## Vérification
 
 ```sh
-npm test                     # tests statiques
 npm run build                # construit dist/
-npm install                  # une fois, pour Playwright
-npx playwright install chromium
-npm run test:browser         # tests navigateur sur dist/
+npm test                     # tests statiques (après le build : ils vérifient dist/)
+npx playwright install chromium   # une fois
+npm run test:browser         # tests navigateur sur dist/ (desktop + mobile)
 ```
 
-Les tests vérifient notamment : un seul `<h1>`, aucune ressource externe ni code en ligne
-(compatibilité CSP), des identifiants et ancres valides, un catalogue cohérent, et le
-parcours complet panier → formulaire → récapitulatif.
+Les tests vérifient notamment : aucune ressource externe ni script en ligne (CSP), des
+traductions FR/EN complètes, le calcul des frais de livraison, et le parcours complet
+catalogue → panier → formulaire → message WhatsApp.
 
 ## Modifier le catalogue
 
-Les articles se gèrent dans **`catalogue/catalogue.csv`**, un tableau à ouvrir avec Excel, Numbers
-ou Google Sheets (mode d’emploi : [`catalogue/LISEZMOI.md`](catalogue/LISEZMOI.md)).
+Articles, prix, zones de livraison, catégories et numéro WhatsApp : **`src/data/catalogue.ts`**.
 
-```sh
-# après avoir modifié et enregistré le tableau :
-npm test       # régénère src/js/products.js et vérifie le catalogue (ligne exacte en cas d’erreur)
-git add -A && git commit -m "catalogue : mise à jour" && git push
-```
-
-- Prix vide → article « sur devis » ; `disponible` = `non` → article masqué.
-- Traduction anglaise facultative (repli sur le français).
-- `src/js/products.js` est **généré** : ne pas le modifier à la main.
-- Catégories et numéro WhatsApp : `src/js/config.js`.
+- `price: null` → article « sur devis » ; champ `en` facultatif (repli sur le français).
+- Photos : déposer le fichier dans `public/img/produits/` et le référencer (`image: 'img/produits/….webp'`).
+- Règles de livraison (gratuité, minimum de commande) : `DELIVERY_RULES`.
 
 ## Traductions
 
-Le français est écrit directement dans `src/index.html`. Chaque texte traduisible porte
-`data-i18n="clé"` ; sa version anglaise se trouve dans `src/js/i18n.js` (`PAGE.en`).
-Les textes générés par le JavaScript (boutons, messages, récapitulatif) sont dans `UI.fr` / `UI.en`,
-et les noms d’articles anglais dans le champ `en` de chaque produit.
-`npm test` échoue si une traduction manque.
+Les textes de l'interface sont dans `src/locales/fr.json` et `src/locales/en.json`
+(utilisés via `t('clé')`). `npm test` échoue si une clé manque dans l'une des deux langues.
 
 ## Avant l’ouverture commerciale
 
 - [x] Renseigner adresse et téléphone professionnels
 - [ ] Intégrer les vrais articles, prix et stocks
-- [x] Transmettre les commandes par WhatsApp (numéro dans `src/js/products.js` → `SHOP.whatsapp`)
+- [x] Transmettre les commandes par WhatsApp (numéro dans `src/data/catalogue.ts` → `SHOP.whatsapp`)
 - [x] Définir les zones et frais de livraison (à valider avec le livreur)
 - [ ] Faire valider mentions légales, conditions de vente et confidentialité
 - [ ] Choisir un hébergement et autoriser l’indexation (`public/robots.txt`)
@@ -120,7 +105,7 @@ Alain Bienvenu Leudjeu
 
 ## Mise en ligne (GitHub Pages)
 
-Le workflow `.github/workflows/deploy.yml` teste, construit puis publie `dist/` à chaque
+Le workflow `.github/workflows/deploy.yml` construit (sous `/CommandeLivraisonLipaCentre/`), teste puis publie `dist/` à chaque
 push sur `main`. Adresse : <https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/>
 
 Configuration initiale (une seule fois) : **Settings → Pages → Build and deployment →

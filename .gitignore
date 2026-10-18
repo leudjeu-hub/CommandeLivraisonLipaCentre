@@ -1,6 +1,7 @@
 # Dépendances et build
 node_modules/
 dist/
+*.tsbuildinfo
 
 # Tests
 playwright-report/

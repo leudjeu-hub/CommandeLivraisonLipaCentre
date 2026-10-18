@@ -1,7 +1,7 @@
-// Tests unitaires des règles de frais de livraison (module pure src/js/fees.cjs).
+// Tests unitaires des règles de frais de livraison (src/data/catalogue.ts, utilisé par l'application).
 const assert = require('node:assert');
 const { test } = require('node:test');
-const { isFree, feeFor } = require('../src/js/fees.cjs');
+const { isFree, feeFor } = require('../src/data/catalogue.ts');
 
 const rules = { freeFrom: 25000, freeZones: [1, 2], minOrder: 2000 };
 
