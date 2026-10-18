@@ -9,6 +9,8 @@ const port = Number(process.env.PORT) || 4200;
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
+  '.cjs': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
@@ -42,7 +44,10 @@ http.createServer((req, res) => {
   res.setHeader('Content-Security-Policy', csp);
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'no-referrer');
-  res.setHeader('Cache-Control', ext === '.html' ? 'no-cache' : 'public, max-age=3600');
+  // HTML ne se met jamais en cache (catalogue et prix toujours à jour).
+  // JS et CSS sont rechargés à chaque visite pour éviter de servir un catalogue périmé ;
+  // les images (nommées, immuables) peuvent être mises en cache par le navigateur.
+  res.setHeader('Cache-Control', ext === '.html' || ext === '.js' || ext === '.css' ? 'no-cache' : 'public, max-age=3600');
   fs.createReadStream(filename).pipe(res);
 }).listen(port, '127.0.0.1', () => {
   console.log(`Site servi depuis ${path.relative(process.cwd(), root) || '.'} → http://127.0.0.1:${port}`);

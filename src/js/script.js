@@ -148,9 +148,8 @@
 
   const zt = (z, field) => (lang !== i18n.DEFAULT && z[lang] && z[lang][field]) || z[field];
   const zoneOfArea = (area) => delivery.find((z) => z.areas.includes(area));
-  const isFree = (z, subtotal) => rules.freeFrom > 0 && rules.freeZones.includes(z.zone) && subtotal >= rules.freeFrom;
   // Frais pour une zone : 0 si livraison offerte (commande, pas devis), sinon le tarif de la zone
-  const feeFor = (z, subtotal) => (!quote && isFree(z, subtotal) ? 0 : z.fee);
+  const feeFor = (z, subtotal) => window.fees.feeFor(z, subtotal, rules, quote);
 
   // « 1, 2 et 3 » / « 1, 2 and 3 »
   const listWords = (xs) => (xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' ' + t('and') + ' ' + xs.at(-1));
