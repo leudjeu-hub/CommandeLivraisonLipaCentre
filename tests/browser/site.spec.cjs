@@ -126,3 +126,12 @@ test('panier enregistré par l’ancien site ou corrompu : pas de plantage', asy
   await expect(page.locator('text=Cahier A4')).toBeVisible();
   await expect(page.locator('text=Kit de géométrie')).toBeVisible();
 });
+
+test('navigation : la page active est signalée', async ({ page, isMobile }) => {
+  await page.goto('/livraison');
+  if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
+  await expect(page.getByRole('link', { name: 'Livraison', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('link', { name: 'Le catalogue', exact: true })).not.toHaveAttribute('aria-current', 'page');
+  await page.goto('/panier');
+  await expect(page.getByRole('button', { name: 'Panier' })).toHaveAttribute('aria-current', 'page');
+});
