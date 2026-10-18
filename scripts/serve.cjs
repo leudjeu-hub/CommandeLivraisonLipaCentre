@@ -1,4 +1,5 @@
 // Petit serveur local avec les mêmes en-têtes de sécurité qu'en production.
+// style-src 'unsafe-inline' : MUI (Emotion) injecte ses styles dans la page ; les scripts restent 'self'.
 // Usage : node scripts/serve.cjs [dossier]   (par défaut : dist)
 const http = require('node:http');
 const fs = require('node:fs');
@@ -20,7 +21,7 @@ const types = {
   '.xml': 'application/xml',
   '.txt': 'text/plain; charset=utf-8'
 };
-const csp = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+const csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
 if (!fs.existsSync(root)) {
   console.error(`Dossier introuvable : ${root}. Lancez d'abord "npm run build".`);
@@ -37,6 +38,8 @@ http.createServer((req, res) => {
   }
   if (filename === root || filename === root + path.sep) filename = path.join(root, 'index.html');
   if (!filename.startsWith(root + path.sep)) { res.writeHead(403).end(); return; }
+  // Routes de l'application (/catalogue, /panier…) : servir index.html, comme 404.html sur GitHub Pages
+  if (!path.extname(filename) && !fs.existsSync(filename)) filename = path.join(root, 'index.html');
   if (!fs.existsSync(filename) || !fs.statSync(filename).isFile()) { res.writeHead(404).end(); return; }
 
   const ext = path.extname(filename);

@@ -7,6 +7,11 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Node >= 22. React 19 + TypeScript, Vite, MUI, react-router, i18next.
 - Dev : `npm run dev` (Vite) sert l’application sur http://127.0.0.1:4200.
 - Build : `npm run build` (`tsc -b && vite build`) produit `dist/`. `npm run preview` le sert.
+- Images (photos, logo, favicon) : `public/img/`, copiées telles quelles dans `dist/img/`. Dans le code,
+  les préfixer par `import.meta.env.BASE_URL` (le site publié vit sous `/CommandeLivraisonLipaCentre/`).
+- GitHub Pages : `deploy.yml` construit avec `BASE_PATH=/CommandeLivraisonLipaCentre/` ; le build copie
+  `index.html` en `404.html` pour que les liens directs (`/catalogue`, `/panier`…) fonctionnent.
+  Navigation interne : toujours via react-router (`Link`, `navigate`), jamais `window.location`.
 
 ## Catalogue et API
 
@@ -29,6 +34,7 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 ## À faire / à ne pas faire
 
 - Pas de script en ligne ni de ressource externe (polices, CDN, analytics) sans mettre à jour la CSP et les tests.
+  Styles : `style-src 'self' 'unsafe-inline'` (MUI/Emotion injecte ses styles) ; scripts : `'self'` uniquement.
 - Ne jamais committer de secrets (`.env` est ignoré).
 - Site bilingue FR/EN : tout nouveau texte visible passe par `t('…')` avec une clé dans
   `src/locales/fr.json` et `src/locales/en.json`.

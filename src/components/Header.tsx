@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AppBar, Toolbar, IconButton, Button, Drawer, List, ListItem, ListItemText, Badge, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Button, Drawer, List, ListItem, ListItemButton, ListItemText, Badge, useMediaQuery, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from '../context/CartContext';
@@ -29,7 +29,7 @@ export default function Header() {
     <AppBar position="sticky" color="primary" elevation={0}>
       <Toolbar>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit', flexGrow: 1 }}>
-          <img src="/img/logo.svg" alt="LIPACE" width={120} height={32} />
+          <img src={`${import.meta.env.BASE_URL}img/logo.svg`} alt="LIPACE" width={120} height={32} />
         </Link>
 
         {!isMobile && (
@@ -65,9 +65,9 @@ export default function Header() {
                     <ListItemText primary={l.label} />
                   </ListItem>
                 ))}
-                <ListItem onClick={toggleLang}>
+                <ListItemButton onClick={toggleLang}>
                   <ListItemText primary={i18n.language === 'fr' ? 'English' : 'Français'} />
-                </ListItem>
+                </ListItemButton>
               </List>
             </Drawer>
           </>
