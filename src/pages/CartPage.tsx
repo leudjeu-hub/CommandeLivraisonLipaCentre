@@ -3,16 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, IconButton, Divider, Paper, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useCart } from '../context/CartContext';
-import { PRODUCTS, DELIVERY, DELIVERY_RULES, money } from '../data/catalogue';
+import { DELIVERY, DELIVERY_RULES, money } from '../data/catalogue';
+import { useProducts } from '../data/useProducts';
 
 export default function CartPage() {
   const { t, i18n } = useTranslation();
   const { items, removeItem, updateQuantity, clearCart } = useCart();
+  const products = useProducts();
   const navigate = useNavigate();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
 
   const cartProducts = items
-    .map((item) => ({ ...item, product: PRODUCTS.find((p) => p.id === item.productId)! }))
+    .map((item) => ({ ...item, product: products.find((p) => p.id === item.productId)! }))
     .filter((x) => x.product);
 
   const subtotal = cartProducts.reduce((sum, x) => sum + (x.product.price || 0) * x.quantity, 0);

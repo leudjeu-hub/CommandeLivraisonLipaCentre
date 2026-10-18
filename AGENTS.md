@@ -4,33 +4,34 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 
 ## Build & dev
 
-- Node >= 22. Aucune dépendance d’exécution ; seul `@playwright/test` est en devDependency.
-- Dev : `npm run dev` génère `src/js/products.js` depuis l’API http://localhost:8000/ (`scripts/catalogue-api.cjs`, variable `CATALOGUE_API`) puis sert `src/` sur http://127.0.0.1:4200. Sans API : `npm run dev:csv`. Tests et build restent sur `catalogue/catalogue.csv`.
-- Build : `npm run build` (`scripts/build.cjs`) copie `src/` puis `public/` dans `dist/`.
-- `npm start` construit puis sert `dist/` avec les en-têtes de production.
+- Node >= 22. React 19 + TypeScript, Vite, MUI, react-router, i18next.
+- Dev : `npm run dev` (Vite) sert l’application sur http://127.0.0.1:4200.
+- Build : `npm run build` (`tsc -b && vite build`) produit `dist/`. `npm run preview` le sert.
+
+## Catalogue et API
+
+- Production : articles, zones de livraison, catégories et numéro WhatsApp dans `src/data/catalogue.ts`.
+- Développement : les pages lisent les articles via `useProducts()` (`src/data/useProducts.ts`),
+  qui appelle `GET /products/`. Vite relaie `/products/` vers l’API http://localhost:8000
+  (`vite.config.ts`, modifiable : `CATALOGUE_API=http://… npm run dev`). En dev seulement, la CSP
+  passe à `connect-src 'self'` (plugin `dev-csp`). API injoignable → avertissement console et
+  repli sur `catalogue.ts`. Le code d’appel à l’API est retiré du build de production.
+- Ne pas importer `PRODUCTS` directement dans une page : passer par `useProducts()`.
+- Les zones de livraison ne viennent pas de l’API (elle n’en fournit pas).
 
 ## Tests
 
-- `npm test` : `node --test tests/*.test.cjs` (structure HTML, ressources locales, CSP, catalogue).
+- `npm test` : `node --test tests/*.test.cjs` (structure HTML, ressources, catalogue, traductions, frais).
 - `npm run test:browser` : Playwright, projets `desktop` et `mobile` (iPhone 13).
-  Le `webServer` reconstruit `dist/` avant de servir.
+  Le `webServer` lance `npm run build` puis `scripts/serve.cjs dist` (en-têtes de production).
 - Toute requête vers un autre hôte que 127.0.0.1:4200 fait échouer les tests navigateur.
-
-## Architecture
-
-- Une seule page : `src/index.html`. Pas de framework, pas de bundler.
-- `src/js/config.js` définit `window.CATEGORIES` et `window.SHOP` ; `src/js/products.js` (généré) définit `window.PRODUCTS` ; `src/js/script.js`
-  contient toute la logique (IIFE, scripts classiques `defer` — fonctionne aussi en `file://`).
-- CSP stricte (`script-src 'self'; style-src 'self'`) dans la balise meta et dans `scripts/serve.cjs`.
 
 ## À faire / à ne pas faire
 
-- Ne pas ajouter de script ou de style en ligne, ni d’attribut `style=` ou `onclick=` :
-  appliquer les styles dynamiques via `element.style` (voir `renderProducts`).
-- Ne pas charger de ressource externe (polices, CDN, analytics) sans mettre à jour la CSP et les tests.
+- Pas de script en ligne ni de ressource externe (polices, CDN, analytics) sans mettre à jour la CSP et les tests.
 - Ne jamais committer de secrets (`.env` est ignoré).
-- Catalogue : source unique `catalogue/catalogue.csv` ; `src/js/products.js` est GÉNÉRÉ par `scripts/catalogue.cjs` (lancé par `pretest` et `build`) — ne jamais l’éditer à la main. Catégories et WhatsApp : `src/js/config.js`.
-- Site bilingue FR/EN : tout nouveau texte visible reçoit `data-i18n` et une traduction dans `src/js/i18n.js` (sinon `npm test` échoue).
+- Site bilingue FR/EN : tout nouveau texte visible passe par `t('…')` avec une clé dans
+  `src/locales/fr.json` et `src/locales/en.json`.
 - Interface en français par défaut ; conserver les avertissements « version de présentation »
   tant que les commandes ne sont pas réellement transmises.
 - Après toute modification : `npm test` puis `npm run test:browser`.

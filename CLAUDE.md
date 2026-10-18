@@ -6,17 +6,18 @@ Les règles détaillées (build, tests, architecture, à faire / à ne pas faire
 
 ## L’essentiel
 
-- **Stack** : HTML, CSS et JavaScript sans framework, sans bundler, sans dépendance d’exécution.
-  Pas de TypeScript, pas de React : c’est un choix délibéré (une page, clients mobiles en 3G).
-  N’en ajoute pas sans accord explicite.
-- **Fichiers** : `src/index.html`, `src/css/style.css`, `src/js/script.js` (logique),
-  `catalogue/catalogue.csv` (articles et prix, source unique ; `src/js/products.js` en est généré),
-  `src/js/config.js` (catégories, numéro WhatsApp), `src/js/i18n.js` (traductions).
+- **Stack** : React 19 + TypeScript, Vite, MUI, react-router, i18next. Clients mobiles en 3G :
+  pas de nouvelle dépendance sans accord explicite.
+- **Fichiers** : `index.html` (racine, CSP), `src/main.tsx`, `src/App.tsx` (routes), `src/pages/`,
+  `src/components/`, `src/context/CartContext.tsx` (panier),
+  `src/data/catalogue.ts` (articles, livraison, catégories, WhatsApp — source en production),
+  `src/data/useProducts.ts` (articles : API en développement), `src/locales/{fr,en}.json` (traductions).
 - **Commandes** : `npm run dev` · `npm test` · `npm run build` · `npm run test:browser`.
 - **Avant de dire « terminé »** : `npm test` et `npm run test:browser` passent.
 - **Interface en français**, montants en FCFA, numéros au format +237.
-- **CSP stricte** : pas de script ni de style en ligne, pas d’attribut `style=` ou `onclick=`,
-  pas de ressource externe. Tout texte inséré via `innerHTML` passe par `escapeHtml`.
+- **CSP stricte** (`index.html`, `scripts/serve.cjs`) : pas de script en ligne, pas de ressource
+  externe, `connect-src 'none'` en production. Pas de `dangerouslySetInnerHTML`.
+- **API en développement** : `npm run dev` lit les articles sur http://localhost:8000/ (voir AGENTS.md).
 - **Déploiement** : GitHub Pages, automatiquement à chaque push sur `main`.
 
 ## Façon de travailler

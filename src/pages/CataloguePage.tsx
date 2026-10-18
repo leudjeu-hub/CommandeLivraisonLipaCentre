@@ -1,29 +1,31 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, TextField, Chip, Grid, Card, CardContent, CardMedia, CardActions, Button, Box, Typography as MuiTypography } from '@mui/material';
-import { PRODUCTS, CATEGORIES, money } from '../data/catalogue';
+import { CATEGORIES, money } from '../data/catalogue';
+import { useProducts } from '../data/useProducts';
 import { useCart } from '../context/CartContext';
 import { showToast } from '../components/Toast';
 
 export default function CataloguePage() {
   const { t, i18n } = useTranslation();
   const { addItem } = useCart();
+  const products = useProducts();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Tout');
 
   const filtered = useMemo(() => {
     const q = search.normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('fr').trim();
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       const matchCat = category === 'Tout' || p.cat === category;
       const name = (i18n.language === 'fr' ? p.name : p.en?.name || p.name).normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('fr');
       const desc = (i18n.language === 'fr' ? p.desc : p.en?.desc || p.desc).normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('fr');
       const matchSearch = !q || name.includes(q) || desc.includes(q) || t(`cat.${p.cat}`).toLowerCase().includes(q);
       return matchCat && matchSearch;
     });
-  }, [search, category, i18n.language, t]);
+  }, [products, search, category, i18n.language, t]);
 
   const handleAdd = (productId: number) => {
-    const p = PRODUCTS.find((x) => x.id === productId);
+    const p = products.find((x) => x.id === productId);
     if (!p) return;
     if (p.price === null) {
       window.location.href = `/commander?type=quote&product=${productId}`;

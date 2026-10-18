@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Container, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
-import { PRODUCTS, DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../data/catalogue';
+import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../data/catalogue';
+import { useProducts } from '../data/useProducts';
 import { showToast } from '../components/Toast';
 
 const OTHER_AREA = '__autre';
@@ -12,6 +13,7 @@ export default function CheckoutPage() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const { items, clearCart } = useCart();
+  const products = useProducts();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
 
   const type = searchParams.get('type') === 'quote' ? 'quote' : 'order';
@@ -24,18 +26,19 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState('');
   const [slot, setSlot] = useState('');
   const [payment, setPayment] = useState('');
-  const [notes, setNotes] = useState(
-    prefillProduct
-      ? t('common.quoteNote', { name: PRODUCTS.find((p) => p.id === Number(prefillProduct))?.name || '' })
-      : ''
-  );
+  const [notes, setNotes] = useState('');
+  // Les articles peuvent arriver après le premier rendu (API en développement)
+  const quoteName = prefillProduct ? products.find((p) => p.id === Number(prefillProduct))?.name : undefined;
+  useEffect(() => {
+    if (quoteName) setNotes((prev) => prev || t('common.quoteNote', { name: quoteName }));
+  }, [quoteName, t]);
   const [consent, setConsent] = useState(false);
   const [summary, setSummary] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [showAfterSend, setShowAfterSend] = useState(false);
 
   const cartProducts = items
-    .map((item) => ({ ...item, product: PRODUCTS.find((p) => p.id === item.productId)! }))
+    .map((item) => ({ ...item, product: products.find((p) => p.id === item.productId)! }))
     .filter((x) => x.product);
 
   const subtotal = cartProducts.reduce((sum, x) => sum + (x.product.price || 0) * x.quantity, 0);
