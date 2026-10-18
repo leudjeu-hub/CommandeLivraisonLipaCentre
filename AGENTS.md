@@ -22,6 +22,10 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   passe à `connect-src 'self'` (plugin `dev-csp`). API injoignable → avertissement console et
   repli sur `catalogue.ts`. Le code d’appel à l’API est retiré du build de production.
 - Ne pas importer `PRODUCTS` directement dans une page : passer par `useProducts()`.
+- Gestion des articles (créer, modifier, supprimer) : page `/gestion` (`src/pages/AdminPage.tsx`,
+  appels dans `src/data/productsApi.ts`). **Développement uniquement** : l'API n'a pas
+  d'authentification ; la route et le lien n'existent que si `import.meta.env.DEV` (absents du build,
+  vérifié par `npm test`). Tests : projet Playwright `admin` (serveur Vite sur 4201, API simulée).
 - Les zones de livraison ne viennent pas de l’API (elle n’en fournit pas).
 
 ## Tests

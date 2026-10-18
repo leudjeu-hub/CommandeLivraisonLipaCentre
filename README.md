@@ -63,6 +63,9 @@ modifiable avec `CATALOGUE_API=http://… npm run dev`). Si l’API est arrêté
 articles de `src/data/catalogue.ts` (avertissement dans la console). Le site publié utilise
 toujours `src/data/catalogue.ts`.
 
+**Gérer les articles de l'API** : http://127.0.0.1:4200/gestion (lien « Gestion » dans le menu,
+en développement seulement) pour créer, modifier, masquer ou supprimer un article.
+
 ## Vérification
 
 ```sh

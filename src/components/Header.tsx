@@ -30,6 +30,7 @@ export default function Header() {
   const navLinks = [
     { to: '/catalogue', label: t('nav.catalogue') },
     { to: '/livraison', label: t('nav.delivery') },
+    ...(import.meta.env.DEV ? [{ to: '/gestion', label: t('nav.admin') }] : []),
   ];
 
   return (

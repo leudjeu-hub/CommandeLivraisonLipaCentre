@@ -34,5 +34,8 @@ export default defineConfig({
     host: '127.0.0.1',
     proxy: { '/products/': API },
   },
+  // Icônes de la page de gestion (chargée à la demande) : pré-optimisées, sinon Vite les découvre
+  // au premier affichage, recharge la page et React plante (« useContext » de null)
+  optimizeDeps: { include: ['@mui/icons-material/Add', '@mui/icons-material/Edit', '@mui/icons-material/Delete'] },
   build: { outDir: 'dist' },
 });

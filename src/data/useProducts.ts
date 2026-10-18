@@ -1,23 +1,9 @@
 import { useEffect, useState } from 'react';
 import { PRODUCTS, type Product } from './catalogue';
+import { listProducts, type ApiProduct } from './productsApi';
 
 // En développement (`npm run dev`), les articles viennent de l'API (GET /products/,
 // relayée par le proxy Vite vers http://localhost:8000). En production, PRODUCTS (catalogue.ts).
-
-interface ApiProduct {
-  id: number;
-  category: string;
-  price: number | null;
-  name: string;
-  description: string;
-  label: string | null;
-  name_en: string | null;
-  description_en: string | null;
-  label_en: string | null;
-  color: string | null;
-  available: boolean;
-  image: string | null;
-}
 
 const DEFAULT_COLORS: Record<string, string> = { Scolaire: '#31574b', Bureau: '#c6a157', Livres: '#a95540' };
 
@@ -45,17 +31,18 @@ export function fromApi(p: ApiProduct): Product {
 let apiProducts: Promise<Product[]> | null = null;
 
 function loadFromApi(): Promise<Product[]> {
-  apiProducts ??= fetch('/products/')
-    .then((res) => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json() as Promise<ApiProduct[]>;
-    })
+  apiProducts ??= listProducts()
     .then((list) => list.filter((p) => p.available !== false).map(fromApi).sort((a, b) => a.id - b.id))
     .catch((err) => {
-      console.warn(`API catalogue injoignable (${err.message}) : articles de src/data/catalogue.ts utilisés.`);
+      console.warn(`Catalogue : ${err.message} Articles de src/data/catalogue.ts utilisés.`);
       return PRODUCTS;
     });
   return apiProducts;
+}
+
+// Après une création, modification ou suppression : relire l'API au prochain affichage
+export function invalidateProducts() {
+  apiProducts = null;
 }
 
 export function useProducts(): Product[] {
