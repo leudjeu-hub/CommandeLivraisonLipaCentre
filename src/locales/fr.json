@@ -8,7 +8,9 @@
     "lists": "Listes scolaires",
     "delivery": "Livraison",
     "cart": "Panier",
-    "admin": "Gestion"
+    "admin": "Gestion",
+    "login": "Connexion",
+    "account": "Mon compte"
   },
   "notice": "Version de présentation · Articles et prix illustratifs · Chaque commande est confirmée par la librairie.",
   "hero": {
@@ -208,6 +210,42 @@
     "errColor": "Format #RRGGBB.",
     "errImage": "Chemin local commençant par img/ (photo .webp, .avif, .png, .jpg ou .svg).",
     "errStock": "Nombre entier, 0 ou plus.",
-    "errEn": "Renseignez le nom et la description en anglais, ou aucun des deux."
+    "errEn": "Renseignez le nom et la description en anglais, ou aucun des deux.",
+    "tabProducts": "Articles",
+    "tabUsers": "Utilisateurs",
+    "usersIntro": "Un administrateur peut gérer les articles et les comptes. Le dernier administrateur ne peut pas être rétrogradé.",
+    "promote": "Rendre administrateur",
+    "demote": "Retirer les droits",
+    "you": "vous",
+    "roleChanged": "Rôle de {{email}} modifié."
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "registerTitle": "Créer un compte",
+    "intro": "Un compte n'est pas nécessaire pour commander.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "passwordHelp": "8 caractères minimum",
+    "passwordConfirm": "Confirmer le mot de passe",
+    "loginSubmit": "Se connecter",
+    "registerSubmit": "Créer mon compte",
+    "toRegister": "Pas encore de compte ? Créer un compte",
+    "toLogin": "Déjà un compte ? Se connecter",
+    "errEmail": "Adresse e-mail invalide.",
+    "errPassword": "8 caractères minimum.",
+    "errConfirm": "Les mots de passe ne correspondent pas.",
+    "errCredentials": "E-mail ou mot de passe incorrect.",
+    "errTaken": "Un compte existe déjà pour cet e-mail.",
+    "accountTitle": "Mon compte",
+    "loggedAs": "Connecté en tant que {{email}}",
+    "roleUser": "Client",
+    "roleAdmin": "Administrateur",
+    "memberSince": "Compte créé le {{date}}",
+    "logout": "Se déconnecter",
+    "loggedOut": "Vous êtes déconnecté.",
+    "welcome": "Bienvenue !",
+    "forbiddenTitle": "Accès réservé",
+    "forbiddenText": "Cette page est réservée aux administrateurs.",
+    "devOnly": "Développement · API locale"
   }
 }

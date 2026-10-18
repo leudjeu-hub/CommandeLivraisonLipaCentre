@@ -32,7 +32,8 @@ export default defineConfig({
   server: {
     port: 4200,
     host: '127.0.0.1',
-    proxy: { '/products/': API },
+    // /auth/… et /users/… : connexion et comptes (pages /connexion, /compte, /gestion)
+    proxy: { '/products/': API, '/auth/': API, '/users/': API },
   },
   // Icônes de la page de gestion (chargée à la demande) : pré-optimisées, sinon Vite les découvre
   // au premier affichage, recharge la page et React plante (« useContext » de null)

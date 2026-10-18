@@ -58,10 +58,10 @@ test('build : dist/ existe avec index.html', () => {
   assert.ok(fs.existsSync('dist/index.html'), 'dist/index.html manquant — lancez npm run build');
 });
 
-test('build : la gestion des articles (développement) est absente du site publié', () => {
+test('build : gestion et connexion (développement) absentes du site publié', () => {
   const dir = 'dist/assets';
   for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.js'))) {
     const js = fs.readFileSync(path.join(dir, f), 'utf8');
-    assert.doesNotMatch(js, /\/products\/|admin-row/, `${f} contient la gestion des articles ou l’accès à l’API`);
+    assert.doesNotMatch(js, /\/products\/|\/auth\/|\/users\/|admin-row/, `${f} contient la gestion, la connexion ou l’accès à l’API`);
   }
 });

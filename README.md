@@ -63,8 +63,13 @@ modifiable avec `CATALOGUE_API=http://… npm run dev`). Si l’API est arrêté
 articles de `src/data/catalogue.ts` (avertissement dans la console). Le site publié utilise
 toujours `src/data/catalogue.ts`.
 
-**Gérer les articles de l'API** : http://127.0.0.1:4200/gestion (lien « Gestion » dans le menu,
-en développement seulement) pour créer, modifier, masquer ou supprimer un article.
+**Comptes** (en développement seulement) : « Connexion » dans le menu pour se connecter ou créer
+un compte client ; commander reste possible sans compte.
+
+**Gérer les articles et les comptes** : http://127.0.0.1:4200/gestion, réservé aux
+administrateurs. Premier administrateur, dans le dépôt de l'API :
+`uv run python -m app.scripts.create_admin votre@email`. Un administrateur peut ensuite en
+promouvoir d'autres (onglet « Utilisateurs »).
 
 ## Vérification
 

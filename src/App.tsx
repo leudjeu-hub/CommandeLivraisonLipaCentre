@@ -7,9 +7,13 @@ import DeliveryPage from './pages/DeliveryPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 
-// Gestion des articles : développement uniquement (l'API locale n'a pas d'authentification).
-// En production, import.meta.env.DEV vaut false et la page est absente du build.
-const AdminPage = import.meta.env.DEV ? lazy(() => import('./pages/AdminPage')) : null;
+// Connexion, compte et gestion (articles, utilisateurs) : développement uniquement, car l'API
+// ne tourne qu'en local pour l'instant. En production, import.meta.env.DEV vaut false et ces pages
+// sont absentes du build.
+const dev = import.meta.env.DEV;
+const AdminPage = dev ? lazy(() => import('./pages/AdminPage')) : null;
+const AuthPage = dev ? lazy(() => import('./pages/AuthPage')) : null;
+const AccountPage = dev ? lazy(() => import('./pages/AccountPage')) : null;
 
 export default function App() {
   return (
@@ -21,6 +25,9 @@ export default function App() {
         <Route path="panier" element={<CartPage />} />
         <Route path="commander" element={<CheckoutPage />} />
         {AdminPage && <Route path="gestion" element={<Suspense><AdminPage /></Suspense>} />}
+        {AuthPage && <Route path="connexion" element={<Suspense><AuthPage mode="login" /></Suspense>} />}
+        {AuthPage && <Route path="inscription" element={<Suspense><AuthPage mode="register" /></Suspense>} />}
+        {AccountPage && <Route path="compte" element={<Suspense><AccountPage /></Suspense>} />}
       </Route>
     </Routes>
   );

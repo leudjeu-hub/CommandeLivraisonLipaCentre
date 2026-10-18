@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Navigate, useLocation } from 'react-router-dom';
 import {
   Alert, Box, Button, Checkbox, Chip, Container, Dialog, DialogActions, DialogContent, DialogContentText,
   DialogTitle, FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Paper, Select, Stack,
-  TextField, Typography, useMediaQuery, useTheme,
+  Tab, Tabs, TextField, Typography, useMediaQuery, useTheme,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,9 +16,11 @@ import {
   type ApiProduct, type ProductInput,
 } from '../data/productsApi';
 import { showToast } from '../components/Toast';
+import { useAuth } from '../context/AuthContext';
+import { listUsers, setRole, type User } from '../data/authApi';
 
-// Page de gestion des articles : uniquement en développement (route ajoutée dans App.tsx
-// si import.meta.env.DEV), car l'API n'a pas d'authentification et tourne en local.
+// Gestion des articles et des comptes : administrateurs uniquement (l'API le vérifie aussi).
+// Développement uniquement (route ajoutée dans App.tsx si import.meta.env.DEV) : l'API tourne en local.
 
 type FormValues = Record<
   'category' | 'name' | 'description' | 'price' | 'label' | 'name_en' | 'description_en' | 'label_en' | 'color' | 'image' | 'stock',
@@ -82,6 +85,89 @@ const toInput = (v: FormValues, status: string | null): ProductInput => {
 };
 
 export default function AdminPage() {
+  const { t } = useTranslation();
+  const { user, ready } = useAuth();
+  const { pathname } = useLocation();
+  const [tab, setTab] = useState<'products' | 'users'>('products');
+
+  if (!ready) return null;
+  if (!user) return <Navigate to={`/connexion?suite=${encodeURIComponent(pathname)}`} replace />;
+  if (user.role !== 'admin') {
+    return (
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 2 }}>{t('auth.forbiddenTitle')}</Typography>
+        <Alert severity="warning">{t('auth.forbiddenText')}</Alert>
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Typography variant="overline" color="secondary">{t('admin.eyebrow')}</Typography>
+      <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>{t('admin.title')}</Typography>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
+        <Tab value="products" label={t('admin.tabProducts')} />
+        <Tab value="users" label={t('admin.tabUsers')} />
+      </Tabs>
+      {tab === 'products' ? <ProductsAdmin /> : <UsersAdmin currentUserId={user.id} />}
+    </Container>
+  );
+}
+
+function UsersAdmin({ currentUserId }: { currentUserId: number }) {
+  const { t } = useTranslation();
+  const [users, setUsers] = useState<User[] | null>(null);
+  const [error, setError] = useState('');
+
+  const load = useCallback(() => {
+    listUsers().then(setUsers).catch((err) => setError(err.message));
+  }, []);
+  useEffect(load, [load]);
+
+  const toggle = async (u: User) => {
+    setError('');
+    try {
+      await setRole(u.id, u.role === 'admin' ? 'user' : 'admin');
+      showToast(t('admin.roleChanged', { email: u.email }));
+      load();
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+
+  return (
+    <>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>{t('admin.usersIntro')}</Typography>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {!users && !error && <Typography color="text.secondary">{t('admin.loading')}</Typography>}
+      <Stack spacing={1.5}>
+        {users?.map((u) => (
+          <Paper key={u.id} data-testid="user-row" variant="outlined" sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ flexGrow: 1, minWidth: 0, overflowWrap: 'anywhere' }}>
+              <Typography sx={{ fontWeight: 700 }}>
+                {u.email}{u.id === currentUserId && ` (${t('admin.you')})`}
+              </Typography>
+              <Chip
+                size="small"
+                label={u.role === 'admin' ? t('auth.roleAdmin') : t('auth.roleUser')}
+                color={u.role === 'admin' ? 'primary' : 'default'}
+                sx={{ mt: 0.5 }}
+              />
+            </Box>
+            {/* Se retirer ses propres droits ferait perdre l'accès à cette page */}
+            {u.id !== currentUserId && (
+              <Button variant="outlined" size="small" onClick={() => toggle(u)}>
+                {u.role === 'admin' ? t('admin.demote') : t('admin.promote')}
+              </Button>
+            )}
+          </Paper>
+        ))}
+      </Stack>
+    </>
+  );
+}
+
+function ProductsAdmin() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -165,13 +251,11 @@ export default function AdminPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="overline" color="secondary">{t('admin.eyebrow')}</Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 1 }}>
-        <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif' }}>{t('admin.title')}</Typography>
+    <>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 3 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ flex: '1 1 280px' }}>{t('admin.intro')}</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => openForm('new')}>{t('admin.new')}</Button>
       </Box>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>{t('admin.intro')}</Typography>
 
       {loadError && <Alert severity="error" sx={{ mb: 2 }}>{loadError}</Alert>}
       {!products && !loadError && <Typography color="text.secondary">{t('admin.loading')}</Typography>}
@@ -254,6 +338,6 @@ export default function AdminPage() {
           <Button onClick={handleDelete} color="error" variant="contained">{t('admin.delete')}</Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </>
   );
 }

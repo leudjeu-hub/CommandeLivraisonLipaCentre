@@ -8,7 +8,9 @@
     "lists": "School lists",
     "delivery": "Delivery",
     "cart": "Basket",
-    "admin": "Manage"
+    "admin": "Manage",
+    "login": "Log in",
+    "account": "My account"
   },
   "notice": "Preview version · Illustrative items and prices · Every order is confirmed by the bookshop.",
   "hero": {
@@ -208,6 +210,42 @@
     "errColor": "Format #RRGGBB.",
     "errImage": "Local path starting with img/ (.webp, .avif, .png, .jpg or .svg photo).",
     "errStock": "Whole number, 0 or more.",
-    "errEn": "Fill in both the English name and description, or neither."
+    "errEn": "Fill in both the English name and description, or neither.",
+    "tabProducts": "Items",
+    "tabUsers": "Users",
+    "usersIntro": "An administrator can manage items and accounts. The last administrator cannot be demoted.",
+    "promote": "Make administrator",
+    "demote": "Remove rights",
+    "you": "you",
+    "roleChanged": "Role of {{email}} changed."
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create an account",
+    "intro": "You don't need an account to order.",
+    "email": "E-mail",
+    "password": "Password",
+    "passwordHelp": "At least 8 characters",
+    "passwordConfirm": "Confirm password",
+    "loginSubmit": "Log in",
+    "registerSubmit": "Create my account",
+    "toRegister": "No account yet? Create one",
+    "toLogin": "Already have an account? Log in",
+    "errEmail": "Invalid e-mail address.",
+    "errPassword": "At least 8 characters.",
+    "errConfirm": "Passwords do not match.",
+    "errCredentials": "Wrong e-mail or password.",
+    "errTaken": "An account already exists for this e-mail.",
+    "accountTitle": "My account",
+    "loggedAs": "Logged in as {{email}}",
+    "roleUser": "Customer",
+    "roleAdmin": "Administrator",
+    "memberSince": "Account created on {{date}}",
+    "logout": "Log out",
+    "loggedOut": "You are logged out.",
+    "welcome": "Welcome!",
+    "forbiddenTitle": "Restricted access",
+    "forbiddenText": "This page is for administrators only.",
+    "devOnly": "Development · local API"
   }
 }

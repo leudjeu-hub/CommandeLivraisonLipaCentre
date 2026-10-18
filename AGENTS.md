@@ -22,10 +22,17 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   passe à `connect-src 'self'` (plugin `dev-csp`). API injoignable → avertissement console et
   repli sur `catalogue.ts`. Le code d’appel à l’API est retiré du build de production.
 - Ne pas importer `PRODUCTS` directement dans une page : passer par `useProducts()`.
-- Gestion des articles (créer, modifier, supprimer) : page `/gestion` (`src/pages/AdminPage.tsx`,
-  appels dans `src/data/productsApi.ts`). **Développement uniquement** : l'API n'a pas
-  d'authentification ; la route et le lien n'existent que si `import.meta.env.DEV` (absents du build,
-  vérifié par `npm test`). Tests : projet Playwright `admin` (serveur Vite sur 4201, API simulée).
+- Comptes (développement uniquement, l'API ne tourne qu'en local) : `/connexion`, `/inscription`,
+  `/compte` (`src/pages/AuthPage.tsx`, `AccountPage.tsx`), session dans `src/context/AuthContext.tsx`
+  (jeton `centre-auth-token` dans localStorage, envoyé en `Authorization: Bearer` par `request()` de
+  `src/data/productsApi.ts`). Rôles : `user` (client) et `admin`. Commander reste possible sans compte.
+- Gestion (articles et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
+  uniquement** (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
+  dans le dépôt de l'API ; un admin peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).
+- Ces routes et liens n'existent que si `import.meta.env.DEV` ; en production `AuthProvider` est un
+  fournisseur statique (personne n'est connecté) et `npm test` vérifie que le build ne contient ni
+  `/products/`, ni `/auth/`, ni `/users/`. Tests : projet Playwright `admin` (Vite sur 4201, API simulée :
+  `admin.spec.cjs`, `auth.spec.cjs`).
 - Les zones de livraison ne viennent pas de l’API (elle n’en fournit pas).
 
 ## Tests

@@ -23,15 +23,49 @@ export interface ApiProduct {
 // Champs envoyés à la création et à la modification (PUT est partiel ; null efface le champ)
 export type ProductInput = Omit<ApiProduct, 'id'>;
 
-export class ApiError extends Error {}
+export class ApiError extends Error {
+  constructor(message: string, readonly status = 0) {
+    super(message);
+  }
+}
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+// Jeton de connexion (POST /auth/login) envoyé avec chaque requête ; voir AuthContext
+const TOKEN_KEY = 'centre-auth-token';
+
+export function getToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setToken(token: string | null) {
+  try {
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    // stockage indisponible : la session ne survivra pas au rechargement
+  }
+}
+
+// Appelé quand l'API répond 401 (session expirée ou révoquée) ; branché par AuthContext
+let onUnauthorized: (() => void) | null = null;
+export function setUnauthorizedHandler(handler: (() => void) | null) {
+  onUnauthorized = handler;
+}
+
+export async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
   let res: Response;
   try {
-    res = await fetch(path, { ...init, headers: { 'Content-Type': 'application/json' } });
+    res = await fetch(path, { ...init, headers });
   } catch {
     throw new ApiError('API injoignable (http://localhost:8000). Est-elle démarrée ?');
   }
+  if (res.status === 401 && token) onUnauthorized?.();
   if (res.status === 204) return undefined as T;
   const body = await res.json().catch(() => null);
   if (!res.ok) {
@@ -40,7 +74,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const message = Array.isArray(detail)
       ? detail.map((d: { loc?: string[]; msg: string }) => `${d.loc?.at(-1) ?? ''} : ${d.msg}`).join(' · ')
       : typeof detail === 'string' ? detail : `Erreur HTTP ${res.status}`;
-    throw new ApiError(message);
+    throw new ApiError(message, res.status);
   }
   return body as T;
 }

@@ -5,10 +5,10 @@ module.exports = defineConfig({
   timeout: 30000,
   use: { baseURL: 'http://127.0.0.1:4200', reducedMotion: 'reduce' },
   projects: [
-    { name: 'desktop', testIgnore: /admin\.spec/, use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', testIgnore: /admin\.spec/, use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
+    { name: 'desktop', testIgnore: /(admin|auth)\.spec/, use: { ...devices['Desktop Chrome'] } },
+    { name: 'mobile', testIgnore: /(admin|auth)\.spec/, use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
     // Gestion des articles : n'existe qu'en développement → serveur Vite, API simulée dans le test
-    { name: 'admin', testMatch: /admin\.spec/, use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:4201' } }
+    { name: 'admin', testMatch: /(admin|auth)\.spec/, use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:4201' } }
   ],
   webServer: [
     {

@@ -5,10 +5,12 @@ import { AppBar, Toolbar, IconButton, Button, Drawer, List, ListItemButton, List
 import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header() {
   const { t, i18n } = useTranslation();
   const { totalItems } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -30,7 +32,13 @@ export default function Header() {
   const navLinks = [
     { to: '/catalogue', label: t('nav.catalogue') },
     { to: '/livraison', label: t('nav.delivery') },
-    ...(import.meta.env.DEV ? [{ to: '/gestion', label: t('nav.admin') }] : []),
+    // Développement uniquement (API locale) : gestion pour les administrateurs, compte ou connexion
+    ...(import.meta.env.DEV
+      ? [
+          ...(user?.role === 'admin' ? [{ to: '/gestion', label: t('nav.admin') }] : []),
+          user ? { to: '/compte', label: t('nav.account') } : { to: '/connexion', label: t('nav.login') },
+        ]
+      : []),
   ];
 
   return (

@@ -1,4 +1,5 @@
 // Gestion des articles (développement) : l'API est simulée en mémoire, la vraie API n'est pas touchée.
+// Un administrateur est connecté (jeton dans localStorage, /auth/me simulé) ; voir auth.spec.cjs.
 const { test, expect } = require('@playwright/test');
 
 const article = (id, name, extra = {}) => ({
@@ -10,6 +11,11 @@ test.beforeEach(async ({ page }) => {
   const db = new Map([[1, article(1, 'Cahier A4')], [2, article(2, 'Stylo bleu', { price: 500 })]]);
   let nextId = 3;
   page.on('pageerror', (e) => { throw e; });
+  await page.addInitScript(() => localStorage.setItem('centre-auth-token', 'jeton-admin'));
+  await page.route('**/auth/me', (route) => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify({ id: 1, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00' })
+  }));
   await page.route(/\/products\/(\d+)?$/, async (route) => {
     const req = route.request();
     const id = Number(new URL(req.url()).pathname.split('/')[2]);
