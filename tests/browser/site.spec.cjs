@@ -109,3 +109,20 @@ test('panier vide : bouton désactivé', async ({ page }) => {
   await page.goto('/panier');
   await expect(page.locator('text=Votre panier est vide')).toBeVisible();
 });
+
+test('panier enregistré par l’ancien site ou corrompu : pas de plantage', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  for (const stored of ['{"1":2,"3":1}', '"texte"', '[{"productId":1}]', 'pas du json']) {
+    await page.goto('/');
+    await page.evaluate((v) => localStorage.setItem('centre-cart', v), stored);
+    await page.goto('/panier');
+    await expect(page.locator('h1')).toBeVisible();
+  }
+  expect(errors).toEqual([]);
+  // ancien format { "id": quantité } : le panier est repris
+  await page.evaluate(() => localStorage.setItem('centre-cart', '{"1":2,"3":1}'));
+  await page.goto('/panier');
+  await expect(page.locator('text=Cahier A4')).toBeVisible();
+  await expect(page.locator('text=Kit de géométrie')).toBeVisible();
+});

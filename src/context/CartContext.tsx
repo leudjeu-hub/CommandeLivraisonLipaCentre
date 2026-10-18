@@ -18,18 +18,39 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'centre-cart';
 
+const validQuantity = (q: unknown): q is number => Number.isInteger(q) && (q as number) >= 1 && (q as number) <= 99;
+
+// Le panier enregistré peut venir d'une ancienne version du site ({ "id": quantité })
+// ou être corrompu : on ne garde que les lignes valides, sinon la page plante au démarrage.
+function parseStoredCart(stored: unknown): CartItem[] {
+  if (Array.isArray(stored)) {
+    return stored.filter(
+      (i): i is CartItem => !!i && Number.isInteger(i.productId) && validQuantity(i.quantity)
+    );
+  }
+  if (stored && typeof stored === 'object') {
+    return Object.entries(stored)
+      .filter(([id, q]) => Number.isInteger(Number(id)) && validQuantity(q))
+      .map(([id, q]) => ({ productId: Number(id), quantity: q as number }));
+  }
+  return [];
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      return parseStoredCart(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
     } catch {
       return [];
     }
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // stockage indisponible (navigation privée…) : le panier reste en mémoire
+    }
   }, [items]);
 
   const addItem = (productId: number) => {
