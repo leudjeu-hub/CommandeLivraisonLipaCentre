@@ -18,27 +18,32 @@
     "title": "Une page s'ouvre.",
     "titleEm": "Nous vous la livrons.",
     "intro": "Livres, fournitures scolaires et papeterie de bureau. Préparez votre panier en quelques clics, pour une livraison à domicile à Yaoundé et un paiement à la réception.",
-    "cta": "Découvrir le catalogue ↗",
+    "cta": "Découvrir le catalogue",
     "list": "Ma liste scolaire",
     "channels": "Téléphone · WhatsApp · Commande en ligne"
   },
   "strip": {
-    "step1": "01 / Choisissez vos articles — Un catalogue simple, pour l'école et le bureau.",
-    "step2": "02 / Précisez votre adresse — Quartier, repère et créneau souhaité.",
-    "step3": "03 / Payez à la réception — Espèces, Orange Money ou MTN MoMo, après activation."
+    "title": "Comment ça marche",
+    "step1Title": "Choisissez vos articles",
+    "step1Text": "Un catalogue simple, pour l'école et le bureau.",
+    "step2Title": "Précisez votre adresse",
+    "step2Text": "Quartier, repère et créneau souhaité.",
+    "step3Title": "Payez à la réception",
+    "step3Text": "Espèces, Orange Money ou MTN MoMo, après activation."
   },
   "catalogue": {
     "eyebrow": "La sélection du Centre",
     "title": "Tout commence ici.",
     "note": "Catalogue de démonstration · Prix en FCFA",
     "searchPlaceholder": "Rechercher un cahier, un stylo…",
-    "searchLabel": "Rechercher un produit"
+    "searchLabel": "Rechercher un produit",
+    "count": "{{count}} article(s)"
   },
   "lists": {
     "eyebrow": "Parents, simplifiez la rentrée",
     "title": "Une liste scolaire ? Nous préparons le reste.",
     "text": "Rassemblez les livres et fournitures demandés par l'école. Préparez votre demande de devis avec la classe, les références et les quantités.",
-    "cta": "Préparer une demande de devis ↗",
+    "cta": "Préparer une demande de devis",
     "editionTitle": "Le bon article, la bonne édition.",
     "editionText": "Chaque livre doit être confirmé par son titre, son auteur et son édition. Toute substitution nécessite votre accord.",
     "businessTitle": "Pour les entreprises aussi.",
@@ -65,14 +70,22 @@
     "saturday": "Samedi",
     "sunday": "Dimanche",
     "closed": "Fermé",
-    "terms": "Informations et confidentialité"
+    "terms": "Informations et confidentialité",
+    "contact": "Contact",
+    "info": "Informations",
+    "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé"
   },
   "cart": {
     "title": "Votre panier",
     "empty": "Votre panier est vide. Découvrez notre sélection.",
     "fees": "Livraison : de {{min}} à {{max}} selon le quartier.",
     "minimum": "Il manque {{missing}} pour atteindre le minimum de commande ({{min}}).",
-    "checkout": "Préparer ma commande"
+    "checkout": "Préparer ma commande",
+    "summary": "Récapitulatif",
+    "subtotal": "Sous-total des articles",
+    "decrease": "Diminuer la quantité : {{name}}",
+    "increase": "Augmenter la quantité : {{name}}",
+    "continue": "Continuer mes achats"
   },
   "form": {
     "orderTitle": "Livraison à Yaoundé",
@@ -83,15 +96,17 @@
     "area": "Quartier",
     "areaOther": "Précisez votre quartier",
     "address": "Adresse et repère",
-    "slot": "Créneau souhaité — à confirmer",
+    "slot": "Créneau souhaité",
     "slotMorning": "Matin",
     "slotAfternoon": "Après-midi",
     "slotPhone": "À convenir par téléphone",
-    "payment": "Paiement à la réception — sous réserve d'activation",
+    "payment": "Paiement à la réception",
     "paymentCash": "Espèces",
-    "notes": "Liste scolaire ou instructions complémentaires",
+    "notes": "Instructions ou liste scolaire",
     "consent": "Je comprends que les prix, le stock et le délai de livraison doivent être confirmés par la librairie.",
-    "submit": "Créer mon récapitulatif"
+    "submit": "Créer mon récapitulatif",
+    "slotHelp": "À confirmer par la librairie.",
+    "paymentHelp": "Orange Money et MTN MoMo sous réserve d'activation."
   },
   "result": {
     "title": "Votre récapitulatif est prêt",
@@ -123,7 +138,7 @@
   },
   "common": {
     "close": "Fermer",
-    "add": "Ajouter +",
+    "add": "Ajouter",
     "request": "Demander",
     "onQuote": "Sur devis",
     "quoteNote": "{{name}} : titre, classe et édition à préciser.",
@@ -248,5 +263,9 @@
     "forbiddenText": "Cette page est réservée aux administrateurs.",
     "eyebrow": "Espace client",
     "slow": "Connexion au serveur… Le premier accès peut prendre jusqu'à une minute."
+  },
+  "home": {
+    "selectionTitle": "Les incontournables",
+    "selectionCta": "Voir tout le catalogue"
   }
 }

@@ -1,7 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
-import MapFab from './MapFab';
 import Toast from './Toast';
 
 export default function Layout() {
@@ -12,7 +11,6 @@ export default function Layout() {
         <Outlet />
       </main>
       <Footer />
-      <MapFab />
       <Toast />
     </>
   );

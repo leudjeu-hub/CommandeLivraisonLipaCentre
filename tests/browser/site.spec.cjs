@@ -28,6 +28,8 @@ test('la page se charge sans erreur et affiche le catalogue', async ({ page }) =
   const errors = [];
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
   page.on('pageerror', (e) => errors.push(e.message));
+  // API disponible (le 503 simulé par défaut serait journalisé par le navigateur comme une erreur)
+  await mockApi(page, () => ({ body: [] }));
   await page.goto('/');
   await expect(page.locator('h1')).toContainText('Une page');
   await expect(page.locator('text=Découvrir le catalogue')).toBeVisible();

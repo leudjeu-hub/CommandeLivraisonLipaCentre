@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
+import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../data/catalogue';
 import { useProducts } from '../data/useProducts';
@@ -125,12 +125,29 @@ export default function CheckoutPage() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 2 }}>
+    <Container maxWidth="sm" sx={{ py: { xs: 3, md: 5 } }}>
+      <Typography variant="h2" component="h1" sx={{ mb: 2 }}>
         {type === 'quote' ? t('form.quoteTitle') : t('form.orderTitle')}
       </Typography>
 
       <Alert severity="info" sx={{ mb: 3 }}>{t('form.intro')}</Alert>
+
+      {/* Rappel du panier : le client voit ce qu'il commande sans revenir en arrière */}
+      {type === 'order' && cartProducts.length > 0 && !showResult && (
+        <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+          <Typography variant="overline" color="text.secondary">{t('cart.summary')}</Typography>
+          {cartProducts.map(({ product, quantity }) => (
+            <Box key={product.id} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, fontSize: '0.9375rem' }}>
+              <span>{quantity} × {i18n.language === 'fr' ? product.name : product.en?.name || product.name}</span>
+              {product.price !== null && <Box component="span" sx={{ whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{money(product.price * quantity, locale)}</Box>}
+            </Box>
+          ))}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider', fontWeight: 700 }}>
+            <span>{t('cart.subtotal')}</span>
+            <Box component="span" sx={{ fontVariantNumeric: 'tabular-nums' }}>{money(subtotal, locale)}</Box>
+          </Box>
+        </Paper>
+      )}
 
       {!showResult ? (
         <Paper component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
@@ -170,6 +187,7 @@ export default function CheckoutPage() {
               <MenuItem value="afternoon">{t('form.slotAfternoon')}</MenuItem>
               <MenuItem value="phone">{t('form.slotPhone')}</MenuItem>
             </Select>
+            <FormHelperText>{t('form.slotHelp')}</FormHelperText>
           </FormControl>
 
           <FormControl fullWidth sx={{ mb: 2 }}>
@@ -179,6 +197,7 @@ export default function CheckoutPage() {
               <MenuItem value="orange">Orange Money</MenuItem>
               <MenuItem value="mtn">MTN MoMo</MenuItem>
             </Select>
+            <FormHelperText>{t('form.paymentHelp')}</FormHelperText>
           </FormControl>
 
           <TextField fullWidth multiline rows={3} label={t('form.notes')} value={notes} onChange={(e) => setNotes(e.target.value)} sx={{ mb: 2 }} />

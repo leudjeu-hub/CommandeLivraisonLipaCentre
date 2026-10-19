@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, IconButton, Divider, Paper, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Alert, Box, Button, Container, Divider, IconButton, Paper, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, money } from '../data/catalogue';
 import { useProducts } from '../data/useProducts';
@@ -25,84 +28,86 @@ export default function CartPage() {
   const canCheckout = cartProducts.length > 0 && missing === 0;
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 3 }}>
-        {t('cart.title')}
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
+      <Typography variant="h2" component="h1" sx={{ mb: 3 }}>{t('cart.title')}</Typography>
 
       {cartProducts.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
+        <Paper sx={{ p: { xs: 4, md: 6 }, textAlign: 'center', maxWidth: 560, mx: 'auto' }}>
+          <ShoppingBagOutlinedIcon sx={{ fontSize: 48, color: 'secondary.main', mb: 1 }} aria-hidden />
           <Typography variant="body1" color="text.secondary">{t('cart.empty')}</Typography>
-          <Button variant="contained" sx={{ mt: 2 }} onClick={() => navigate('/catalogue')}>
+          <Button variant="contained" size="large" sx={{ mt: 3 }} onClick={() => navigate('/catalogue')}>
             {t('nav.catalogue')}
           </Button>
         </Paper>
       ) : (
-        <>
-          <Paper sx={{ p: 2, mb: 2 }}>
-            <List>
-              {cartProducts.map(({ product, quantity }) => {
-                const name = i18n.language === 'fr' ? product.name : product.en?.name || product.name;
-                return (
-                  <ListItem key={product.id} disablePadding sx={{ py: 1 }}>
-                    <ListItemText
-                      primary={name}
-                      secondary={product.price !== null ? money(product.price, locale) : t('common.onQuote')}
-                    />
-                    <ListItemSecondaryAction>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <input
-                          type="number"
-                          min={1}
-                          max={99}
-                          value={quantity}
-                          onChange={(e) => updateQuantity(product.id, parseInt(e.target.value) || 1)}
-                          aria-label={t('common.quantity', { name })}
-                          style={{ width: 60, padding: '4px 8px', border: '1px solid #ccc', borderRadius: 4 }}
-                        />
-                        <IconButton edge="end" onClick={() => removeItem(product.id)} aria-label={t('common.remove', { name })}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                );
-              })}
-            </List>
+        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1.7fr 1fr' }, alignItems: 'start' }}>
+          <Paper component="ul" sx={{ listStyle: 'none', m: 0, p: 0, overflow: 'hidden' }}>
+            {cartProducts.map(({ product, quantity }, i) => {
+              const name = i18n.language === 'fr' ? product.name : product.en?.name || product.name;
+              return (
+                <Box component="li" key={product.id} sx={{ display: 'grid', gridTemplateColumns: '64px 1fr auto', gap: 2, alignItems: 'center', p: 2, borderTop: i ? '1px solid' : 'none', borderColor: 'divider' }}>
+                  <Box sx={{ width: 64, height: 64, borderRadius: 2, overflow: 'hidden', bgcolor: product.color }}>
+                    {product.image && (
+                      <Box component="img" src={import.meta.env.BASE_URL + product.image} alt="" width={64} height={64} loading="lazy" sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    )}
+                  </Box>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 600, lineHeight: 1.3 }}>{name}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {product.price !== null ? money(product.price, locale) : t('common.onQuote')}
+                    </Typography>
+                    {/* Quantité : boutons −/+ de 44 px, plus faciles au doigt qu'un champ numérique */}
+                    <Box role="group" aria-label={t('common.quantity', { name })} sx={{ display: 'inline-flex', alignItems: 'center', mt: 1, border: '1px solid', borderColor: 'divider', borderRadius: 999 }}>
+                      <IconButton size="small" onClick={() => updateQuantity(product.id, quantity - 1)} aria-label={t('cart.decrease', { name })}>
+                        <RemoveIcon fontSize="small" />
+                      </IconButton>
+                      <Typography component="output" aria-live="polite" sx={{ minWidth: 28, textAlign: 'center', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{quantity}</Typography>
+                      <IconButton size="small" onClick={() => updateQuantity(product.id, quantity + 1)} disabled={quantity >= 99} aria-label={t('cart.increase', { name })}>
+                        <AddIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                  <Box sx={{ textAlign: 'right', alignSelf: 'stretch', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <IconButton onClick={() => removeItem(product.id)} aria-label={t('common.remove', { name })} sx={{ color: 'text.secondary', mr: -1, mt: -1 }}>
+                      <DeleteOutlineIcon />
+                    </IconButton>
+                    {product.price !== null && (
+                      <Typography sx={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{money(product.price * quantity, locale)}</Typography>
+                    )}
+                  </Box>
+                </Box>
+              );
+            })}
           </Paper>
 
-          <Paper sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="h6">{t('cart.title')}</Typography>
-              <Typography variant="h6" color="primary">{money(subtotal, locale)}</Typography>
+          <Paper component="aside" aria-labelledby="cart-summary" sx={{ p: 3, position: { md: 'sticky' }, top: { md: 88 } }}>
+            <Typography id="cart-summary" variant="h5" component="h2" sx={{ mb: 2 }}>{t('cart.summary')}</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 2 }}>
+              <Typography color="text.secondary">{t('cart.subtotal')}</Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: '1.375rem', color: 'primary.main', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{money(subtotal, locale)}</Typography>
             </Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               {t('cart.fees', { min: money(minFee, locale), max: money(maxFee, locale) })}
             </Typography>
 
             {missing > 0 && (
-              <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+              <Alert severity="warning" sx={{ mt: 2 }}>
                 {t('cart.minimum', { missing: money(missing, locale), min: money(DELIVERY_RULES.minOrder, locale) })}
-              </Typography>
+              </Alert>
             )}
 
+            <Button variant="contained" size="large" fullWidth disabled={!canCheckout} onClick={() => navigate('/commander')} sx={{ mt: 3 }}>
+              {t('cart.checkout')}
+            </Button>
+            <Button fullWidth onClick={() => navigate('/catalogue')} sx={{ mt: 1 }}>
+              {t('cart.continue')}
+            </Button>
             <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-              <Button variant="outlined" color="error" onClick={clearCart}>
-                {t('terms.clear')}
-              </Button>
-              <Button
-                variant="contained"
-                size="large"
-                disabled={!canCheckout}
-                onClick={() => navigate('/commander')}
-              >
-                {t('cart.checkout')}
-              </Button>
-            </Box>
+            <Button size="small" color="error" onClick={clearCart} sx={{ display: 'block', mx: 'auto' }}>
+              {t('terms.clear')}
+            </Button>
           </Paper>
-        </>
+        </Box>
       )}
     </Container>
   );

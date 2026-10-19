@@ -18,27 +18,32 @@
     "title": "A page opens.",
     "titleEm": "We deliver it to you.",
     "intro": "Books, school supplies and office stationery. Fill your basket in a few clicks for home delivery in Yaoundé, with payment on delivery.",
-    "cta": "Browse the catalogue ↗",
+    "cta": "Browse the catalogue",
     "list": "My school list",
     "channels": "Phone · WhatsApp · Online order"
   },
   "strip": {
-    "step1": "01 / Choose your items — A simple catalogue for school and office.",
-    "step2": "02 / Give your address — Neighbourhood, landmark and preferred time slot.",
-    "step3": "03 / Pay on delivery — Cash, Orange Money or MTN MoMo, once activated."
+    "title": "How it works",
+    "step1Title": "Choose your items",
+    "step1Text": "A simple catalogue for school and office.",
+    "step2Title": "Give your address",
+    "step2Text": "Neighbourhood, landmark and preferred time slot.",
+    "step3Title": "Pay on delivery",
+    "step3Text": "Cash, Orange Money or MTN MoMo, once activated."
   },
   "catalogue": {
     "eyebrow": "The Centre's selection",
     "title": "It all starts here.",
     "note": "Demo catalogue · Prices in FCFA",
     "searchPlaceholder": "Search for a notebook, a pen…",
-    "searchLabel": "Search for a product"
+    "searchLabel": "Search for a product",
+    "count": "{{count}} item(s)"
   },
   "lists": {
     "eyebrow": "Parents, make back-to-school easy",
     "title": "A school list? We'll handle the rest.",
     "text": "Gather the books and supplies requested by the school. Prepare your quote request with the class, references and quantities.",
-    "cta": "Request a quote ↗",
+    "cta": "Request a quote",
     "editionTitle": "The right item, the right edition.",
     "editionText": "Each book must be confirmed by its title, author and edition. Any substitution requires your approval.",
     "businessTitle": "For businesses too.",
@@ -65,14 +70,22 @@
     "saturday": "Saturday",
     "sunday": "Sunday",
     "closed": "Closed",
-    "terms": "Information & privacy"
+    "terms": "Information & privacy",
+    "contact": "Contact",
+    "info": "Information",
+    "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé"
   },
   "cart": {
     "title": "Your basket",
     "empty": "Your basket is empty. Browse our selection.",
     "fees": "Delivery: {{min}} to {{max}} depending on the neighbourhood.",
     "minimum": "Add {{missing}} more to reach the minimum order ({{min}}).",
-    "checkout": "Prepare my order"
+    "checkout": "Prepare my order",
+    "summary": "Summary",
+    "subtotal": "Items subtotal",
+    "decrease": "Decrease quantity: {{name}}",
+    "increase": "Increase quantity: {{name}}",
+    "continue": "Continue shopping"
   },
   "form": {
     "orderTitle": "Delivery in Yaoundé",
@@ -83,15 +96,17 @@
     "area": "Neighbourhood",
     "areaOther": "Please specify your neighbourhood",
     "address": "Address and landmark",
-    "slot": "Preferred time slot — to be confirmed",
+    "slot": "Preferred time slot",
     "slotMorning": "Morning",
     "slotAfternoon": "Afternoon",
     "slotPhone": "To be arranged by phone",
-    "payment": "Payment on delivery — subject to activation",
+    "payment": "Payment on delivery",
     "paymentCash": "Cash",
-    "notes": "School list or additional instructions",
+    "notes": "Instructions or school list",
     "consent": "I understand that prices, stock and delivery time must be confirmed by the bookshop.",
-    "submit": "Create my summary"
+    "submit": "Create my summary",
+    "slotHelp": "To be confirmed by the bookshop.",
+    "paymentHelp": "Orange Money and MTN MoMo subject to activation."
   },
   "result": {
     "title": "Your summary is ready",
@@ -123,7 +138,7 @@
   },
   "common": {
     "close": "Close",
-    "add": "Add +",
+    "add": "Add",
     "request": "Request",
     "onQuote": "On quote",
     "quoteNote": "{{name}}: please specify the title, class and edition.",
@@ -248,5 +263,9 @@
     "forbiddenText": "This page is for administrators only.",
     "eyebrow": "Customer area",
     "slow": "Contacting the server… The first access can take up to a minute."
+  },
+  "home": {
+    "selectionTitle": "Essentials",
+    "selectionCta": "See the whole catalogue"
   }
 }
