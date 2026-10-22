@@ -7,12 +7,12 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, money } from '../data/catalogue';
-import { useProducts } from '../data/useProducts';
+import { useCatalogue } from '../data/useProducts';
 
 export default function CartPage() {
   const { t, i18n } = useTranslation();
   const { items, removeItem, updateQuantity, clearCart } = useCart();
-  const products = useProducts();
+  const { products, status } = useCatalogue();
   const navigate = useNavigate();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
 
@@ -31,7 +31,10 @@ export default function CartPage() {
     <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
       <Typography variant="h2" component="h1" sx={{ mb: 3 }}>{t('cart.title')}</Typography>
 
-      {cartProducts.length === 0 ? (
+      {status === 'loading' && items.length > 0 ? (
+        // Panier enregistré, catalogue pas encore reçu : ne pas l'afficher « vide »
+        <Typography color="text.secondary" sx={{ textAlign: 'center', py: 6 }} role="status">{t('catalogue.loading')}</Typography>
+      ) : cartProducts.length === 0 ? (
         <Paper sx={{ p: { xs: 4, md: 6 }, textAlign: 'center', maxWidth: 560, mx: 'auto' }}>
           <ShoppingBagOutlinedIcon sx={{ fontSize: 48, color: 'secondary.main', mb: 1 }} aria-hidden />
           <Typography variant="body1" color="text.secondary">{t('cart.empty')}</Typography>

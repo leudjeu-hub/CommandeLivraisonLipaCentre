@@ -22,9 +22,15 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   https://papeterie-api-kshr.onrender.com, appelée directement (`PROD_API_URL` au build). Le préfixe
   est `import.meta.env.VITE_API_URL` (défini dans `vite.config.ts`, vide en dev) ; le plugin `api-csp`
   ajoute l'API à `connect-src` du build, et `scripts/serve.cjs` reprend la CSP du `index.html` construit.
-- Articles : `useProducts()` (`src/data/useProducts.ts`) affiche d'abord `src/data/catalogue.ts`, puis les
-  articles de `GET /products/` dès qu'ils arrivent (serveur Render en veille : ~40 s). API injoignable →
-  avertissement console, `catalogue.ts` reste affiché. Zones de livraison, catégories et WhatsApp :
+- Articles : `useCatalogue()` / `useProducts()` (`src/data/useProducts.ts`). La dernière liste reçue de
+  `GET /products/` est gardée dans localStorage (`centre-catalogue`) et affichée tout de suite au retour,
+  puis remplacée par la réponse de l'API (serveur Render en veille : ~40 s). Première visite : statut
+  `loading` (message « Chargement du catalogue… », pas d'articles de démonstration : leurs numéros 1 à 8
+  désignent d'autres articles dans l'API, le panier afficherait un autre article). API injoignable et rien
+  en mémoire → avertissement console, `catalogue.ts` affiché (statut `fallback`).
+- Catalogue (~1 500 articles) : `/catalogue` affiche 24 cartes puis « Afficher plus » ; Gestion > Articles
+  50 lignes, avec une recherche (nom, n°, famille). Ne jamais afficher toute la liste d'un coup (téléphones
+  d'entrée de gamme en 3G). Zones de livraison, catégories et WhatsApp :
   `src/data/catalogue.ts`.
 - Familles (sous-catégories, champ `family` de l'API, texte libre) : sur `/catalogue`, une 2e ligne de puces
   filtre par famille dans la catégorie choisie, et les articles sont affichés par sections (une par famille,
@@ -34,6 +40,7 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   `/compte` (`src/pages/AuthPage.tsx`, `AccountPage.tsx`), session dans `src/context/AuthContext.tsx`
   (jeton `centre-auth-token` dans localStorage, envoyé en `Authorization: Bearer` par `request()` de
   `src/data/productsApi.ts`). Rôles : `user` (client) et `admin`. Commander reste possible sans compte.
+  Seul un 401 de l'API efface la session ; API injoignable → session gardée, `SessionWait` propose de réessayer.
 - Gestion (articles et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
   uniquement** (les responsables n'y voient que les heures) (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
   dans le dépôt de l'API ; un admin peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).

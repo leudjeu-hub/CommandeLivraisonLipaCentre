@@ -10,7 +10,8 @@
     "cart": "Basket",
     "admin": "Manage",
     "login": "Log in",
-    "account": "My account"
+    "account": "My account",
+    "menu": "Menu"
   },
   "notice": "Preview version · Illustrative items and prices · Every order is confirmed by the bookshop.",
   "hero": {
@@ -40,7 +41,10 @@
     "count": "{{count}} item(s)",
     "families": "Families",
     "allFamilies": "All",
-    "otherFamily": "Other items"
+    "otherFamily": "Other items",
+    "noteLive": "Prices in FCFA, confirmed by the bookshop before delivery",
+    "loading": "Loading the catalogue… (up to a minute if the server was asleep)",
+    "more": "Show more ({{count}} left)"
   },
   "lists": {
     "eyebrow": "Parents, make back-to-school easy",
@@ -109,7 +113,10 @@
     "consent": "I understand that prices, stock and delivery time must be confirmed by the bookshop.",
     "submit": "Create my summary",
     "slotHelp": "To be confirmed by the bookshop.",
-    "paymentHelp": "Orange Money and MTN MoMo subject to activation."
+    "paymentHelp": "Orange Money and MTN MoMo subject to activation.",
+    "phoneHelp": "Cameroonian number, e.g. 6 93 24 03 96",
+    "errPhone": "Invalid number: 9 digits starting with 6 or 2 (+237 optional).",
+    "emptyOrder": "Your basket is empty: add items before preparing your order."
   },
   "result": {
     "title": "Your summary is ready",
@@ -285,7 +292,8 @@
     },
     "fFamily": "Family",
     "fFamilyHelp": "Groups items in the catalogue (e.g. Sacs et cartables). Empty = \"Other items\".",
-    "errFamily": "60 characters maximum."
+    "errFamily": "60 characters maximum.",
+    "search": "Search (item, no., family)"
   },
   "auth": {
     "loginTitle": "Log in",
@@ -318,7 +326,10 @@
     "slow": "Contacting the server… The first access can take up to a minute.",
     "roleEmployee": "Employee",
     "roleManager": "Manager",
-    "errBlocked": "This account is blocked. Please contact the shop."
+    "errBlocked": "This account is blocked. Please contact the shop.",
+    "errTooMany": "Too many password attempts. Please try again in a few minutes.",
+    "offline": "The server is not responding. Check your connection. You are still signed in.",
+    "retry": "Try again"
   },
   "home": {
     "selectionTitle": "Essentials",

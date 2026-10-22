@@ -140,3 +140,19 @@ test('exporter le catalogue en CSV', async ({ page }) => {
   expect(text.startsWith('﻿id;categorie;prix;nom;')).toBe(true);
   expect(text).toContain('2;Scolaire;500;Stylo bleu;;Desc.;');
 });
+
+test('rechercher un article et afficher la liste par pages', async ({ page }) => {
+  // Remplace la liste simulée par 120 articles
+  await page.route(/\/products\/$/, (route) => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify(Array.from({ length: 120 }, (_, i) => article(i + 1, `Article ${i + 1}`, { family: i % 2 ? 'Stylos' : 'Cahiers' })))
+  }));
+  await page.goto('/gestion');
+  await expect(rows(page)).toHaveCount(50);
+  await page.getByRole('button', { name: /Afficher plus \(70/ }).click();
+  await expect(rows(page)).toHaveCount(120);
+  await page.getByLabel('Rechercher (article, n°, famille)').fill('#7');
+  await expect(rows(page)).toHaveCount(11); // #7 et #70 à #79
+  await page.getByLabel('Rechercher (article, n°, famille)').fill('stylos');
+  await expect(rows(page)).toHaveCount(50);
+});

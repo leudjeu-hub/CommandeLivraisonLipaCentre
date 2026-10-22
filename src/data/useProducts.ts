@@ -3,10 +3,23 @@ import { PRODUCTS, type Product } from './catalogue';
 import { listProducts, type ApiProduct } from './productsApi';
 
 // Les articles viennent de l'API (GET /products/ : API locale en développement, Render sur le site
-// publié). En attendant sa réponse (jusqu'à ~40 s si le serveur Render est en veille) ou si elle
-// échoue, le site affiche PRODUCTS (src/data/catalogue.ts).
+// publié). La dernière liste reçue est gardée dans le navigateur : au retour, le catalogue s'affiche
+// tout de suite (puis se met à jour), même si le serveur Render est en veille (~40 s) ou injoignable.
+// Première visite sans réponse : rien d'affiché (« chargement ») plutôt que des articles de
+// démonstration, dont les numéros 1 à 8 désignent d'autres articles dans l'API (mauvais panier).
+// API injoignable et rien en mémoire : PRODUCTS (src/data/catalogue.ts).
+
+// 'loading' : rien encore ; 'cache' : liste de la visite précédente ; 'api' : liste à jour ;
+// 'fallback' : API injoignable, articles de démonstration
+export type CatalogueStatus = 'loading' | 'cache' | 'api' | 'fallback';
+
+export interface Catalogue {
+  products: Product[];
+  status: CatalogueStatus;
+}
 
 const DEFAULT_COLORS: Record<string, string> = { Scolaire: '#31574b', Bureau: '#c6a157', Livres: '#a95540' };
+const CACHE_KEY = 'centre-catalogue';
 
 // « CAHIER / 200 PAGES » → « CAHIER\n200 PAGES » ; sans vignette : le nom en majuscules
 const label = (value: string | null, name: string) =>
@@ -30,31 +43,73 @@ export function fromApi(p: ApiProduct): Product {
   return product;
 }
 
-let apiProducts: Promise<Product[]> | null = null;
+// Lu une seule fois (la liste complète pèse plusieurs centaines de Ko)
+let cached: Product[] | null | undefined;
+function readCache(): Product[] | null {
+  if (cached === undefined) {
+    try {
+      const list = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      cached = Array.isArray(list) && list.length > 0 ? list : null;
+    } catch {
+      cached = null;
+    }
+  }
+  return cached;
+}
 
-function loadFromApi(): Promise<Product[]> {
-  apiProducts ??= listProducts()
-    .then((list) => list.filter((p) => p.available !== false).map(fromApi).sort((a, b) => a.id - b.id))
+function writeCache(list: Product[]) {
+  cached = list.length > 0 ? list : null;
+  try {
+    if (cached) localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+    else localStorage.removeItem(CACHE_KEY);
+  } catch {
+    // stockage plein ou indisponible : le catalogue sera rechargé à la prochaine visite
+  }
+}
+
+let loaded: Catalogue | null = null;
+let pending: Promise<Catalogue> | null = null;
+
+function loadFromApi(): Promise<Catalogue> {
+  pending ??= listProducts()
+    .then((list) => {
+      const products = list.filter((p) => p.available !== false).map(fromApi).sort((a, b) => a.id - b.id);
+      writeCache(products);
+      return { products, status: 'api' as const };
+    })
     .catch((err) => {
-      console.warn(`Catalogue : ${err.message} Articles de src/data/catalogue.ts utilisés.`);
-      return PRODUCTS;
-    });
-  return apiProducts;
+      const previous = readCache();
+      console.warn(`Catalogue : ${err.message} ${previous ? 'Liste de la visite précédente utilisée.' : 'Articles de src/data/catalogue.ts utilisés.'}`);
+      return previous ? { products: previous, status: 'cache' as const } : { products: PRODUCTS, status: 'fallback' as const };
+    })
+    .then((result) => (loaded = result));
+  return pending;
 }
 
 // Après une création, modification ou suppression : relire l'API au prochain affichage
 export function invalidateProducts() {
-  apiProducts = null;
+  loaded = null;
+  pending = null;
 }
 
-export function useProducts(): Product[] {
-  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+function initial(): Catalogue {
+  if (loaded) return loaded;
+  const previous = readCache();
+  return previous ? { products: previous, status: 'cache' } : { products: [], status: 'loading' };
+}
+
+export function useCatalogue(): Catalogue {
+  const [catalogue, setCatalogue] = useState<Catalogue>(initial);
   useEffect(() => {
     let active = true;
-    loadFromApi().then((list) => active && setProducts(list));
+    loadFromApi().then((result) => active && setCatalogue(result));
     return () => {
       active = false;
     };
   }, []);
-  return products;
+  return catalogue;
+}
+
+export function useProducts(): Product[] {
+  return useCatalogue().products;
 }
