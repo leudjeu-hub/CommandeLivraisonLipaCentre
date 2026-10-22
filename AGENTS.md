@@ -9,6 +9,8 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Build : `npm run build` (`tsc -b && vite build`) produit `dist/`. `npm run preview` le sert.
 - Images (photos, logo, favicon) : `public/img/`, copiées telles quelles dans `dist/img/`. Dans le code,
   les préfixer par `import.meta.env.BASE_URL` (le site publié vit sous `/CommandeLivraisonLipaCentre/`).
+- Photos par famille d'articles : `public/img/produits/famille-*.webp` (Unsplash, 480 × 480), liste et crédits
+  des photographes dans `src/data/photosFamilles.ts`. Une photo par famille, pas une par article.
 - GitHub Pages : `deploy.yml` construit avec `BASE_PATH=/CommandeLivraisonLipaCentre/` ; le build copie
   `index.html` en `404.html` pour que les liens directs (`/catalogue`, `/panier`…) fonctionnent.
   Navigation interne : toujours via react-router (`Link`, `navigate`), jamais `window.location`.
