@@ -9,6 +9,8 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import DownloadIcon from '@mui/icons-material/Download';
 import { money } from '../data/catalogue';
 import { invalidateProducts } from '../data/useProducts';
 import {
@@ -21,6 +23,7 @@ import {
   canManageHours, deleteUser, listUsers, ROLE_LABEL, ROLES, setActive, setRole, type Role, type User,
 } from '../data/authApi';
 import HoursAdmin from './HoursAdmin';
+import CatalogueImport, { exportCatalogue } from './CatalogueImport';
 
 // Gestion des articles, des comptes et des heures : administrateurs ; les responsables n'ont que
 // l'onglet « Heures » (l'API le vérifie aussi).
@@ -241,6 +244,7 @@ function ProductsAdmin() {
   const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState<ApiProduct | null>(null);
   const [deleteError, setDeleteError] = useState('');
+  const [importing, setImporting] = useState(false);
 
   const load = useCallback(() => {
     listProducts()
@@ -312,8 +316,25 @@ function ProductsAdmin() {
     <>
       <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 3 }}>
         <Typography variant="body2" color="text.secondary" sx={{ flex: '1 1 280px' }}>{t('admin.intro')}</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => openForm('new')}>{t('admin.new')}</Button>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Button variant="outlined" startIcon={<DownloadIcon />} disabled={!products?.length} onClick={() => products && exportCatalogue(products)}>
+            {t('admin.export')}
+          </Button>
+          <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => setImporting(true)}>{t('admin.import')}</Button>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => openForm('new')}>{t('admin.new')}</Button>
+        </Box>
       </Box>
+
+      <CatalogueImport
+        open={importing}
+        onClose={() => setImporting(false)}
+        onImported={(r) => {
+          setImporting(false);
+          invalidateProducts();
+          showToast(t('admin.imported', { created: r.created, updated: r.updated }));
+          load();
+        }}
+      />
 
       {loadError && <Alert severity="error" sx={{ mb: 2 }}>{loadError}</Alert>}
       {!products && !loadError && <Typography color="text.secondary">{t('admin.loading')}</Typography>}
