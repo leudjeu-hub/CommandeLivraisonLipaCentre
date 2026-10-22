@@ -228,11 +228,19 @@
     "errEn": "Fill in both the English name and description, or neither.",
     "tabProducts": "Items",
     "tabUsers": "Users",
-    "usersIntro": "An employee can clock in and out from “My account”. An administrator also manages products, accounts and hours. The last administrator cannot be demoted.",
+    "usersIntro": "An employee clocks in from “My account”. A manager also sees and corrects the team's hours (not their own). An administrator also manages products and accounts. A blocked account can no longer log in. The last administrator cannot be demoted, blocked or deleted.",
     "you": "you",
     "roleChanged": "Role of {{email}} changed.",
     "tabHours": "Hours",
-    "role": "Role"
+    "role": "Role",
+    "blocked": "Blocked",
+    "block": "Block",
+    "unblock": "Unblock",
+    "userBlocked": "{{email}} is blocked.",
+    "userUnblocked": "{{email}} is unblocked.",
+    "userDeleted": "Account {{email}} deleted.",
+    "confirmUserText": "The account is deleted permanently. An account with recorded hours cannot be deleted: block it instead.",
+    "errHasHours": "This account has recorded hours; deleting it would erase that history. Block it instead."
   },
   "auth": {
     "loginTitle": "Log in",
@@ -263,7 +271,9 @@
     "forbiddenText": "This page is for administrators only.",
     "eyebrow": "Customer area",
     "slow": "Contacting the server… The first access can take up to a minute.",
-    "roleEmployee": "Employee"
+    "roleEmployee": "Employee",
+    "roleManager": "Manager",
+    "errBlocked": "This account is blocked. Please contact the shop."
   },
   "home": {
     "selectionTitle": "Essentials",

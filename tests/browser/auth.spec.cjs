@@ -1,7 +1,7 @@
 // Connexion et rôles (développement) : l'API /auth et /users est simulée en mémoire.
 const { test, expect } = require('@playwright/test');
 
-const ADMIN = { id: 1, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00' };
+const ADMIN = { id: 1, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00', is_active: true };
 
 test.beforeEach(async ({ page }) => {
   const users = new Map([[1, { ...ADMIN, password: 'admin-123' }]]);
@@ -24,13 +24,14 @@ test.beforeEach(async ({ page }) => {
     const body = req.postDataJSON?.() ?? null;
     if (path === '/auth/register') {
       if ([...users.values()].some((u) => u.email === body.email)) return json(route, 409, { detail: 'taken' });
-      const user = { id: nextId++, email: body.email, role: 'user', created_at: '2026-10-19T09:00:00', password: body.password };
+      const user = { id: nextId++, email: body.email, role: 'user', created_at: '2026-10-19T09:00:00', is_active: true, password: body.password };
       users.set(user.id, user);
       return session(route, user);
     }
     if (path === '/auth/login') {
       const user = [...users.values()].find((u) => u.email === body.email && u.password === body.password);
-      return user ? session(route, user) : json(route, 401, { detail: 'Invalid e-mail or password' });
+      if (!user) return json(route, 401, { detail: 'Invalid e-mail or password' });
+      return user.is_active ? session(route, user) : json(route, 403, { detail: 'This account is blocked' });
     }
     const user = current(req);
     if (!user) return json(route, 401, { detail: 'Not authenticated' });
@@ -39,7 +40,13 @@ test.beforeEach(async ({ page }) => {
     if (user.role !== 'admin') return json(route, 403, { detail: 'Administrator access required' });
     if (path === '/users/') return json(route, 200, [...users.values()].map(publicUser));
     const id = Number(path.split('/')[2]);
-    users.get(id).role = body.role;
+    if (req.method() === 'DELETE') {
+      if (users.get(id).hasHours) return json(route, 409, { detail: 'This account has recorded hours and cannot be deleted; block it instead' });
+      users.delete(id);
+      return route.fulfill({ status: 204 });
+    }
+    if (path.endsWith('/active')) users.get(id).is_active = body.active;
+    else users.get(id).role = body.role;
     return json(route, 200, publicUser(users.get(id)));
   });
   await page.route(/\/products\/$/, (route) => json(route, 200, []));
@@ -140,4 +147,41 @@ test('session expirée : retour à l’état déconnecté', async ({ page }) => 
   await page.goto('/compte');
   await expect(page).toHaveURL(/\/connexion/);
   expect(await page.evaluate(() => localStorage.getItem('centre-auth-token'))).toBeNull();
+});
+
+test('un administrateur bloque puis supprime un compte', async ({ page }) => {
+  await page.goto('/inscription');
+  await page.getByLabel('E-mail').fill('bob@exemple.cm');
+  await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
+  await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await page.getByRole('button', { name: 'Se déconnecter' }).click();
+
+  await page.goto('/connexion?suite=/gestion');
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await page.getByRole('tab', { name: 'Utilisateurs' }).click();
+  const bob = page.getByTestId('user-row').filter({ hasText: 'bob@exemple.cm' });
+  await bob.getByRole('button', { name: 'Bloquer' }).click();
+  await expect(bob).toContainText('Bloqué');
+  await expect(bob.getByRole('button', { name: 'Débloquer' })).toBeVisible();
+
+  // Le compte bloqué ne peut plus se connecter
+  await page.evaluate(() => localStorage.clear());
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill('bob@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page.getByText('Ce compte est bloqué. Contactez la librairie.')).toBeVisible();
+
+  // Suppression avec confirmation
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await page.goto('/gestion');
+  await page.getByRole('tab', { name: 'Utilisateurs' }).click();
+  await page.getByRole('button', { name: 'Supprimer bob@exemple.cm' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Supprimer' }).click();
+  await expect(page.getByTestId('user-row')).toHaveCount(1);
 });

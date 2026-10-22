@@ -12,18 +12,18 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { money } from '../data/catalogue';
 import { invalidateProducts } from '../data/useProducts';
 import {
-  API_CATEGORIES, createProduct, deleteProduct, listProducts, updateProduct,
+  API_CATEGORIES, ApiError, createProduct, deleteProduct, listProducts, updateProduct,
   type ApiProduct, type ProductInput,
 } from '../data/productsApi';
 import { showToast } from '../components/Toast';
 import { useAuth } from '../context/AuthContext';
-import { listUsers, setRole, type Role, type User } from '../data/authApi';
+import {
+  canManageHours, deleteUser, listUsers, ROLE_LABEL, ROLES, setActive, setRole, type Role, type User,
+} from '../data/authApi';
 import HoursAdmin from './HoursAdmin';
 
-// Gestion des articles, des comptes et des heures : administrateurs uniquement (l'API le vérifie aussi).
-
-const ROLES: Role[] = ['user', 'employee', 'admin'];
-const ROLE_LABEL = { user: 'auth.roleUser', employee: 'auth.roleEmployee', admin: 'auth.roleAdmin' } as const;
+// Gestion des articles, des comptes et des heures : administrateurs ; les responsables n'ont que
+// l'onglet « Heures » (l'API le vérifie aussi).
 
 type FormValues = Record<
   'category' | 'name' | 'description' | 'price' | 'label' | 'name_en' | 'description_en' | 'label_en' | 'color' | 'image' | 'stock',
@@ -95,7 +95,7 @@ export default function AdminPage() {
 
   if (!ready) return null;
   if (!user) return <Navigate to={`/connexion?suite=${encodeURIComponent(pathname)}`} replace />;
-  if (user.role !== 'admin') {
+  if (!canManageHours(user.role)) {
     return (
       <Container maxWidth="sm" sx={{ py: 4 }}>
         <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 2 }}>{t('auth.forbiddenTitle')}</Typography>
@@ -104,18 +104,23 @@ export default function AdminPage() {
     );
   }
 
+  const isAdmin = user.role === 'admin';
+  const shown = isAdmin ? tab : 'hours';
+
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="overline" color="secondary">{t('admin.eyebrow')}</Typography>
-      <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>{t('admin.title')}</Typography>
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
-        <Tab value="products" label={t('admin.tabProducts')} />
-        <Tab value="users" label={t('admin.tabUsers')} />
-        <Tab value="hours" label={t('admin.tabHours')} />
-      </Tabs>
-      {tab === 'products' && <ProductsAdmin />}
-      {tab === 'users' && <UsersAdmin currentUserId={user.id} />}
-      {tab === 'hours' && <HoursAdmin />}
+      <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>{isAdmin ? t('admin.title') : t('admin.tabHours')}</Typography>
+      {isAdmin && (
+        <Tabs value={shown} onChange={(_, v) => setTab(v)} sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
+          <Tab value="products" label={t('admin.tabProducts')} />
+          <Tab value="users" label={t('admin.tabUsers')} />
+          <Tab value="hours" label={t('admin.tabHours')} />
+        </Tabs>
+      )}
+      {shown === 'products' && <ProductsAdmin />}
+      {shown === 'users' && <UsersAdmin currentUserId={user.id} />}
+      {shown === 'hours' && <HoursAdmin currentUser={user} />}
     </Container>
   );
 }
@@ -124,20 +129,36 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
   const { t } = useTranslation();
   const [users, setUsers] = useState<User[] | null>(null);
   const [error, setError] = useState('');
+  const [toDelete, setToDelete] = useState<User | null>(null);
+  const [deleteError, setDeleteError] = useState('');
 
   const load = useCallback(() => {
     listUsers().then(setUsers).catch((err) => setError(err.message));
   }, []);
   useEffect(load, [load]);
 
-  const change = async (u: User, role: Role) => {
+  const run = async (action: () => Promise<unknown>, message: string) => {
     setError('');
     try {
-      await setRole(u.id, role);
-      showToast(t('admin.roleChanged', { email: u.email }));
+      await action();
+      showToast(message);
       load();
     } catch (err) {
       setError((err as Error).message);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!toDelete) return;
+    setDeleteError('');
+    try {
+      await deleteUser(toDelete.id);
+      showToast(t('admin.userDeleted', { email: toDelete.email }));
+      setToDelete(null);
+      load();
+    } catch (err) {
+      // 409 : le compte a des heures enregistrées, on le bloque plutôt
+      setDeleteError(err instanceof ApiError && err.status === 409 && /hours/.test(err.message) ? t('admin.errHasHours') : (err as Error).message);
     }
   };
 
@@ -153,30 +174,53 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
               <Typography sx={{ fontWeight: 700 }}>
                 {u.email}{u.id === currentUserId && ` (${t('admin.you')})`}
               </Typography>
-              <Chip
-                size="small"
-                label={t(ROLE_LABEL[u.role])}
-                color={u.role === 'user' ? 'default' : 'primary'}
-                sx={{ mt: 0.5 }}
-              />
+              <Stack direction="row" spacing={0.5} sx={{ mt: 0.5 }}>
+                <Chip size="small" label={t(ROLE_LABEL[u.role])} color={u.role === 'user' ? 'default' : 'primary'} />
+                {!u.is_active && <Chip size="small" color="error" label={t('admin.blocked')} />}
+              </Stack>
             </Box>
-            {/* Se retirer ses propres droits ferait perdre l'accès à cette page */}
+            {/* Se retirer ses propres droits ou se bloquer ferait perdre l'accès à cette page */}
             {u.id !== currentUserId && (
-              <FormControl size="small" sx={{ minWidth: 170 }}>
-                <InputLabel id={`role-${u.id}`}>{t('admin.role')}</InputLabel>
-                <Select
-                  labelId={`role-${u.id}`}
-                  label={t('admin.role')}
-                  value={u.role}
-                  onChange={(e) => change(u, e.target.value as Role)}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                <FormControl size="small" sx={{ minWidth: 170 }}>
+                  <InputLabel id={`role-${u.id}`}>{t('admin.role')}</InputLabel>
+                  <Select
+                    labelId={`role-${u.id}`}
+                    label={t('admin.role')}
+                    value={u.role}
+                    onChange={(e) => run(() => setRole(u.id, e.target.value as Role), t('admin.roleChanged', { email: u.email }))}
+                  >
+                    {ROLES.map((r) => <MenuItem key={r} value={r}>{t(ROLE_LABEL[r])}</MenuItem>)}
+                  </Select>
+                </FormControl>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color={u.is_active ? 'warning' : 'primary'}
+                  onClick={() => run(() => setActive(u.id, !u.is_active), t(u.is_active ? 'admin.userBlocked' : 'admin.userUnblocked', { email: u.email }))}
                 >
-                  {ROLES.map((r) => <MenuItem key={r} value={r}>{t(ROLE_LABEL[r])}</MenuItem>)}
-                </Select>
-              </FormControl>
+                  {u.is_active ? t('admin.block') : t('admin.unblock')}
+                </Button>
+                <IconButton onClick={() => { setDeleteError(''); setToDelete(u); }} aria-label={`${t('admin.delete')} ${u.email}`} color="error">
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
             )}
           </Paper>
         ))}
       </Stack>
+
+      <Dialog open={toDelete !== null} onClose={() => setToDelete(null)}>
+        <DialogTitle>{t('admin.confirmTitle', { name: toDelete?.email })}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{t('admin.confirmUserText')}</DialogContentText>
+          {deleteError && <Alert severity="error" sx={{ mt: 2 }}>{deleteError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setToDelete(null)}>{t('admin.cancel')}</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">{t('admin.delete')}</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

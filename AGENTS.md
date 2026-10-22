@@ -30,8 +30,11 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   (jeton `centre-auth-token` dans localStorage, envoyé en `Authorization: Bearer` par `request()` de
   `src/data/productsApi.ts`). Rôles : `user` (client) et `admin`. Commander reste possible sans compte.
 - Gestion (articles et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
-  uniquement** (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
+  uniquement** (les responsables n'y voient que les heures) (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
   dans le dépôt de l'API ; un admin peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).
+- Rôles : `user` (client), `employee`, `manager` (responsable : seulement l'onglet « Heures » de `/gestion`,
+  ne corrige pas ses propres heures), `admin`. Un admin bloque / débloque ou supprime un compte
+  (Gestion > Utilisateurs) ; l'API refuse de supprimer un compte qui a des heures (409 → le bloquer).
 - Pointage des employés : rôle `employee` (attribué dans Gestion > Utilisateurs). Sur `/compte`,
   `src/components/TimeClock.tsx` (entrée / sortie, totaux jour, semaine, mois) ; dans `/gestion`, onglet
   « Heures » (`src/pages/HoursAdmin.tsx` : totaux par employé, détail, correction, export CSV). API `/time/…`

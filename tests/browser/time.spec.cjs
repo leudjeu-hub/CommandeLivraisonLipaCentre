@@ -1,8 +1,9 @@
 // Pointage des employés (développement) : l'API /time/… est simulée en mémoire, comme dans admin.spec.cjs.
 const { test, expect } = require('@playwright/test');
 
-const EMPLOYEE = { id: 2, email: 'awa@exemple.cm', role: 'employee', created_at: '2026-10-19T08:00:00' };
-const ADMIN = { id: 1, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00' };
+const EMPLOYEE = { id: 2, email: 'awa@exemple.cm', role: 'employee', created_at: '2026-10-19T08:00:00', is_active: true };
+const ADMIN = { id: 1, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00', is_active: true };
+const MANAGER = { id: 3, email: 'resp@exemple.cm', role: 'manager', created_at: '2026-10-19T08:00:00', is_active: true };
 
 // Simule l'API pour `me` ; `entries` est partagé, l'heure vient du « serveur » (Date du navigateur)
 async function mockApi(page, me, entries) {
@@ -11,12 +12,12 @@ async function mockApi(page, me, entries) {
   await page.addInitScript(() => localStorage.setItem('centre-auth-token', 'jeton'));
   const json = (route, status, body) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
   await page.route('**/auth/me', (route) => json(route, 200, me));
-  await page.route('**/users/', (route) => json(route, 200, [ADMIN, EMPLOYEE]));
   await page.route(/\/time\//, async (route) => {
     const req = route.request();
     const url = new URL(req.url());
     const open = () => entries.find((e) => e.user_id === me.id && !e.ended_at) ?? null;
     const inRange = (e) => e.started_at >= url.searchParams.get('start') && e.started_at < url.searchParams.get('end');
+    if (url.pathname.endsWith('/time/staff')) return json(route, 200, [ADMIN, EMPLOYEE, MANAGER]);
     if (url.pathname.endsWith('/me/current')) return json(route, 200, open());
     if (url.pathname.endsWith('/me/clock-in')) {
       if (open()) return json(route, 409, { detail: 'Already clocked in' });
@@ -92,4 +93,20 @@ test('le gérant voit les totaux et corrige un pointage', async ({ page }) => {
   await page.getByRole('button', { name: 'Enregistrer' }).click();
   await expect(awa).toContainText('5 h 00');
   await expect(page.getByTestId('entry-row').last()).toContainText('corrigé');
+});
+
+test('le responsable ne voit que les heures et ne corrige pas les siennes', async ({ page }) => {
+  const entries = [
+    entry(1, EMPLOYEE, todayAt(0, 0), todayAt(2, 0)),
+    entry(2, MANAGER, todayAt(0, 0), todayAt(1, 0)),
+  ];
+  await mockApi(page, MANAGER, entries);
+  await page.goto('/gestion');
+  await expect(page.getByRole('heading', { name: 'Heures' })).toBeVisible();
+  await expect(page.getByRole('tab')).toHaveCount(0); // ni articles ni utilisateurs
+  await page.getByRole('button', { name: "Aujourd'hui" }).click();
+  await expect(page.getByTestId('entry-row')).toHaveCount(2);
+  await expect(page.getByRole('button', { name: /Corriger le pointage de awa@exemple.cm/ })).toHaveCount(1);
+  await expect(page.getByRole('button', { name: /Corriger le pointage de resp@exemple.cm/ })).toHaveCount(0);
+  await expect(page.getByTestId('hours-row').filter({ hasText: 'resp@exemple.cm' })).toContainText('1 h 00');
 });

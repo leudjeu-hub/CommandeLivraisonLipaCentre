@@ -49,6 +49,7 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       const status = err instanceof ApiError ? err.status : 0;
       setError(
         status === 401 ? t('auth.errCredentials')
+          : status === 403 ? t('auth.errBlocked')
           : status === 409 ? t('auth.errTaken')
           : (err as Error).message
       );

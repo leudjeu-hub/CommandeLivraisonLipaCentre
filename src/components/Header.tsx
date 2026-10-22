@@ -6,6 +6,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { canManageHours } from '../data/authApi';
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -32,8 +33,8 @@ export default function Header() {
   const navLinks = [
     { to: '/catalogue', label: t('nav.catalogue') },
     { to: '/livraison', label: t('nav.delivery') },
-    // Gestion pour les administrateurs ; « Mon compte » si connecté, sinon « Connexion »
-    ...(user?.role === 'admin' ? [{ to: '/gestion', label: t('nav.admin') }] : []),
+    // Gestion pour les administrateurs et les responsables (heures) ; « Mon compte » si connecté, sinon « Connexion »
+    ...(user && canManageHours(user.role) ? [{ to: '/gestion', label: t('nav.admin') }] : []),
     user ? { to: '/compte', label: t('nav.account') } : { to: '/connexion', label: t('nav.login') },
   ];
 

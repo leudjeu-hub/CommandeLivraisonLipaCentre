@@ -2,13 +2,23 @@ import { request } from './productsApi';
 
 // Comptes et connexion (API : /auth/…, /users/…). Développement uniquement, comme la gestion des articles.
 
-export type Role = 'user' | 'employee' | 'admin';
+export type Role = 'user' | 'employee' | 'manager' | 'admin';
+
+export const ROLES: Role[] = ['user', 'employee', 'manager', 'admin'];
+export const ROLE_LABEL = {
+  user: 'auth.roleUser', employee: 'auth.roleEmployee', manager: 'auth.roleManager', admin: 'auth.roleAdmin',
+} as const;
+
+// Gestion (/gestion) : le responsable n'y voit que les heures
+export const canManageHours = (role: Role) => role === 'manager' || role === 'admin';
 
 export interface User {
   id: number;
   email: string;
   role: Role;
   created_at: string;
+  // false = compte bloqué (connexion refusée)
+  is_active: boolean;
 }
 
 interface TokenResponse {
@@ -35,3 +45,11 @@ export const listUsers = () => request<User[]>('/users/');
 
 export const setRole = (id: number, role: Role) =>
   request<User>(`/users/${id}/role`, { method: 'PATCH', body: JSON.stringify({ role }) });
+
+export const setActive = (id: number, active: boolean) =>
+  request<User>(`/users/${id}/active`, { method: 'PATCH', body: JSON.stringify({ active }) });
+
+export const deleteUser = (id: number) => request<void>(`/users/${id}`, { method: 'DELETE' });
+
+// Employés, responsables et administrateurs (pour le tableau des heures ; responsable ou admin)
+export const listStaff = () => request<User[]>('/time/staff');
