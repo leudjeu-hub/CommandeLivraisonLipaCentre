@@ -23,6 +23,7 @@ export function fromApi(p: ApiProduct): Product {
     label: label(p.label, p.name),
   };
   if (p.image) product.image = p.image;
+  if (p.family) product.family = p.family;
   if (p.name_en && p.description_en) {
     product.en = { name: p.name_en, desc: p.description_en, label: label(p.label_en, p.name_en) };
   }

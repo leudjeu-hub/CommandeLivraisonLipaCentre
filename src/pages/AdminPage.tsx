@@ -29,20 +29,21 @@ import CatalogueImport, { exportCatalogue } from './CatalogueImport';
 // l'onglet « Heures » (l'API le vérifie aussi).
 
 type FormValues = Record<
-  'category' | 'name' | 'description' | 'price' | 'label' | 'name_en' | 'description_en' | 'label_en' | 'color' | 'image' | 'stock',
+  'category' | 'name' | 'family' | 'description' | 'price' | 'label' | 'name_en' | 'description_en' | 'label_en' | 'color' | 'image' | 'stock',
   string
 > & { available: boolean };
 
 type Errors = Partial<Record<keyof FormValues, string>>;
 
 const EMPTY: FormValues = {
-  category: 'Scolaire', name: '', description: '', price: '', label: '', name_en: '', description_en: '',
+  category: 'Scolaire', name: '', family: '', description: '', price: '', label: '', name_en: '', description_en: '',
   label_en: '', color: '', image: '', stock: '0', available: true,
 };
 
 const toForm = (p: ApiProduct): FormValues => ({
   category: p.category,
   name: p.name,
+  family: p.family ?? '',
   description: p.description,
   price: p.price === null ? '' : String(Math.round(p.price)),
   label: p.label ?? '',
@@ -60,6 +61,7 @@ function validate(v: FormValues): Errors {
   const e: Errors = {};
   const price = v.price.replace(/[\s  ]/g, '');
   if (!v.name.trim()) e.name = 'admin.errName';
+  if (v.family.trim().length > 60) e.family = 'admin.errFamily';
   if (price && !(/^\d+$/.test(price) && Number(price) > 0)) e.price = 'admin.errPrice';
   if (v.color.trim() && !/^#[0-9a-f]{6}$/i.test(v.color.trim())) e.color = 'admin.errColor';
   const image = v.image.trim();
@@ -76,6 +78,7 @@ const toInput = (v: FormValues, status: string | null): ProductInput => {
   return {
     category: v.category,
     name: v.name.trim(),
+    family: orNull(v.family),
     description: v.description.trim(),
     price: price ? Number(price) : null,
     label: orNull(v.label),
@@ -378,6 +381,7 @@ function ProductsAdmin() {
                 </Select>
               </FormControl>
               <TextField {...field('name')} label={t('admin.fName')} required />
+              <TextField {...field('family')} label={t('admin.fFamily')} helperText={errors.family ? t(errors.family) : t('admin.fFamilyHelp')} />
               <TextField {...field('description')} label={t('admin.fDescription')} multiline minRows={2} />
               <TextField
                 {...field('price')}

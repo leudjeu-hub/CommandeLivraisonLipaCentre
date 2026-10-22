@@ -166,6 +166,29 @@ test('site publié : le catalogue affiche les articles de l’API', async ({ pag
   await expect(page.locator('[data-testid="product-card"]')).toContainText('1 800 FCFA');
 });
 
+test('site publié : articles regroupés et filtrés par famille', async ({ page }) => {
+  const item = (id, category, name, family) => ({ id, category, price: 500, name, family, description: '', label: null,
+    name_en: null, description_en: null, label_en: null, color: null, available: true, status: null, image: null, stock: 1 });
+  await mockApi(page, (path) => ({
+    body: path === '/products/'
+      ? [item(1, 'Scolaire', 'Sac rouge', 'Sacs et cartables'), item(2, 'Scolaire', 'Sac bleu', 'Sacs et cartables'),
+        item(3, 'Scolaire', 'Stylo noir', 'Stylos'), item(4, 'Scolaire', 'Objet mystère', null), item(5, 'Bureau', 'Rame A4', 'Papier')]
+      : null
+  }));
+  await page.goto('/catalogue');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(5);
+  await expect(page.locator('section h2')).toHaveText(['Papier (1)', 'Sacs et cartables (2)', 'Stylos (1)', 'Autres articles (1)']);
+  await page.getByRole('button', { name: 'Scolaire' }).click();
+  const families = page.getByRole('group', { name: 'Familles' });
+  await expect(families.getByRole('button')).toHaveText(['Toutes', 'Sacs et cartables', 'Stylos']);
+  await families.getByRole('button', { name: 'Sacs et cartables' }).click();
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(2);
+  // Changer de catégorie remet la famille à « Toutes »
+  await page.getByRole('button', { name: 'Bureau' }).click();
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(1);
+  await expect(page.getByRole('group', { name: 'Familles' }).getByRole('button', { name: 'Toutes' })).toHaveAttribute('aria-pressed', 'true');
+});
+
 test('site publié : un administrateur se connecte depuis la barre de navigation', async ({ page, isMobile }) => {
   const admin = { id: 3, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00' };
   await mockApi(page, (path, req) => {

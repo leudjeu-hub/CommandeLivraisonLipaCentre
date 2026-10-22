@@ -3,7 +3,7 @@
 const { test, expect } = require('@playwright/test');
 
 const article = (id, name, extra = {}) => ({
-  id, category: 'Scolaire', price: 1500, name, description: 'Desc.', label: null, name_en: null,
+  id, category: 'Scolaire', price: 1500, name, family: null, description: 'Desc.', label: null, name_en: null,
   description_en: null, label_en: null, color: null, available: true, status: null, image: null, stock: 3, ...extra
 });
 
@@ -138,5 +138,5 @@ test('exporter le catalogue en CSV', async ({ page }) => {
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Exporter (CSV)' }).click()]);
   const text = require('fs').readFileSync(await download.path(), 'utf8');
   expect(text.startsWith('﻿id;categorie;prix;nom;')).toBe(true);
-  expect(text).toContain('2;Scolaire;500;Stylo bleu;Desc.;');
+  expect(text).toContain('2;Scolaire;500;Stylo bleu;;Desc.;');
 });

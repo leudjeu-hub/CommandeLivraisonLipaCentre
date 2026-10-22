@@ -37,7 +37,10 @@
     "note": "Catalogue de démonstration · Prix en FCFA",
     "searchPlaceholder": "Rechercher un cahier, un stylo…",
     "searchLabel": "Rechercher un produit",
-    "count": "{{count}} article(s)"
+    "count": "{{count}} article(s)",
+    "families": "Familles",
+    "allFamilies": "Toutes",
+    "otherFamily": "Autres articles"
   },
   "lists": {
     "eyebrow": "Parents, simplifiez la rentrée",
@@ -245,7 +248,7 @@
     "import": "Importer (CSV)",
     "importTitle": "Importer des articles depuis un fichier CSV",
     "importHelp": "Le plus simple : exportez le catalogue actuel, modifiez-le dans Excel, enregistrez-le au format CSV puis importez-le. Vous verrez un aperçu avant que quoi que ce soit ne soit enregistré.",
-    "importColumns": "Colonnes : id, categorie (Scolaire, Bureau ou Livres), prix (FCFA, vide = sur devis), nom, description, vignette, nom_en, description_en, vignette_en, couleur (#RRGGBB), disponible (oui / non), image (img/produits/…), stock. Seules nom et categorie sont obligatoires pour un nouvel article.",
+    "importColumns": "Colonnes : id, categorie (Scolaire, Bureau ou Livres), prix (FCFA, vide = sur devis), nom, famille, description, vignette, nom_en, description_en, vignette_en, couleur (#RRGGBB), disponible (oui / non), image (img/produits/…), stock. Seules nom et categorie sont obligatoires pour un nouvel article.",
     "importRules": "Une ligne avec un id modifie cet article ; sans id, elle modifie l'article qui porte le même nom, sinon elle en crée un nouveau. Une colonne absente du fichier n'est pas modifiée (un fichier « id;prix » ne change que les prix). Aucun article n'est supprimé. Si une seule ligne est en erreur, rien n'est importé.",
     "importTemplate": "Télécharger un modèle",
     "importChoose": "Choisir un fichier…",
@@ -279,7 +282,10 @@
       "english_pair": "Ligne {{line}} : renseignez le nom et la description en anglais, ou aucun des deux.",
       "invalid_row": "Ligne {{line}} : article invalide.",
       "other": "Ligne {{line}} : erreur ({{code}})."
-    }
+    },
+    "fFamily": "Famille",
+    "fFamilyHelp": "Regroupe les articles dans le catalogue (ex. Sacs et cartables). Vide = « Autres articles ».",
+    "errFamily": "60 caractères maximum."
   },
   "auth": {
     "loginTitle": "Connexion",

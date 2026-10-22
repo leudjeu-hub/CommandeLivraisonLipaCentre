@@ -6,6 +6,7 @@ export interface Product {
   name: string;
   desc: string;
   label: string;
+  family?: string;
   image?: string;
   en?: {
     name: string;

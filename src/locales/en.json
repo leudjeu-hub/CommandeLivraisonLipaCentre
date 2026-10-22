@@ -37,7 +37,10 @@
     "note": "Demo catalogue · Prices in FCFA",
     "searchPlaceholder": "Search for a notebook, a pen…",
     "searchLabel": "Search for a product",
-    "count": "{{count}} item(s)"
+    "count": "{{count}} item(s)",
+    "families": "Families",
+    "allFamilies": "All",
+    "otherFamily": "Other items"
   },
   "lists": {
     "eyebrow": "Parents, make back-to-school easy",
@@ -245,7 +248,7 @@
     "import": "Import (CSV)",
     "importTitle": "Import items from a CSV file",
     "importHelp": "The easiest way: export the current catalogue, edit it in Excel, save it as CSV and import it. You get a preview before anything is saved.",
-    "importColumns": "Columns: id, categorie (Scolaire, Bureau or Livres), prix (FCFA, empty = on request), nom, description, vignette, nom_en, description_en, vignette_en, couleur (#RRGGBB), disponible (oui / non), image (img/produits/…), stock. Only nom and categorie are required for a new item.",
+    "importColumns": "Columns: id, categorie (Scolaire, Bureau or Livres), prix (FCFA, empty = on request), nom, famille, description, vignette, nom_en, description_en, vignette_en, couleur (#RRGGBB), disponible (oui / non), image (img/produits/…), stock. Only nom and categorie are required for a new item.",
     "importRules": "A row with an id updates that item; without an id it updates the item with the same name, otherwise it creates a new one. A column missing from the file is left unchanged (an \"id;prix\" file only changes prices). No item is deleted. If a single row has an error, nothing is imported.",
     "importTemplate": "Download a template",
     "importChoose": "Choose a file…",
@@ -279,7 +282,10 @@
       "english_pair": "Line {{line}}: fill in both the English name and description, or neither.",
       "invalid_row": "Line {{line}}: invalid item.",
       "other": "Line {{line}}: error ({{code}})."
-    }
+    },
+    "fFamily": "Family",
+    "fFamilyHelp": "Groups items in the catalogue (e.g. Sacs et cartables). Empty = \"Other items\".",
+    "errFamily": "60 characters maximum."
   },
   "auth": {
     "loginTitle": "Log in",

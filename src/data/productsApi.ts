@@ -8,6 +8,7 @@ export interface ApiProduct {
   category: string;
   price: number | null;
   name: string;
+  family: string | null;
   description: string;
   label: string | null;
   name_en: string | null;
