@@ -37,7 +37,8 @@ function download(name: string, rows: Record<string, string>[]) {
   a.href = url;
   a.download = name;
   a.click();
-  URL.revokeObjectURL(url);
+  // Révoqué un peu plus tard : certains navigateurs (Safari, Firefox) annulent sinon le téléchargement
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export const exportCatalogue = (products: ApiProduct[]) =>

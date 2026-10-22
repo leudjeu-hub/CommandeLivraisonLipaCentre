@@ -1,18 +1,22 @@
-import { useState, useMemo } from 'react';
+import { useDeferredValue, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Chip, Container, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, Container, InputAdornment, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { CATEGORIES, type Product } from '../data/catalogue';
-import { useProducts } from '../data/useProducts';
+import { useCatalogue } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
 
 const byName = (a: string, b: string) => a.localeCompare(b, 'fr');
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('fr');
+// Cartes affichées d'un coup : 1 500 cartes (~18 000 éléments) figent un téléphone d'entrée de gamme
+const PAGE = 24;
 
 export default function CataloguePage() {
   const { t, i18n } = useTranslation();
-  const products = useProducts();
+  const { products, status } = useCatalogue();
   const [search, setSearch] = useState('');
+  // La saisie reste fluide : le filtrage suit avec un léger retard si le téléphone est lent
+  const query = useDeferredValue(search);
   const [category, setCategory] = useState('Tout');
   // Famille choisie dans la catégorie ('' = toutes) ; les familles viennent de l'API (Gestion, import CSV)
   const [family, setFamily] = useState('');
@@ -26,26 +30,47 @@ export default function CataloguePage() {
     [inCategory]
   );
 
-  const filtered = useMemo(() => {
-    const q = fold(search.trim());
+  // Texte de recherche de chaque article, calculé une fois (pas à chaque lettre tapée)
+  const searchText = useMemo(() => {
     const fr = i18n.language === 'fr';
-    return inCategory.filter((p) => {
-      const name = fold(fr ? p.name : p.en?.name || p.name);
-      const desc = fold(fr ? p.desc : p.en?.desc || p.desc);
-      const matchSearch = !q || name.includes(q) || desc.includes(q) || fold(t(`cat.${p.cat}`)).includes(q) || fold(p.family ?? '').includes(q);
-      return (!family || p.family === family) && matchSearch;
-    });
-  }, [inCategory, family, search, i18n.language, t]);
+    return new Map(products.map((p) => [p.id, fold([
+      fr ? p.name : p.en?.name || p.name, fr ? p.desc : p.en?.desc || p.desc, t(`cat.${p.cat}`), p.family ?? '',
+    ].join(' '))]));
+  }, [products, i18n.language, t]);
+
+  const q = fold(query.trim());
+  const filtered = useMemo(
+    () => inCategory.filter((p) => (!family || p.family === family) && (!q || searchText.get(p.id)!.includes(q))),
+    [inCategory, family, q, searchText]
+  );
+
+  // Nombre de cartes affichées ; revient à PAGE quand la recherche ou les filtres changent
+  const filterKey = `${category}|${family}|${q}`;
+  const [shown, setShown] = useState({ key: filterKey, count: PAGE });
+  const limit = shown.key === filterKey ? shown.count : PAGE;
 
   // Articles regroupés par famille (ordre alphabétique, articles sans famille à la fin)
+  // (les sections au-delà de la limite sont coupées ; le titre garde le nombre total de la famille)
   const sections = useMemo(() => {
-    if (!families.length) return [{ title: '', items: filtered }];
+    if (!families.length) return [{ title: '', total: filtered.length, items: filtered.slice(0, limit) }];
     const groups = new Map<string, Product[]>();
-    filtered.forEach((p) => groups.set(p.family ?? '', [...(groups.get(p.family ?? '') ?? []), p]));
+    filtered.forEach((p) => {
+      const key = p.family ?? '';
+      const group = groups.get(key);
+      if (group) group.push(p);
+      else groups.set(key, [p]);
+    });
+    let left = limit;
     return [...groups.keys()]
       .sort((a, b) => (!a ? 1 : !b ? -1 : byName(a, b)))
-      .map((title) => ({ title: title || t('catalogue.otherFamily'), items: groups.get(title)! }));
-  }, [filtered, families, t]);
+      .map((title) => {
+        const all = groups.get(title)!;
+        const items = all.slice(0, Math.max(0, left));
+        left -= items.length;
+        return { title: title || t('catalogue.otherFamily'), total: all.length, items };
+      })
+      .filter((s) => s.items.length > 0);
+  }, [filtered, families, limit, t]);
 
   const chooseCategory = (c: string) => {
     setCategory(c);
@@ -56,7 +81,9 @@ export default function CataloguePage() {
     <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
       <Typography variant="overline" color="secondary">{t('catalogue.eyebrow')}</Typography>
       <Typography variant="h2" component="h1" sx={{ mb: 1 }}>{t('catalogue.title')}</Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>{t('catalogue.note')}</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        {status === 'fallback' ? t('catalogue.note') : t('catalogue.noteLive')}
+      </Typography>
 
       {/* Recherche et filtres restent accessibles en haut de l'écran pendant le défilement */}
       <Box sx={{ position: 'sticky', top: { xs: 56, sm: 64 }, zIndex: 2, bgcolor: 'background.default', py: 1.5, mx: { xs: -2, sm: -3 }, px: { xs: 2, sm: 3 }, mb: 2 }}>
@@ -102,10 +129,14 @@ export default function CataloguePage() {
       </Box>
 
       <Typography variant="body2" color="text.secondary" aria-live="polite" sx={{ mb: 1.5 }}>
-        {t('catalogue.count', { count: filtered.length })}
+        {status !== 'loading' && t('catalogue.count', { count: filtered.length })}
       </Typography>
 
-      {filtered.length === 0 ? (
+      {status === 'loading' ? (
+        <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', py: 6 }}>
+          {t('catalogue.loading')}
+        </Typography>
+      ) : filtered.length === 0 ? (
         <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', py: 6 }}>
           {t('common.noResults')}
         </Typography>
@@ -114,7 +145,7 @@ export default function CataloguePage() {
           <Box component="section" key={s.title} aria-label={s.title || undefined} sx={{ mb: 4 }}>
             {s.title && (
               <Typography variant="h5" component="h2" sx={{ fontFamily: 'Georgia, serif', mb: 1.5 }}>
-                {s.title} <Typography component="span" variant="body2" color="text.secondary">({s.items.length})</Typography>
+                {s.title} <Typography component="span" variant="body2" color="text.secondary">({s.total})</Typography>
               </Typography>
             )}
             <Box sx={{ display: 'grid', gap: { xs: 1.5, sm: 2.5 }, gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', md: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' } }}>
@@ -122,6 +153,14 @@ export default function CataloguePage() {
             </Box>
           </Box>
         ))
+      )}
+
+      {status !== 'loading' && filtered.length > limit && (
+        <Box sx={{ textAlign: 'center' }}>
+          <Button variant="outlined" size="large" onClick={() => setShown({ key: filterKey, count: limit + PAGE * 2 })} sx={{ bgcolor: '#fff' }}>
+            {t('catalogue.more', { count: filtered.length - limit })}
+          </Button>
+        </Box>
       )}
     </Container>
   );

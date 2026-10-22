@@ -10,7 +10,8 @@
     "cart": "Panier",
     "admin": "Gestion",
     "login": "Connexion",
-    "account": "Mon compte"
+    "account": "Mon compte",
+    "menu": "Menu"
   },
   "notice": "Version de présentation · Articles et prix illustratifs · Chaque commande est confirmée par la librairie.",
   "hero": {
@@ -40,7 +41,10 @@
     "count": "{{count}} article(s)",
     "families": "Familles",
     "allFamilies": "Toutes",
-    "otherFamily": "Autres articles"
+    "otherFamily": "Autres articles",
+    "noteLive": "Prix en FCFA, confirmés par la librairie avant la livraison",
+    "loading": "Chargement du catalogue… (jusqu’à une minute si le serveur était en veille)",
+    "more": "Afficher plus ({{count}} restant(s))"
   },
   "lists": {
     "eyebrow": "Parents, simplifiez la rentrée",
@@ -109,7 +113,10 @@
     "consent": "Je comprends que les prix, le stock et le délai de livraison doivent être confirmés par la librairie.",
     "submit": "Créer mon récapitulatif",
     "slotHelp": "À confirmer par la librairie.",
-    "paymentHelp": "Orange Money et MTN MoMo sous réserve d'activation."
+    "paymentHelp": "Orange Money et MTN MoMo sous réserve d'activation.",
+    "phoneHelp": "Numéro camerounais, par exemple 6 93 24 03 96",
+    "errPhone": "Numéro invalide : 9 chiffres commençant par 6 ou 2 (+237 facultatif).",
+    "emptyOrder": "Votre panier est vide : ajoutez des articles avant de préparer la commande."
   },
   "result": {
     "title": "Votre récapitulatif est prêt",
@@ -285,7 +292,8 @@
     },
     "fFamily": "Famille",
     "fFamilyHelp": "Regroupe les articles dans le catalogue (ex. Sacs et cartables). Vide = « Autres articles ».",
-    "errFamily": "60 caractères maximum."
+    "errFamily": "60 caractères maximum.",
+    "search": "Rechercher (article, n°, famille)"
   },
   "auth": {
     "loginTitle": "Connexion",
@@ -318,7 +326,10 @@
     "slow": "Connexion au serveur… Le premier accès peut prendre jusqu'à une minute.",
     "roleEmployee": "Employé",
     "roleManager": "Responsable",
-    "errBlocked": "Ce compte est bloqué. Contactez la librairie."
+    "errBlocked": "Ce compte est bloqué. Contactez la librairie.",
+    "errTooMany": "Trop d’essais de mot de passe. Réessayez dans quelques minutes.",
+    "offline": "Le serveur ne répond pas. Vérifiez votre connexion. Votre session est conservée.",
+    "retry": "Réessayer"
   },
   "home": {
     "selectionTitle": "Les incontournables",

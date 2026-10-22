@@ -13,7 +13,12 @@ test.beforeEach(async ({ page }) => {
     if (url.startsWith(API)) return route.fulfill({ status: 503, contentType: 'application/json', body: '{"detail":"indisponible"}' });
     return route.abort();
   });
-  page.on('requestfailed', (r) => { throw new Error('Requête bloquée : ' + r.url()); });
+  // Une requête annulée par la navigation suivante (favicon, API) n'est pas une erreur ; les
+  // requêtes externes bloquées par route.abort() échouent avec net::ERR_FAILED
+  page.on('requestfailed', (r) => {
+    if (r.failure()?.errorText === 'net::ERR_ABORTED') return;
+    throw new Error('Requête bloquée : ' + r.url());
+  });
 });
 
 async function mockApi(page, handler) {
@@ -211,4 +216,88 @@ test('site publié : un administrateur se connecte depuis la barre de navigation
   if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
   await page.getByRole('link', { name: 'Gestion', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Gestion des articles' })).toBeVisible();
+});
+
+const apiItem = (id, name, family = null) => ({ id, category: 'Scolaire', price: 500, name, family, description: '', label: null,
+  name_en: null, description_en: null, label_en: null, color: null, available: true, status: null, image: null, stock: 1 });
+
+test('site publié : grand catalogue affiché par pages, la recherche porte sur tout', async ({ page }) => {
+  const list = Array.from({ length: 100 }, (_, i) => apiItem(i + 1, `Article ${i + 1}`));
+  await mockApi(page, (path) => ({ body: path === '/products/' ? list : null }));
+  await page.goto('/catalogue');
+  await expect(page.getByText('100 article(s)')).toBeVisible();
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(24);
+  await page.getByRole('button', { name: /Afficher plus \(76/ }).click();
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(72);
+  // La recherche trouve aussi les articles pas encore affichés
+  await page.fill('input[type="search"]', 'article 99');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: /Afficher plus/ })).toHaveCount(0);
+});
+
+test('site publié : le catalogue de la visite précédente s’affiche sans attendre l’API', async ({ page }) => {
+  let calls = 0;
+  await mockApi(page, (path) => { calls += path === '/products/' ? 1 : 0; return { body: path === '/products/' ? [apiItem(41, 'Cahier réel')] : null }; });
+  await page.goto('/catalogue');
+  await expect(page.locator('[data-testid="product-card"]')).toContainText('Cahier réel');
+  // API en panne à la visite suivante : la liste enregistrée reste affichée (pas les articles de démonstration)
+  await page.unrouteAll();
+  await page.route('**/*', (route) => route.request().url().startsWith('http://127.0.0.1:4200')
+    ? route.continue() : route.fulfill({ status: 503, contentType: 'application/json', body: '{}' }));
+  await page.reload();
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(1);
+  await expect(page.locator('[data-testid="product-card"]')).toContainText('Cahier réel');
+  expect(calls).toBe(1);
+});
+
+test('panier enregistré : pas « vide » ni faux articles pendant le chargement de l’API', async ({ page }) => {
+  let release;
+  const waiting = new Promise((r) => { release = r; });
+  await page.route(`${API}/products/`, async (route) => {
+    await waiting;
+    route.fulfill({ contentType: 'application/json', body: JSON.stringify([apiItem(3, 'Agrafeuse réelle')]) });
+  });
+  await page.addInitScript(() => localStorage.setItem('centre-cart', '[{"productId":3,"quantity":2}]'));
+  await page.goto('/panier');
+  await expect(page.getByText('Chargement du catalogue')).toBeVisible();
+  await expect(page.getByText('Votre panier est vide')).toHaveCount(0);
+  await expect(page.getByText('Kit de géométrie')).toHaveCount(0);
+  release();
+  await expect(page.getByText('Agrafeuse réelle')).toBeVisible();
+});
+
+test('commande : panier vide et numéro de téléphone invalide', async ({ page }) => {
+  await page.goto('/commander');
+  await expect(page.getByText('Votre panier est vide : ajoutez des articles')).toBeVisible();
+  await page.goto('/catalogue');
+  await page.click('button:has-text("Ajouter")');
+  await page.click('button:has-text("Ajouter")');
+  await page.goto('/commander');
+  await page.getByLabel('Nom du destinataire').fill('Client Test');
+  await page.getByLabel('Téléphone').fill('12345');
+  await page.getByRole('combobox', { name: 'Quartier' }).click();
+  await page.getByRole('option', { name: 'Essos', exact: true }).click();
+  await page.getByLabel('Adresse et repère').fill('Près du rond-point');
+  await page.getByRole('checkbox').check();
+  await page.click('button:has-text("Créer mon récapitulatif")');
+  await expect(page.getByText('Numéro invalide')).toBeVisible();
+  await page.getByLabel('Téléphone').fill('6 93 24 03 96');
+  await page.click('button:has-text("Créer mon récapitulatif")');
+  await expect(page.locator('text=Votre récapitulatif est prêt')).toBeVisible();
+});
+
+test('site publié : serveur injoignable au démarrage, la session est conservée', async ({ page }) => {
+  const admin = { id: 3, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00', is_active: true };
+  let up = false;
+  await mockApi(page, (path) => {
+    if (path === '/auth/me') return up ? { body: admin } : { status: 502, body: { detail: 'Bad gateway' } };
+    return { body: path === '/products/' ? [] : null };
+  });
+  await page.addInitScript(() => localStorage.setItem('centre-auth-token', 'jeton'));
+  await page.goto('/compte');
+  await expect(page.getByText('Le serveur ne répond pas')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('centre-auth-token'))).toBe('jeton');
+  up = true;
+  await page.getByRole('button', { name: 'Réessayer' }).click();
+  await expect(page.getByText('Connecté en tant que admin@exemple.cm')).toBeVisible();
 });

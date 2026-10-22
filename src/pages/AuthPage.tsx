@@ -51,6 +51,7 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         status === 401 ? t('auth.errCredentials')
           : status === 403 ? t('auth.errBlocked')
           : status === 409 ? t('auth.errTaken')
+          : status === 429 ? t('auth.errTooMany')
           : (err as Error).message
       );
     } finally {

@@ -27,7 +27,11 @@ export default function Header() {
   const toggleLang = () => {
     const next = i18n.language === 'fr' ? 'en' : 'fr';
     i18n.changeLanguage(next);
-    localStorage.setItem('centre-lang', next);
+    try {
+      localStorage.setItem('centre-lang', next);
+    } catch {
+      // stockage indisponible : la langue ne sera pas retenue
+    }
   };
 
   const navLinks = [
@@ -71,7 +75,7 @@ export default function Header() {
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>
-            <IconButton color="inherit" onClick={() => setDrawerOpen(true)} aria-label="Menu">
+            <IconButton color="inherit" onClick={() => setDrawerOpen(true)} aria-label={t('nav.menu')}>
               <MenuIcon />
             </IconButton>
             <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>

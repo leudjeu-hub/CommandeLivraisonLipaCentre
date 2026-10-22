@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Button, Chip, Container, Paper, Typography } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
+import SessionWait from '../components/SessionWait';
 import { showToast } from '../components/Toast';
 import TimeClock from '../components/TimeClock';
 import { ROLE_LABEL } from '../data/authApi';
@@ -9,10 +10,10 @@ import { ROLE_LABEL } from '../data/authApi';
 // Mon compte (/compte).
 export default function AccountPage() {
   const { t, i18n } = useTranslation();
-  const { user, ready, logout } = useAuth();
+  const { user, ready, offline, logout } = useAuth();
   const navigate = useNavigate();
 
-  if (!ready) return null;
+  if (!ready || (offline && !user)) return <SessionWait />;
   if (!user) return <Navigate to="/connexion?suite=/compte" replace />;
 
   const handleLogout = async () => {

@@ -1,19 +1,21 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../data/catalogue';
-import { useProducts } from '../data/useProducts';
+import { useCatalogue } from '../data/useProducts';
 import { showToast } from '../components/Toast';
 
 const OTHER_AREA = '__autre';
+// Numéro camerounais : 9 chiffres commençant par 6 (mobile) ou 2 (fixe), indicatif +237 facultatif
+const validPhone = (phone: string) => /^(\+?237|00237)?[26]\d{8}$/.test(phone.replace(/[\s.()-]/g, ''));
 
 export default function CheckoutPage() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const { items, clearCart } = useCart();
-  const products = useProducts();
+  const { products, status } = useCatalogue();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
 
   const type = searchParams.get('type') === 'quote' ? 'quote' : 'order';
@@ -21,6 +23,7 @@ export default function CheckoutPage() {
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState(false);
   const [area, setArea] = useState('');
   const [areaOther, setAreaOther] = useState('');
   const [address, setAddress] = useState('');
@@ -87,8 +90,16 @@ export default function CheckoutPage() {
     return lines.join('\n');
   };
 
+  const missing = Math.max(0, DELIVERY_RULES.minOrder - subtotal);
+  // Commande sans article (lien direct, panier vidé) ou sous le minimum : renvoyer vers le panier
+  const orderBlocked = type === 'order' && !showResult && (cartProducts.length === 0 || missing > 0);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validPhone(phone)) {
+      setPhoneError(true);
+      return;
+    }
     const text = buildSummary();
     setSummary(text);
     setShowResult(true);
@@ -112,7 +123,8 @@ export default function CheckoutPage() {
     a.href = url;
     a.download = 'demande-librairie-centre.txt';
     a.click();
-    URL.revokeObjectURL(url);
+    // Révoqué un peu plus tard : certains navigateurs (Safari, Firefox) annulent sinon le téléchargement
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const handleCopy = async () => {
@@ -149,10 +161,34 @@ export default function CheckoutPage() {
         </Paper>
       )}
 
-      {!showResult ? (
+      {type === 'order' && status === 'loading' && items.length > 0 && !showResult ? (
+        <Typography color="text.secondary" sx={{ textAlign: 'center', py: 6 }} role="status">{t('catalogue.loading')}</Typography>
+      ) : orderBlocked ? (
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
+          <Typography color="text.secondary" sx={{ mb: 2 }}>
+            {cartProducts.length === 0
+              ? t('form.emptyOrder')
+              : t('cart.minimum', { missing: money(missing, locale), min: money(DELIVERY_RULES.minOrder, locale) })}
+          </Typography>
+          <Button variant="contained" component={Link} to={cartProducts.length === 0 ? '/catalogue' : '/panier'}>
+            {cartProducts.length === 0 ? t('nav.catalogue') : t('nav.cart')}
+          </Button>
+        </Paper>
+      ) : !showResult ? (
         <Paper component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
-          <TextField fullWidth required label={t('form.name')} value={name} onChange={(e) => setName(e.target.value)} sx={{ mb: 2 }} />
-          <TextField fullWidth required type="tel" label={t('form.phone')} value={phone} onChange={(e) => setPhone(e.target.value)} sx={{ mb: 2 }} />
+          <TextField fullWidth required autoComplete="name" label={t('form.name')} value={name} onChange={(e) => setName(e.target.value)} sx={{ mb: 2 }} />
+          <TextField
+            fullWidth
+            required
+            type="tel"
+            autoComplete="tel"
+            label={t('form.phone')}
+            value={phone}
+            onChange={(e) => { setPhone(e.target.value); setPhoneError(false); }}
+            error={phoneError}
+            helperText={phoneError ? t('form.errPhone') : t('form.phoneHelp')}
+            sx={{ mb: 2 }}
+          />
 
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel id="area-label">{t('form.area')}</InputLabel>
@@ -171,7 +207,7 @@ export default function CheckoutPage() {
           </FormControl>
 
           {area === OTHER_AREA && (
-            <TextField fullWidth label={t('form.areaOther')} value={areaOther} onChange={(e) => setAreaOther(e.target.value)} sx={{ mb: 2 }} />
+            <TextField fullWidth required label={t('form.areaOther')} value={areaOther} onChange={(e) => setAreaOther(e.target.value)} sx={{ mb: 2 }} />
           )}
 
           {feeLine && (
@@ -203,7 +239,7 @@ export default function CheckoutPage() {
           <TextField fullWidth multiline rows={3} label={t('form.notes')} value={notes} onChange={(e) => setNotes(e.target.value)} sx={{ mb: 2 }} />
 
           <FormControlLabel
-            control={<Checkbox checked={consent} onChange={(e) => setConsent(e.target.checked)} />}
+            control={<Checkbox required checked={consent} onChange={(e) => setConsent(e.target.checked)} />}
             label={t('form.consent')}
             sx={{ mb: 2 }}
           />

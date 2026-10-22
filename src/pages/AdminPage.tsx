@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation } from 'react-router-dom';
 import {
   Alert, Box, Button, Checkbox, Chip, Container, Dialog, DialogActions, DialogContent, DialogContentText,
   DialogTitle, FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Paper, Select, Stack,
-  Tab, Tabs, TextField, Typography, useMediaQuery, useTheme,
+  InputAdornment, Tab, Tabs, TextField, Typography, useMediaQuery, useTheme,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -19,6 +20,7 @@ import {
 } from '../data/productsApi';
 import { showToast } from '../components/Toast';
 import { useAuth } from '../context/AuthContext';
+import SessionWait from '../components/SessionWait';
 import {
   canManageHours, deleteUser, listUsers, ROLE_LABEL, ROLES, setActive, setRole, type Role, type User,
 } from '../data/authApi';
@@ -73,6 +75,10 @@ function validate(v: FormValues): Errors {
 
 const orNull = (s: string) => s.trim() || null;
 
+// Lignes affichées d'un coup dans la liste des articles (le catalogue en compte ~1 500)
+const ROWS = 50;
+const fold = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr');
+
 const toInput = (v: FormValues, status: string | null): ProductInput => {
   const price = v.price.replace(/[\s  ]/g, '');
   return {
@@ -95,11 +101,11 @@ const toInput = (v: FormValues, status: string | null): ProductInput => {
 
 export default function AdminPage() {
   const { t } = useTranslation();
-  const { user, ready } = useAuth();
+  const { user, ready, offline } = useAuth();
   const { pathname } = useLocation();
   const [tab, setTab] = useState<'products' | 'users' | 'hours'>('products');
 
-  if (!ready) return null;
+  if (!ready || (offline && !user)) return <SessionWait />;
   if (!user) return <Navigate to={`/connexion?suite=${encodeURIComponent(pathname)}`} replace />;
   if (!canManageHours(user.role)) {
     return (
@@ -248,6 +254,15 @@ function ProductsAdmin() {
   const [toDelete, setToDelete] = useState<ApiProduct | null>(null);
   const [deleteError, setDeleteError] = useState('');
   const [importing, setImporting] = useState(false);
+  const [search, setSearch] = useState('');
+  const query = fold(useDeferredValue(search).trim());
+  const [rows, setRows] = useState(ROWS);
+
+  // Recherche par nom, numéro (#12) ou famille
+  const matching = useMemo(
+    () => (products ?? []).filter((p) => !query || `#${p.id} ${fold(p.name)} ${fold(p.family ?? '')}`.includes(query)),
+    [products, query]
+  );
 
   const load = useCallback(() => {
     listProducts()
@@ -343,8 +358,22 @@ function ProductsAdmin() {
       {!products && !loadError && <Typography color="text.secondary">{t('admin.loading')}</Typography>}
       {products?.length === 0 && <Typography color="text.secondary">{t('admin.empty')}</Typography>}
 
+      {!!products?.length && (
+        <TextField
+          type="search"
+          size="small"
+          fullWidth
+          label={t('admin.search')}
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setRows(ROWS); }}
+          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> } }}
+          helperText={t('catalogue.count', { count: matching.length })}
+          sx={{ mb: 2 }}
+        />
+      )}
+
       <Stack spacing={1.5}>
-        {products?.map((p) => (
+        {matching.slice(0, rows).map((p) => (
           <Paper key={p.id} data-testid="admin-row" variant="outlined" sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
               <Typography sx={{ fontWeight: 700 }}>{p.name}</Typography>
@@ -363,6 +392,13 @@ function ProductsAdmin() {
           </Paper>
         ))}
       </Stack>
+      {matching.length > rows && (
+        <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Button variant="outlined" onClick={() => setRows(rows + ROWS * 2)}>
+            {t('catalogue.more', { count: matching.length - rows })}
+          </Button>
+        </Box>
+      )}
 
       <Dialog open={editing !== null} onClose={() => !saving && setEditing(null)} fullScreen={fullScreen} fullWidth maxWidth="sm">
         <form onSubmit={handleSave} noValidate>

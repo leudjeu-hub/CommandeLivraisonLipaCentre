@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Card, Typography } from '@mui/material';
@@ -8,7 +9,8 @@ import { showToast } from './Toast';
 
 // Carte article (catalogue et accueil). Compacte pour tenir à 2 par ligne sur un écran de 360 px :
 // photo carrée, nom sur 2 lignes max, prix bien visible, bouton pleine largeur ≥ 44 px.
-export default function ProductCard({ product: p }: { product: Product }) {
+// memo : taper dans la recherche ne redessine pas les cartes déjà affichées.
+export default memo(function ProductCard({ product: p }: { product: Product }) {
   const { t, i18n } = useTranslation();
   const { addItem } = useCart();
   const navigate = useNavigate();
@@ -78,4 +80,4 @@ export default function ProductCard({ product: p }: { product: Product }) {
       </Box>
     </Card>
   );
-}
+});
