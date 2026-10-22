@@ -7,6 +7,11 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Node >= 22. React 19 + TypeScript, Vite, MUI, react-router, i18next.
 - Dev : `npm run dev` (Vite) sert l’application sur http://127.0.0.1:4200.
 - Build : `npm run build` (`tsc -b && vite build`) produit `dist/`. `npm run preview` le sert.
+- Poids (clients en 3G) : seul l'accueil est dans le fichier principal ; les autres pages sont chargées
+  à part (`lazy` dans `src/App.tsx`) et celles du parcours de commande préchargées après l'affichage.
+  React et react-router sont dans un fichier `react-*.js` séparé (gardé en cache d'une mise en ligne à
+  l'autre). Ne pas regrouper MUI dans un fichier à part : cela ramènerait tous ses composants dans la
+  première visite.
 - Images (photos, logo, favicon) : `public/img/`, copiées telles quelles dans `dist/img/`. Dans le code,
   les préfixer par `import.meta.env.BASE_URL` (le site publié vit sous `/CommandeLivraisonLipaCentre/`).
 - Photos par famille d'articles : `public/img/produits/famille-*.webp` (Unsplash, 480 × 480), liste et crédits
