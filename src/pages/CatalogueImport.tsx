@@ -9,12 +9,12 @@ import { importProducts, type ApiProduct, type ImportProblem, type ImportReport 
 // (POST /products/import) : d'abord un aperçu, puis l'import si aucune ligne n'est en erreur.
 
 const COLUMNS = [
-  'id', 'categorie', 'prix', 'nom', 'description', 'vignette', 'nom_en', 'description_en', 'vignette_en',
+  'id', 'categorie', 'prix', 'nom', 'famille', 'description', 'vignette', 'nom_en', 'description_en', 'vignette_en',
   'couleur', 'disponible', 'image', 'stock',
 ] as const;
 
 const EXAMPLE: Record<(typeof COLUMNS)[number], string> = {
-  id: '', categorie: 'Scolaire', prix: '1500', nom: 'Cahier A5 · 96 pages (exemple)', description: 'Grands carreaux.',
+  id: '', categorie: 'Scolaire', prix: '1500', nom: 'Cahier A5 · 96 pages (exemple)', famille: 'Cahiers', description: 'Grands carreaux.',
   vignette: 'CAHIER / A5', nom_en: '', description_en: '', vignette_en: '', couleur: '', disponible: 'oui', image: '',
   stock: '20',
 };
@@ -23,7 +23,7 @@ const MAX_SHOWN = 30;
 
 const toRow = (p: ApiProduct): Record<(typeof COLUMNS)[number], string> => ({
   id: String(p.id), categorie: p.category, prix: p.price === null ? '' : String(Math.round(p.price)), nom: p.name,
-  description: p.description, vignette: p.label ?? '', nom_en: p.name_en ?? '', description_en: p.description_en ?? '',
+  famille: p.family ?? '', description: p.description, vignette: p.label ?? '', nom_en: p.name_en ?? '', description_en: p.description_en ?? '',
   vignette_en: p.label_en ?? '', couleur: p.color ?? '', disponible: p.available ? 'oui' : 'non', image: p.image ?? '',
   stock: String(p.stock),
 });

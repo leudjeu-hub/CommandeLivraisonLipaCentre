@@ -24,6 +24,9 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   articles de `GET /products/` dès qu'ils arrivent (serveur Render en veille : ~40 s). API injoignable →
   avertissement console, `catalogue.ts` reste affiché. Zones de livraison, catégories et WhatsApp :
   `src/data/catalogue.ts`.
+- Familles (sous-catégories, champ `family` de l'API, texte libre) : sur `/catalogue`, une 2e ligne de puces
+  filtre par famille dans la catégorie choisie, et les articles sont affichés par sections (une par famille,
+  « Autres articles » à la fin). Sans aucune famille (catalogue.ts), affichage à plat comme avant.
 - Ne pas importer `PRODUCTS` directement dans une page : passer par `useProducts()`.
 - Comptes : `/connexion`, `/inscription`,
   `/compte` (`src/pages/AuthPage.tsx`, `AccountPage.tsx`), session dans `src/context/AuthContext.tsx`
