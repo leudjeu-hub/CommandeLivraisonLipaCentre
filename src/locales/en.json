@@ -331,7 +331,8 @@
     "errBlocked": "This account is blocked. Please contact the shop.",
     "errTooMany": "Too many password attempts. Please try again in a few minutes.",
     "offline": "The server is not responding. Check your connection. You are still signed in.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "errTooManyRegister": "Too many accounts were created recently. Please try again in an hour, or order without an account."
   },
   "home": {
     "selectionTitle": "Essentials",

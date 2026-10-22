@@ -185,3 +185,13 @@ test('un administrateur bloque puis supprime un compte', async ({ page }) => {
   await page.getByRole('dialog').getByRole('button', { name: 'Supprimer' }).click();
   await expect(page.getByTestId('user-row')).toHaveCount(1);
 });
+
+test('inscription refusée par la limite de l’API : message clair', async ({ page }) => {
+  await page.route(/\/auth\/register$/, (route) => route.fulfill({ status: 429, contentType: 'application/json', body: '{"detail":"Too many failed attempts; try again in a few minutes"}' }));
+  await page.goto('/inscription');
+  await page.getByLabel('E-mail').fill('nouveau@exemple.cm');
+  await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
+  await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await expect(page.getByText('Trop de comptes ont été créés récemment')).toBeVisible();
+});
