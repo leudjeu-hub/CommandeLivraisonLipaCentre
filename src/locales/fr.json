@@ -228,11 +228,19 @@
     "errEn": "Renseignez le nom et la description en anglais, ou aucun des deux.",
     "tabProducts": "Articles",
     "tabUsers": "Utilisateurs",
-    "usersIntro": "Un employé peut pointer ses heures depuis « Mon compte ». Un administrateur gère aussi les articles, les comptes et les heures. Le dernier administrateur ne peut pas être rétrogradé.",
+    "usersIntro": "Un employé pointe ses heures depuis « Mon compte ». Un responsable voit et corrige aussi les heures de l'équipe (pas les siennes). Un administrateur gère en plus les articles et les comptes. Un compte bloqué ne peut plus se connecter. Le dernier administrateur ne peut être ni rétrogradé, ni bloqué, ni supprimé.",
     "you": "vous",
     "roleChanged": "Rôle de {{email}} modifié.",
     "tabHours": "Heures",
-    "role": "Rôle"
+    "role": "Rôle",
+    "blocked": "Bloqué",
+    "block": "Bloquer",
+    "unblock": "Débloquer",
+    "userBlocked": "{{email}} est bloqué.",
+    "userUnblocked": "{{email}} est débloqué.",
+    "userDeleted": "Compte {{email}} supprimé.",
+    "confirmUserText": "Le compte est supprimé définitivement. Un compte qui a des heures enregistrées ne peut pas être supprimé : bloquez-le.",
+    "errHasHours": "Ce compte a des heures enregistrées : le supprimer effacerait cet historique. Bloquez-le plutôt."
   },
   "auth": {
     "loginTitle": "Connexion",
@@ -263,7 +271,9 @@
     "forbiddenText": "Cette page est réservée aux administrateurs.",
     "eyebrow": "Espace client",
     "slow": "Connexion au serveur… Le premier accès peut prendre jusqu'à une minute.",
-    "roleEmployee": "Employé"
+    "roleEmployee": "Employé",
+    "roleManager": "Responsable",
+    "errBlocked": "Ce compte est bloqué. Contactez la librairie."
   },
   "home": {
     "selectionTitle": "Les incontournables",

@@ -9,7 +9,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import EditIcon from '@mui/icons-material/Edit';
 import DownloadIcon from '@mui/icons-material/Download';
-import { listUsers, type User } from '../data/authApi';
+import { listStaff, type User } from '../data/authApi';
 import {
   allEntries, correctEntry, dayKey, deleteEntry, entryMs, formatDuration, isForgotten, periodBounds, shiftPeriod,
   type Period, type TimeEntry,
@@ -25,7 +25,8 @@ const toLocalInput = (iso: string) => {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 };
 
-export default function HoursAdmin() {
+// Un responsable ne corrige pas ses propres heures (l'API le refuse aussi) ; un administrateur peut.
+export default function HoursAdmin({ currentUser }: { currentUser: User }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
   const [period, setPeriod] = useState<Period>('week');
@@ -48,7 +49,7 @@ export default function HoursAdmin() {
   useEffect(load, [load]);
 
   useEffect(() => {
-    listUsers().then((users) => setStaff(users.filter((u) => u.role !== 'user'))).catch(() => undefined);
+    listStaff().then(setStaff).catch(() => undefined);
   }, []);
 
   // Une ligne par employé : ceux qui ont le rôle, plus quiconque a pointé sur la période
@@ -194,9 +195,11 @@ export default function HoursAdmin() {
                         {e.edited_at && <Chip size="small" variant="outlined" label={t('hours.corrected')} sx={{ ml: 1 }} title={t('hours.correctedOn', { date: date(e.edited_at) })} />}
                       </TableCell>
                       <TableCell align="right">
-                        <IconButton size="small" onClick={() => setEditing(e)} aria-label={t('hours.correctFor', { email: e.user_email, time: time(e.started_at) })}>
-                          <EditIcon fontSize="small" />
-                        </IconButton>
+                        {(currentUser.role === 'admin' || e.user_id !== currentUser.id) && (
+                          <IconButton size="small" onClick={() => setEditing(e)} aria-label={t('hours.correctFor', { email: e.user_email, time: time(e.started_at) })}>
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
