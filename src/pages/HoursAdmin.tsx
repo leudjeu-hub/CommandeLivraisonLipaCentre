@@ -91,7 +91,8 @@ export default function HoursAdmin({ currentUser }: { currentUser: User }) {
     a.href = url;
     a.download = `heures-${dayKey(start.toISOString())}-${period}.csv`;
     a.click();
-    URL.revokeObjectURL(url);
+    // Révoqué un peu plus tard : certains navigateurs (Safari, Firefox) annulent sinon le téléchargement
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const totalAll = rows.reduce((s, r) => s + r.ms, 0);
