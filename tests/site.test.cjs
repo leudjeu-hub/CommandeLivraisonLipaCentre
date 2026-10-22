@@ -36,7 +36,7 @@ test('dépôt : aucun secret ni fichier sensible committé', () => {
 
 test('catalogue : données valides dans src/data/catalogue.ts', () => {
   const src = fs.readFileSync('src/data/catalogue.ts', 'utf8');
-  assert.match(src, /export const PRODUCTS/);
+  assert.doesNotMatch(src, /export const PRODUCTS/, 'pas d’articles inventés : le catalogue vient de l’API');
   assert.match(src, /export const DELIVERY/);
   assert.match(src, /export const CATEGORIES/);
   assert.match(src, /export const SHOP/);

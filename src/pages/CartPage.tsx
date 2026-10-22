@@ -8,11 +8,12 @@ import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, money } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
+import CatalogueUnavailable from '../components/CatalogueUnavailable';
 
 export default function CartPage() {
   const { t, i18n } = useTranslation();
   const { items, removeItem, updateQuantity, clearCart } = useCart();
-  const { products, status } = useCatalogue();
+  const { products, status, retry } = useCatalogue();
   const navigate = useNavigate();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
 
@@ -31,7 +32,9 @@ export default function CartPage() {
     <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
       <Typography variant="h2" component="h1" sx={{ mb: 3 }}>{t('cart.title')}</Typography>
 
-      {status === 'loading' && items.length > 0 ? (
+      {status === 'unavailable' && items.length > 0 ? (
+        <CatalogueUnavailable onRetry={retry} />
+      ) : status === 'loading' && items.length > 0 ? (
         // Panier enregistré, catalogue pas encore reçu : ne pas l'afficher « vide »
         <Typography color="text.secondary" sx={{ textAlign: 'center', py: 6 }} role="status">{t('catalogue.loading')}</Typography>
       ) : cartProducts.length === 0 ? (
