@@ -25,17 +25,18 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Articles : `useCatalogue()` / `useProducts()` (`src/data/useProducts.ts`). La dernière liste reçue de
   `GET /products/` est gardée dans localStorage (`centre-catalogue`) et affichée tout de suite au retour,
   puis remplacée par la réponse de l'API (serveur Render en veille : ~40 s). Première visite : statut
-  `loading` (message « Chargement du catalogue… », pas d'articles de démonstration : leurs numéros 1 à 8
-  désignent d'autres articles dans l'API, le panier afficherait un autre article). API injoignable et rien
-  en mémoire → avertissement console, `catalogue.ts` affiché (statut `fallback`).
+  `loading` (« Chargement du catalogue… »). API injoignable et rien en mémoire → statut `unavailable` :
+  message avec « Commander par WhatsApp » et « Réessayer » (`src/components/CatalogueUnavailable.tsx`),
+  jamais d'articles inventés (décision d'Alain, 2026-10-22 ; `catalogue.ts` n'a plus d'articles).
 - Catalogue (~1 500 articles) : `/catalogue` affiche 24 cartes puis « Afficher plus » ; Gestion > Articles
   50 lignes, avec une recherche (nom, n°, famille). Ne jamais afficher toute la liste d'un coup (téléphones
   d'entrée de gamme en 3G). Zones de livraison, catégories et WhatsApp :
   `src/data/catalogue.ts`.
 - Familles (sous-catégories, champ `family` de l'API, texte libre) : sur `/catalogue`, une 2e ligne de puces
   filtre par famille dans la catégorie choisie, et les articles sont affichés par sections (une par famille,
-  « Autres articles » à la fin). Sans aucune famille (catalogue.ts), affichage à plat comme avant.
-- Ne pas importer `PRODUCTS` directement dans une page : passer par `useProducts()`.
+  « Autres articles » à la fin). Sans aucune famille, affichage à plat.
+- Articles : toujours via `useCatalogue()` / `useProducts()`. Tests navigateur : `tests/browser/products.json`
+  (8 articles au format de l'API) est servi par défaut pour `GET /products/`.
 - Comptes : `/connexion`, `/inscription`,
   `/compte` (`src/pages/AuthPage.tsx`, `AccountPage.tsx`), session dans `src/context/AuthContext.tsx`
   (jeton `centre-auth-token` dans localStorage, envoyé en `Authorization: Bearer` par `request()` de

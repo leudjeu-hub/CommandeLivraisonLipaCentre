@@ -35,7 +35,6 @@
   "catalogue": {
     "eyebrow": "La sélection du Centre",
     "title": "Tout commence ici.",
-    "note": "Catalogue de démonstration · Prix en FCFA",
     "searchPlaceholder": "Rechercher un cahier, un stylo…",
     "searchLabel": "Rechercher un produit",
     "count": "{{count}} article(s)",
@@ -44,7 +43,10 @@
     "otherFamily": "Autres articles",
     "noteLive": "Prix en FCFA, confirmés par la librairie avant la livraison",
     "loading": "Chargement du catalogue… (jusqu’à une minute si le serveur était en veille)",
-    "more": "Afficher plus ({{count}} restant(s))"
+    "more": "Afficher plus ({{count}} restant(s))",
+    "unavailable": "Le catalogue est momentanément indisponible (serveur injoignable). Réessayez dans un instant, ou envoyez-nous directement votre liste par WhatsApp.",
+    "orderWhatsapp": "Commander par WhatsApp",
+    "unavailableWhatsapp": "Bonjour, je voudrais commander : "
   },
   "lists": {
     "eyebrow": "Parents, simplifiez la rentrée",

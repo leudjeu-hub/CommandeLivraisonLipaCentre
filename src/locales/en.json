@@ -35,7 +35,6 @@
   "catalogue": {
     "eyebrow": "The Centre's selection",
     "title": "It all starts here.",
-    "note": "Demo catalogue · Prices in FCFA",
     "searchPlaceholder": "Search for a notebook, a pen…",
     "searchLabel": "Search for a product",
     "count": "{{count}} item(s)",
@@ -44,7 +43,10 @@
     "otherFamily": "Other items",
     "noteLive": "Prices in FCFA, confirmed by the bookshop before delivery",
     "loading": "Loading the catalogue… (up to a minute if the server was asleep)",
-    "more": "Show more ({{count}} left)"
+    "more": "Show more ({{count}} left)",
+    "unavailable": "The catalogue is temporarily unavailable (server unreachable). Try again in a moment, or send us your list directly by WhatsApp.",
+    "orderWhatsapp": "Order by WhatsApp",
+    "unavailableWhatsapp": "Hello, I would like to order: "
   },
   "lists": {
     "eyebrow": "Parents, make back-to-school easy",

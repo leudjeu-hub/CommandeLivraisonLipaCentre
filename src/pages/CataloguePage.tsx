@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { CATEGORIES, type Product } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
+import CatalogueUnavailable from '../components/CatalogueUnavailable';
 
 const byName = (a: string, b: string) => a.localeCompare(b, 'fr');
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('fr');
@@ -13,7 +14,7 @@ const PAGE = 24;
 
 export default function CataloguePage() {
   const { t, i18n } = useTranslation();
-  const { products, status } = useCatalogue();
+  const { products, status, retry } = useCatalogue();
   const [search, setSearch] = useState('');
   // La saisie reste fluide : le filtrage suit avec un léger retard si le téléphone est lent
   const query = useDeferredValue(search);
@@ -82,7 +83,7 @@ export default function CataloguePage() {
       <Typography variant="overline" color="secondary">{t('catalogue.eyebrow')}</Typography>
       <Typography variant="h2" component="h1" sx={{ mb: 1 }}>{t('catalogue.title')}</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        {status === 'fallback' ? t('catalogue.note') : t('catalogue.noteLive')}
+        {t('catalogue.noteLive')}
       </Typography>
 
       {/* Recherche et filtres restent accessibles en haut de l'écran pendant le défilement */}
@@ -129,10 +130,12 @@ export default function CataloguePage() {
       </Box>
 
       <Typography variant="body2" color="text.secondary" aria-live="polite" sx={{ mb: 1.5 }}>
-        {status !== 'loading' && t('catalogue.count', { count: filtered.length })}
+        {(status === 'api' || status === 'cache') && t('catalogue.count', { count: filtered.length })}
       </Typography>
 
-      {status === 'loading' ? (
+      {status === 'unavailable' ? (
+        <CatalogueUnavailable onRetry={retry} />
+      ) : status === 'loading' ? (
         <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', py: 6 }}>
           {t('catalogue.loading')}
         </Typography>
@@ -155,7 +158,7 @@ export default function CataloguePage() {
         ))
       )}
 
-      {status !== 'loading' && filtered.length > limit && (
+      {filtered.length > limit && (
         <Box sx={{ textAlign: 'center' }}>
           <Button variant="outlined" size="large" onClick={() => setShown({ key: filterKey, count: limit + PAGE * 2 })} sx={{ bgcolor: '#fff' }}>
             {t('catalogue.more', { count: filtered.length - limit })}

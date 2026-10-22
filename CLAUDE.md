@@ -10,8 +10,8 @@ Les règles détaillées (build, tests, architecture, à faire / à ne pas faire
   pas de nouvelle dépendance sans accord explicite.
 - **Fichiers** : `index.html` (racine, CSP), `src/main.tsx`, `src/App.tsx` (routes), `src/pages/`,
   `src/components/`, `src/context/CartContext.tsx` (panier),
-  `src/data/catalogue.ts` (articles, livraison, catégories, WhatsApp — source en production),
-  `src/data/useProducts.ts` (articles de l'API), `src/locales/{fr,en}.json` (traductions).
+  `src/data/catalogue.ts` (livraison, catégories, WhatsApp, frais),
+  `src/data/useProducts.ts` (articles : uniquement l'API, dernière liste gardée dans le navigateur), `src/locales/{fr,en}.json` (traductions).
 - **Commandes** : `npm run dev` · `npm test` · `npm run build` · `npm run test:browser`.
 - **Avant de dire « terminé »** : `npm test` et `npm run test:browser` passent.
 - **Interface en français**, montants en FCFA, numéros au format +237.

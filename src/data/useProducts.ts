@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react';
-import { PRODUCTS, type Product } from './catalogue';
+import { useCallback, useEffect, useState } from 'react';
+import { type Product } from './catalogue';
 import { listProducts, type ApiProduct } from './productsApi';
 
 // Les articles viennent de l'API (GET /products/ : API locale en développement, Render sur le site
 // publié). La dernière liste reçue est gardée dans le navigateur : au retour, le catalogue s'affiche
 // tout de suite (puis se met à jour), même si le serveur Render est en veille (~40 s) ou injoignable.
-// Première visite sans réponse : rien d'affiché (« chargement ») plutôt que des articles de
-// démonstration, dont les numéros 1 à 8 désignent d'autres articles dans l'API (mauvais panier).
-// API injoignable et rien en mémoire : PRODUCTS (src/data/catalogue.ts).
+// Première visite sans réponse : « chargement ». API injoignable et rien en mémoire : « indisponible »
+// (message avec WhatsApp), jamais d'articles inventés.
 
 // 'loading' : rien encore ; 'cache' : liste de la visite précédente ; 'api' : liste à jour ;
-// 'fallback' : API injoignable, articles de démonstration
-export type CatalogueStatus = 'loading' | 'cache' | 'api' | 'fallback';
+// 'unavailable' : API injoignable et aucune liste en mémoire
+export type CatalogueStatus = 'loading' | 'cache' | 'api' | 'unavailable';
 
 export interface Catalogue {
   products: Product[];
@@ -79,8 +78,8 @@ function loadFromApi(): Promise<Catalogue> {
     })
     .catch((err) => {
       const previous = readCache();
-      console.warn(`Catalogue : ${err.message} ${previous ? 'Liste de la visite précédente utilisée.' : 'Articles de src/data/catalogue.ts utilisés.'}`);
-      return previous ? { products: previous, status: 'cache' as const } : { products: PRODUCTS, status: 'fallback' as const };
+      console.warn(`Catalogue : ${err.message} ${previous ? 'Liste de la visite précédente utilisée.' : 'Catalogue indisponible.'}`);
+      return previous ? { products: previous, status: 'cache' as const } : { products: [], status: 'unavailable' as const };
     })
     .then((result) => (loaded = result));
   return pending;
@@ -98,7 +97,7 @@ function initial(): Catalogue {
   return previous ? { products: previous, status: 'cache' } : { products: [], status: 'loading' };
 }
 
-export function useCatalogue(): Catalogue {
+export function useCatalogue(): Catalogue & { retry: () => void } {
   const [catalogue, setCatalogue] = useState<Catalogue>(initial);
   useEffect(() => {
     let active = true;
@@ -107,7 +106,13 @@ export function useCatalogue(): Catalogue {
       active = false;
     };
   }, []);
-  return catalogue;
+  // Catalogue indisponible : nouvel essai à la demande (bouton « Réessayer »)
+  const retry = useCallback(() => {
+    invalidateProducts();
+    setCatalogue({ products: [], status: 'loading' });
+    loadFromApi().then(setCatalogue);
+  }, []);
+  return { ...catalogue, retry };
 }
 
 export function useProducts(): Product[] {

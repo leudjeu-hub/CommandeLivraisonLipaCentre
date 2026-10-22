@@ -33,8 +33,8 @@ livraison et **envoient leur commande par WhatsApp** à la librairie, qui la con
 │   ├── pages/              # une page par route
 │   ├── components/         # en-tête, pied de page, notifications…
 │   ├── context/CartContext.tsx  # panier (mémorisé dans localStorage)
-│   ├── data/catalogue.ts   # articles, zones de livraison, catégories, WhatsApp, calcul des frais
-│   ├── data/useProducts.ts # articles de l'API (catalogue.ts en attendant ou en secours)
+│   ├── data/catalogue.ts   # zones de livraison, catégories, WhatsApp, calcul des frais
+│   ├── data/useProducts.ts # articles de l'API (dernière liste gardée dans le navigateur)
 │   ├── i18n.ts             # configuration i18next
 │   └── locales/            # traductions fr.json / en.json
 ├── public/                 # copié tel quel dans dist/ : img/ (photos, logo, favicon), robots.txt
@@ -63,8 +63,9 @@ Les articles, la connexion et les comptes viennent de l'API (dépôt `CommandeLi
 - sur le site publié, l'API sur Render (https://papeterie-api-kshr.onrender.com ; autre adresse :
   `PROD_API_URL=https://… npm run build`).
 
-En attendant la réponse de l'API (jusqu'à ~40 s si le serveur Render est en veille), ou si elle est
-injoignable, le catalogue affiche les articles de `src/data/catalogue.ts`.
+La dernière liste d'articles reçue est gardée dans le navigateur et s'affiche tout de suite au retour
+(le serveur Render peut mettre ~40 s à se réveiller). À la première visite, si l'API est injoignable,
+le site affiche un message avec « Commander par WhatsApp » et « Réessayer », sans articles inventés.
 
 **Comptes** : « Connexion » dans le menu pour se connecter ou créer un compte client ; commander
 reste possible sans compte.
@@ -89,7 +90,7 @@ catalogue → panier → formulaire → message WhatsApp.
 
 ## Modifier le catalogue
 
-Articles, prix, zones de livraison, catégories et numéro WhatsApp : **`src/data/catalogue.ts`**.
+Zones de livraison, catégories et numéro WhatsApp : **`src/data/catalogue.ts`**. Articles et prix : dans l'API (Gestion > Articles).
 
 - `price: null` → article « sur devis » ; champ `en` facultatif (repli sur le français).
 - Photos : déposer le fichier dans `public/img/produits/` et le référencer (`image: 'img/produits/….webp'`).

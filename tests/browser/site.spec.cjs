@@ -2,14 +2,16 @@
 const { test, expect } = require('@playwright/test');
 
 // Le site publié appelle l'API sur Render (vite.config.ts). Dans les tests, elle est simulée :
-// par défaut « indisponible » (le site affiche alors src/data/catalogue.ts) ; un test peut la
-// remplacer avec mockApi(). Toute autre requête externe fait échouer le test.
+// par défaut GET /products/ renvoie les 8 articles de products.json, le reste répond 503 ; un test
+// peut la remplacer avec mockApi(). Toute autre requête externe fait échouer le test.
 const API = 'https://papeterie-api-kshr.onrender.com';
+const PRODUCTS = require('./products.json');
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/*', (route) => {
     const url = route.request().url();
     if (url.startsWith('http://127.0.0.1:4200')) return route.continue();
+    if (url === `${API}/products/`) return route.fulfill({ contentType: 'application/json', body: JSON.stringify(PRODUCTS) });
     if (url.startsWith(API)) return route.fulfill({ status: 503, contentType: 'application/json', body: '{"detail":"indisponible"}' });
     return route.abort();
   });
@@ -33,8 +35,8 @@ test('la page se charge sans erreur et affiche le catalogue', async ({ page }) =
   const errors = [];
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
   page.on('pageerror', (e) => errors.push(e.message));
-  // API disponible (le 503 simulé par défaut serait journalisé par le navigateur comme une erreur)
-  await mockApi(page, () => ({ body: [] }));
+  // Aucune requête en 503 (le navigateur la journaliserait comme une erreur)
+  await mockApi(page, (path) => ({ body: path === '/products/' ? PRODUCTS : null }));
   await page.goto('/');
   await expect(page.locator('h1')).toContainText('Une page');
   await expect(page.locator('text=Découvrir le catalogue')).toBeVisible();
@@ -300,4 +302,17 @@ test('site publié : serveur injoignable au démarrage, la session est conservé
   up = true;
   await page.getByRole('button', { name: 'Réessayer' }).click();
   await expect(page.getByText('Connecté en tant que admin@exemple.cm')).toBeVisible();
+});
+
+test('API injoignable à la première visite : message et WhatsApp, pas d’articles inventés', async ({ page }) => {
+  let up = false;
+  await mockApi(page, (path) => (up && path === '/products/' ? { body: PRODUCTS } : { status: 503, body: { detail: 'indisponible' } }));
+  await page.goto('/catalogue');
+  const box = page.getByTestId('catalogue-unavailable');
+  await expect(box).toContainText('momentanément indisponible');
+  await expect(box.getByRole('link', { name: 'Commander par WhatsApp' })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396\?text=/);
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(0);
+  up = true;
+  await box.getByRole('button', { name: 'Réessayer' }).click();
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(8);
 });

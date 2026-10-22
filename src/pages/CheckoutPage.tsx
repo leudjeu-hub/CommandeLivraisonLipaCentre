@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
 import { showToast } from '../components/Toast';
+import CatalogueUnavailable from '../components/CatalogueUnavailable';
 
 const OTHER_AREA = '__autre';
 // Numéro camerounais : 9 chiffres commençant par 6 (mobile) ou 2 (fixe), indicatif +237 facultatif
@@ -15,7 +16,7 @@ export default function CheckoutPage() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const { items, clearCart } = useCart();
-  const { products, status } = useCatalogue();
+  const { products, status, retry } = useCatalogue();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
 
   const type = searchParams.get('type') === 'quote' ? 'quote' : 'order';
@@ -161,7 +162,9 @@ export default function CheckoutPage() {
         </Paper>
       )}
 
-      {type === 'order' && status === 'loading' && items.length > 0 && !showResult ? (
+      {type === 'order' && status === 'unavailable' && items.length > 0 && !showResult ? (
+        <CatalogueUnavailable onRetry={retry} />
+      ) : type === 'order' && status === 'loading' && items.length > 0 && !showResult ? (
         <Typography color="text.secondary" sx={{ textAlign: 'center', py: 6 }} role="status">{t('catalogue.loading')}</Typography>
       ) : orderBlocked ? (
         <Paper sx={{ p: 3, textAlign: 'center' }}>
