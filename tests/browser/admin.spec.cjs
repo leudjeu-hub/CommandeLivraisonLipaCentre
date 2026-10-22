@@ -94,3 +94,49 @@ test('les articles modifiés apparaissent dans le catalogue', async ({ page }) =
   await expect(page.getByTestId('product-card')).toHaveCount(1);
   await expect(page.getByTestId('product-card')).toContainText('Stylo bleu');
 });
+
+test('importer un CSV : aperçu, erreurs par ligne, puis import', async ({ page }) => {
+  const calls = [];
+  // L'API (simulée ici) vérifie le fichier ; on contrôle ce que le site envoie et affiche
+  await page.route('**/products/import', async (route) => {
+    const body = route.request().postDataJSON();
+    calls.push(body);
+    const errors = body.content.includes('abc')
+      ? [{ line: 3, code: 'invalid_price', column: 'prix', value: 'abc' }, { line: 4, code: 'unknown_id', column: 'id', value: '99' }]
+      : [];
+    const report = { created: 1, updated: 1, unchanged: 0, errors, applied: !body.dry_run && !errors.length };
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify(report) });
+  });
+  await page.goto('/gestion');
+  await page.getByRole('button', { name: 'Importer (CSV)' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('button', { name: 'Importer', exact: true })).toBeDisabled();
+
+  // Fichier Excel en Windows-1252 (« é » = 0xE9) : relu correctement
+  const latin1 = Buffer.from('id;prix;nom\n2;abc;Stylo\n99;100;Crayon\n;100;Gomme \xe9l\xe9gante\n', 'latin1');
+  await page.getByTestId('import-file').setInputFiles({ name: 'catalogue.csv', mimeType: 'text/csv', buffer: latin1 });
+  await expect(page.getByTestId('import-errors')).toContainText('2 erreurs');
+  await expect(page.getByTestId('import-errors')).toContainText('Ligne 3 : prix « abc » invalide');
+  await expect(page.getByTestId('import-errors')).toContainText('Ligne 4 : aucun article n\'a l\'id « 99 »');
+  await expect(dialog.getByRole('button', { name: 'Importer', exact: true })).toBeDisabled();
+  expect(calls[0].dry_run).toBe(true);
+  expect(calls[0].content).toContain('Gomme élégante');
+
+  // Fichier corrigé : aperçu puis import
+  const fixed = Buffer.from('﻿id;prix;nom\n2;600;Stylo\n;100;Gomme\n', 'utf8');
+  await page.getByTestId('import-file').setInputFiles({ name: 'catalogue.csv', mimeType: 'text/csv', buffer: fixed });
+  await expect(page.getByTestId('import-preview')).toContainText('1 nouvel(s) article(s), 1 modifié(s), 0 inchangé(s)');
+  await dialog.getByRole('button', { name: 'Importer', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByText('Import terminé : 1 créé(s), 1 modifié(s).')).toBeVisible();
+  expect(calls.map((c) => c.dry_run)).toEqual([true, true, false]);
+});
+
+test('exporter le catalogue en CSV', async ({ page }) => {
+  await page.goto('/gestion');
+  await expect(rows(page)).toHaveCount(2);
+  const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Exporter (CSV)' }).click()]);
+  const text = require('fs').readFileSync(await download.path(), 'utf8');
+  expect(text.startsWith('﻿id;categorie;prix;nom;')).toBe(true);
+  expect(text).toContain('2;Scolaire;500;Stylo bleu;Desc.;');
+});

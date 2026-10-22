@@ -32,6 +32,10 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Gestion (articles et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
   uniquement** (les responsables n'y voient que les heures) (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
   dans le dépôt de l'API ; un admin peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).
+- Import / export CSV des articles (Gestion > Articles, `src/pages/CatalogueImport.tsx`) : l'export et le modèle
+  sont générés dans le navigateur (`;`, BOM UTF-8 pour Excel) ; l'import envoie le texte du fichier à
+  `POST /products/import` (aperçu `dry_run`, puis import). C'est l'API qui vérifie et renvoie les erreurs par
+  ligne sous forme de codes, traduits par `admin.importErr.*`. Fichier non UTF-8 → relu en Windows-1252.
 - Rôles : `user` (client), `employee`, `manager` (responsable : seulement l'onglet « Heures » de `/gestion`,
   ne corrige pas ses propres heures), `admin`. Un admin bloque / débloque ou supprime un compte
   (Gestion > Utilisateurs) ; l'API refuse de supprimer un compte qui a des heures (409 → le bloquer).

@@ -92,3 +92,22 @@ export const updateProduct = (id: number, input: ProductInput) =>
   request<ApiProduct>(`/products/${id}`, { method: 'PUT', body: JSON.stringify(input) });
 
 export const deleteProduct = (id: number) => request<void>(`/products/${id}`, { method: 'DELETE' });
+
+// Import CSV (administrateurs) : dryRun = aperçu sans rien enregistrer ; rien n'est écrit si une ligne est en erreur
+export interface ImportProblem {
+  line: number;
+  code: string;
+  column: string | null;
+  value: string | null;
+}
+
+export interface ImportReport {
+  applied: boolean;
+  created: number;
+  updated: number;
+  unchanged: number;
+  errors: ImportProblem[];
+}
+
+export const importProducts = (content: string, dryRun: boolean) =>
+  request<ImportReport>('/products/import', { method: 'POST', body: JSON.stringify({ content, dry_run: dryRun }) });
