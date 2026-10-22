@@ -228,11 +228,11 @@
     "errEn": "Fill in both the English name and description, or neither.",
     "tabProducts": "Items",
     "tabUsers": "Users",
-    "usersIntro": "An administrator can manage items and accounts. The last administrator cannot be demoted.",
-    "promote": "Make administrator",
-    "demote": "Remove rights",
+    "usersIntro": "An employee can clock in and out from “My account”. An administrator also manages products, accounts and hours. The last administrator cannot be demoted.",
     "you": "you",
-    "roleChanged": "Role of {{email}} changed."
+    "roleChanged": "Role of {{email}} changed.",
+    "tabHours": "Hours",
+    "role": "Role"
   },
   "auth": {
     "loginTitle": "Log in",
@@ -262,10 +262,60 @@
     "forbiddenTitle": "Restricted access",
     "forbiddenText": "This page is for administrators only.",
     "eyebrow": "Customer area",
-    "slow": "Contacting the server… The first access can take up to a minute."
+    "slow": "Contacting the server… The first access can take up to a minute.",
+    "roleEmployee": "Employee"
   },
   "home": {
     "selectionTitle": "Essentials",
     "selectionCta": "See the whole catalogue"
+  },
+  "clock": {
+    "title": "Time clock",
+    "out": "Not clocked in",
+    "inSince": "In since {{time}}",
+    "forgotten": "Missing clock-out",
+    "forgottenHelp": "Your clock-in is more than 14 hours old, so the clock-out was probably forgotten. These hours are not counted. Clock out, then ask the manager to correct the time.",
+    "punchIn": "Clock in",
+    "punchOut": "Clock out",
+    "busy": "Saving…",
+    "inDone": "Clocked in at {{time}}.",
+    "outDone": "Clocked out at {{time}}.",
+    "breakHelp": "Break: clock out when you leave and clock in when you return. Break time is not counted. The server's time is recorded.",
+    "day": "Today",
+    "week": "Week",
+    "month": "Month",
+    "todayEntries": "Today's entries",
+    "running": "in progress"
+  },
+  "hours": {
+    "intro": "Employees' hours, breaks excluded. An entry counts for the day it starts. A missing clock-out (over 14 h) is flagged and not counted until corrected.",
+    "period": "Period",
+    "previous": "Previous period",
+    "next": "Next period",
+    "weekOf": "Week of {{from}} to {{to}}",
+    "employee": "Employee",
+    "days": "Days",
+    "hours": "Hours",
+    "total": "Total",
+    "noStaff": "No employees yet. Give the “Employee” role in the Users tab.",
+    "detail": "Entries",
+    "everyone": "Everyone",
+    "export": "Export (CSV)",
+    "empty": "No entries in this period.",
+    "date": "Date",
+    "in": "In",
+    "out": "Out",
+    "duration": "Duration",
+    "hoursDecimal": "Hours (decimal)",
+    "corrected": "corrected",
+    "correctedOn": "Corrected on {{date}}",
+    "correctFor": "Correct the entry of {{email}} at {{time}}",
+    "correctTitle": "Correct an entry of {{email}}",
+    "outHelp": "Empty = still in",
+    "auditNote": "The correction is recorded with your account and the date, and stays visible.",
+    "errOrder": "Clock-out must be after clock-in.",
+    "saved": "Entry corrected.",
+    "deleted": "Entry deleted.",
+    "confirmDelete": "Confirm deletion"
   }
 }

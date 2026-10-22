@@ -3,6 +3,9 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Button, Chip, Container, Paper, Typography } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { showToast } from '../components/Toast';
+import TimeClock from '../components/TimeClock';
+
+const ROLE_LABEL = { user: 'auth.roleUser', employee: 'auth.roleEmployee', admin: 'auth.roleAdmin' } as const;
 
 // Mon compte (/compte).
 export default function AccountPage() {
@@ -25,11 +28,13 @@ export default function AccountPage() {
       <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 3 }}>
         {t('auth.accountTitle')}
       </Typography>
+      {/* Pointage : employés et administrateurs */}
+      {user.role !== 'user' && <TimeClock />}
       <Paper sx={{ p: 3 }}>
         <Typography sx={{ fontWeight: 700, mb: 1 }}>{t('auth.loggedAs', { email: user.email })}</Typography>
         <Chip
-          label={user.role === 'admin' ? t('auth.roleAdmin') : t('auth.roleUser')}
-          color={user.role === 'admin' ? 'primary' : 'default'}
+          label={t(ROLE_LABEL[user.role])}
+          color={user.role === 'user' ? 'default' : 'primary'}
           size="small"
           sx={{ mb: 1 }}
         />

@@ -2,7 +2,7 @@ import { request } from './productsApi';
 
 // Comptes et connexion (API : /auth/…, /users/…). Développement uniquement, comme la gestion des articles.
 
-export type Role = 'user' | 'admin';
+export type Role = 'user' | 'employee' | 'admin';
 
 export interface User {
   id: number;

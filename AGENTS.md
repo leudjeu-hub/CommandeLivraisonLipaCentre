@@ -32,7 +32,12 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Gestion (articles et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
   uniquement** (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
   dans le dépôt de l'API ; un admin peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).
-- Tests : projet Playwright `admin` (Vite sur 4201, API simulée : `admin.spec.cjs`, `auth.spec.cjs`) ;
+- Pointage des employés : rôle `employee` (attribué dans Gestion > Utilisateurs). Sur `/compte`,
+  `src/components/TimeClock.tsx` (entrée / sortie, totaux jour, semaine, mois) ; dans `/gestion`, onglet
+  « Heures » (`src/pages/HoursAdmin.tsx` : totaux par employé, détail, correction, export CSV). API `/time/…`
+  via `src/data/timeApi.ts`. L'heure est celle du serveur ; une pause = sortie puis entrée (non comptée) ;
+  un pointage ouvert depuis plus de 14 h est signalé et non compté.
+- Tests : projet Playwright `admin` (Vite sur 4201, API simulée : `admin.spec.cjs`, `auth.spec.cjs`, `time.spec.cjs`) ;
   `site.spec.cjs` (build de production) simule l'API Render (indisponible par défaut, `mockApi()`).
   `npm test` vérifie que le build n'appelle que l'API Render (CSP, pas de `localhost:8000`).
 - Les zones de livraison ne viennent pas de l’API (elle n’en fournit pas).
