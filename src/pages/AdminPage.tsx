@@ -17,9 +17,13 @@ import {
 } from '../data/productsApi';
 import { showToast } from '../components/Toast';
 import { useAuth } from '../context/AuthContext';
-import { listUsers, setRole, type User } from '../data/authApi';
+import { listUsers, setRole, type Role, type User } from '../data/authApi';
+import HoursAdmin from './HoursAdmin';
 
-// Gestion des articles et des comptes : administrateurs uniquement (l'API le vérifie aussi).
+// Gestion des articles, des comptes et des heures : administrateurs uniquement (l'API le vérifie aussi).
+
+const ROLES: Role[] = ['user', 'employee', 'admin'];
+const ROLE_LABEL = { user: 'auth.roleUser', employee: 'auth.roleEmployee', admin: 'auth.roleAdmin' } as const;
 
 type FormValues = Record<
   'category' | 'name' | 'description' | 'price' | 'label' | 'name_en' | 'description_en' | 'label_en' | 'color' | 'image' | 'stock',
@@ -87,7 +91,7 @@ export default function AdminPage() {
   const { t } = useTranslation();
   const { user, ready } = useAuth();
   const { pathname } = useLocation();
-  const [tab, setTab] = useState<'products' | 'users'>('products');
+  const [tab, setTab] = useState<'products' | 'users' | 'hours'>('products');
 
   if (!ready) return null;
   if (!user) return <Navigate to={`/connexion?suite=${encodeURIComponent(pathname)}`} replace />;
@@ -107,8 +111,11 @@ export default function AdminPage() {
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
         <Tab value="products" label={t('admin.tabProducts')} />
         <Tab value="users" label={t('admin.tabUsers')} />
+        <Tab value="hours" label={t('admin.tabHours')} />
       </Tabs>
-      {tab === 'products' ? <ProductsAdmin /> : <UsersAdmin currentUserId={user.id} />}
+      {tab === 'products' && <ProductsAdmin />}
+      {tab === 'users' && <UsersAdmin currentUserId={user.id} />}
+      {tab === 'hours' && <HoursAdmin />}
     </Container>
   );
 }
@@ -123,10 +130,10 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
   }, []);
   useEffect(load, [load]);
 
-  const toggle = async (u: User) => {
+  const change = async (u: User, role: Role) => {
     setError('');
     try {
-      await setRole(u.id, u.role === 'admin' ? 'user' : 'admin');
+      await setRole(u.id, role);
       showToast(t('admin.roleChanged', { email: u.email }));
       load();
     } catch (err) {
@@ -148,16 +155,24 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
               </Typography>
               <Chip
                 size="small"
-                label={u.role === 'admin' ? t('auth.roleAdmin') : t('auth.roleUser')}
-                color={u.role === 'admin' ? 'primary' : 'default'}
+                label={t(ROLE_LABEL[u.role])}
+                color={u.role === 'user' ? 'default' : 'primary'}
                 sx={{ mt: 0.5 }}
               />
             </Box>
             {/* Se retirer ses propres droits ferait perdre l'accès à cette page */}
             {u.id !== currentUserId && (
-              <Button variant="outlined" size="small" onClick={() => toggle(u)}>
-                {u.role === 'admin' ? t('admin.demote') : t('admin.promote')}
-              </Button>
+              <FormControl size="small" sx={{ minWidth: 170 }}>
+                <InputLabel id={`role-${u.id}`}>{t('admin.role')}</InputLabel>
+                <Select
+                  labelId={`role-${u.id}`}
+                  label={t('admin.role')}
+                  value={u.role}
+                  onChange={(e) => change(u, e.target.value as Role)}
+                >
+                  {ROLES.map((r) => <MenuItem key={r} value={r}>{t(ROLE_LABEL[r])}</MenuItem>)}
+                </Select>
+              </FormControl>
             )}
           </Paper>
         ))}

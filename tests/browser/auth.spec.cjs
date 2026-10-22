@@ -109,7 +109,7 @@ test('un client connecté n’a pas accès à la gestion', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Accès réservé' })).toBeVisible();
 });
 
-test('un administrateur promeut un client', async ({ page }) => {
+test('un administrateur change le rôle d’un client', async ({ page }) => {
   // Un client s'inscrit…
   await page.goto('/inscription');
   await page.getByLabel('E-mail').fill('awa@exemple.cm');
@@ -126,10 +126,13 @@ test('un administrateur promeut un client', async ({ page }) => {
   const rows = page.getByTestId('user-row');
   await expect(rows).toHaveCount(2);
   await expect(rows.first()).toContainText('admin@exemple.cm (vous)');
-  await expect(rows.first().getByRole('button')).toHaveCount(0); // pas de rétrogradation de soi-même
-  await rows.nth(1).getByRole('button', { name: 'Rendre administrateur' }).click();
-  await expect(rows.nth(1)).toContainText('Administrateur');
-  await expect(rows.nth(1).getByRole('button', { name: 'Retirer les droits' })).toBeVisible();
+  await expect(rows.first().getByRole('combobox')).toHaveCount(0); // pas de rétrogradation de soi-même
+  await rows.nth(1).getByRole('combobox', { name: 'Rôle' }).click();
+  await page.getByRole('option', { name: 'Employé' }).click();
+  await expect(rows.nth(1).getByText('Employé', { exact: true }).first()).toBeVisible();
+  await rows.nth(1).getByRole('combobox', { name: 'Rôle' }).click();
+  await page.getByRole('option', { name: 'Administrateur' }).click();
+  await expect(rows.nth(1).locator('.MuiChip-root')).toHaveText('Administrateur');
 });
 
 test('session expirée : retour à l’état déconnecté', async ({ page }) => {

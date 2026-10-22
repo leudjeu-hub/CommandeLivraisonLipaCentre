@@ -228,11 +228,11 @@
     "errEn": "Renseignez le nom et la description en anglais, ou aucun des deux.",
     "tabProducts": "Articles",
     "tabUsers": "Utilisateurs",
-    "usersIntro": "Un administrateur peut gérer les articles et les comptes. Le dernier administrateur ne peut pas être rétrogradé.",
-    "promote": "Rendre administrateur",
-    "demote": "Retirer les droits",
+    "usersIntro": "Un employé peut pointer ses heures depuis « Mon compte ». Un administrateur gère aussi les articles, les comptes et les heures. Le dernier administrateur ne peut pas être rétrogradé.",
     "you": "vous",
-    "roleChanged": "Rôle de {{email}} modifié."
+    "roleChanged": "Rôle de {{email}} modifié.",
+    "tabHours": "Heures",
+    "role": "Rôle"
   },
   "auth": {
     "loginTitle": "Connexion",
@@ -262,10 +262,60 @@
     "forbiddenTitle": "Accès réservé",
     "forbiddenText": "Cette page est réservée aux administrateurs.",
     "eyebrow": "Espace client",
-    "slow": "Connexion au serveur… Le premier accès peut prendre jusqu'à une minute."
+    "slow": "Connexion au serveur… Le premier accès peut prendre jusqu'à une minute.",
+    "roleEmployee": "Employé"
   },
   "home": {
     "selectionTitle": "Les incontournables",
     "selectionCta": "Voir tout le catalogue"
+  },
+  "clock": {
+    "title": "Pointage",
+    "out": "Non pointé",
+    "inSince": "Présent depuis {{time}}",
+    "forgotten": "Sortie oubliée",
+    "forgottenHelp": "Votre entrée date de plus de 14 heures : la sortie a sans doute été oubliée. Ces heures ne sont pas comptées. Pointez la sortie, puis demandez au gérant de corriger l'heure.",
+    "punchIn": "Pointer mon entrée",
+    "punchOut": "Pointer ma sortie",
+    "busy": "Enregistrement…",
+    "inDone": "Entrée enregistrée à {{time}}.",
+    "outDone": "Sortie enregistrée à {{time}}.",
+    "breakHelp": "Pause : pointez votre sortie en partant, puis votre entrée en revenant. Le temps de pause n'est pas compté. L'heure enregistrée est celle du serveur.",
+    "day": "Aujourd'hui",
+    "week": "Semaine",
+    "month": "Mois",
+    "todayEntries": "Pointages d'aujourd'hui",
+    "running": "en cours"
+  },
+  "hours": {
+    "intro": "Heures de présence des employés, pauses exclues. Un pointage compte pour le jour où il commence. Une sortie oubliée (plus de 14 h) est signalée et n'est pas comptée tant qu'elle n'est pas corrigée.",
+    "period": "Période",
+    "previous": "Période précédente",
+    "next": "Période suivante",
+    "weekOf": "Semaine du {{from}} au {{to}}",
+    "employee": "Employé",
+    "days": "Jours",
+    "hours": "Heures",
+    "total": "Total",
+    "noStaff": "Aucun employé. Donnez le rôle « Employé » dans l'onglet Utilisateurs.",
+    "detail": "Détail des pointages",
+    "everyone": "Tous",
+    "export": "Exporter (CSV)",
+    "empty": "Aucun pointage sur cette période.",
+    "date": "Date",
+    "in": "Entrée",
+    "out": "Sortie",
+    "duration": "Durée",
+    "hoursDecimal": "Heures (décimales)",
+    "corrected": "corrigé",
+    "correctedOn": "Corrigé le {{date}}",
+    "correctFor": "Corriger le pointage de {{email}} à {{time}}",
+    "correctTitle": "Corriger un pointage de {{email}}",
+    "outHelp": "Vide = encore présent",
+    "auditNote": "La correction est enregistrée avec votre nom et la date : elle reste visible.",
+    "errOrder": "La sortie doit être après l'entrée.",
+    "saved": "Pointage corrigé.",
+    "deleted": "Pointage supprimé.",
+    "confirmDelete": "Confirmer la suppression"
   }
 }
