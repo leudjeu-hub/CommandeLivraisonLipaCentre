@@ -42,5 +42,19 @@ export default defineConfig(({ command }) => ({
   // Icônes de la page de gestion (chargée à la demande) : pré-optimisées, sinon Vite les découvre
   // au premier affichage, recharge la page et React plante (« useContext » de null)
   optimizeDeps: { include: ['@mui/icons-material/Add', '@mui/icons-material/Edit', '@mui/icons-material/Delete'] },
-  build: { outDir: 'dist' },
+  build: {
+    outDir: 'dist',
+    // React dans un fichier à part : il change rarement, le navigateur le garde d'une mise en ligne
+    // à l'autre. (Pas MUI : regroupé, il ramènerait dans la première visite les composants des
+    // pages chargées à part.)
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (!id.includes('node_modules')) return undefined;
+          if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom)\//.test(id)) return 'react';
+          return undefined;
+        },
+      },
+    },
+  },
 }));

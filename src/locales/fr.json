@@ -331,7 +331,8 @@
     "errBlocked": "Ce compte est bloqué. Contactez la librairie.",
     "errTooMany": "Trop d’essais de mot de passe. Réessayez dans quelques minutes.",
     "offline": "Le serveur ne répond pas. Vérifiez votre connexion. Votre session est conservée.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "errTooManyRegister": "Trop de comptes ont été créés récemment. Réessayez dans une heure, ou commandez sans compte."
   },
   "home": {
     "selectionTitle": "Les incontournables",
