@@ -21,9 +21,22 @@
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:locale:alternate" content="en_GB" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/src/shell.css" />
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Écran affiché avant le démarrage de React (3G : plusieurs secondes), remplacé au premier rendu.
+         Sans JavaScript (Opera Mini, vieux navigateur), il reste la seule page : WhatsApp et téléphone. -->
+    <div id="root">
+      <div class="shell">
+        <div class="shell-bar"><img src="/img/logo-clair.svg" alt="Librairie Papeterie du Centre" width="138" height="38" /></div>
+        <div class="shell-main">
+          <h1>Livres et fournitures livrés à domicile à Yaoundé</h1>
+          <p class="shell-wait">Chargement du site… Si rien ne s’affiche, commandez directement par WhatsApp ou par téléphone.</p>
+          <p><a class="shell-btn" href="https://wa.me/237693240396">Commander par WhatsApp</a></p>
+          <p><a href="tel:+237693240396">+237 6 93 24 03 96</a></p>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

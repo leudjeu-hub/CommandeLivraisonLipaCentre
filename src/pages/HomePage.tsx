@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Link as MuiLink, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { whatsappLink } from '../data/catalogue';
 import { useProducts } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
 
@@ -32,7 +33,12 @@ export default function HomePage() {
               {t('hero.list')}
             </Button>
           </Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>{t('hero.channels')}</Typography>
+          {/* WhatsApp, le canal que beaucoup de clients préfèrent : joignable dès l'accueil */}
+          <Typography variant="body2" sx={{ mt: 3 }}>
+            <MuiLink href={whatsappLink(t('catalogue.unavailableWhatsapp'))} target="_blank" rel="noopener" sx={{ display: 'inline-flex', alignItems: 'center', minHeight: 44, fontWeight: 600 }}>
+              {t('hero.whatsapp')}
+            </MuiLink>
+          </Typography>
         </Container>
       </Box>
 

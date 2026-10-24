@@ -21,7 +21,7 @@
     "intro": "Livres, fournitures scolaires et papeterie de bureau. Préparez votre panier en quelques clics, pour une livraison à domicile à Yaoundé et un paiement à la réception.",
     "cta": "Découvrir le catalogue",
     "list": "Ma liste scolaire",
-    "channels": "Téléphone · WhatsApp · Commande en ligne"
+    "whatsapp": "Vous préférez écrire ? Commandez sur WhatsApp"
   },
   "strip": {
     "title": "Comment ça marche",
@@ -43,6 +43,7 @@
     "otherFamily": "Autres articles",
     "noteLive": "Prix en FCFA, confirmés par la librairie avant la livraison",
     "loading": "Chargement du catalogue… (jusqu’à une minute si le serveur était en veille)",
+    "loadingWhatsapp": "Pressé ? Envoyez-nous votre liste par WhatsApp en attendant.",
     "more": "Afficher plus ({{count}} restant(s))",
     "unavailable": "Le catalogue est momentanément indisponible (serveur injoignable). Réessayez dans un instant, ou envoyez-nous directement votre liste par WhatsApp.",
     "orderWhatsapp": "Commander par WhatsApp",
@@ -74,6 +75,7 @@
     "services": "Vente de fournitures de papeterie, livres et service de livraison.",
     "address": "Carrefour Abbia, face Manège, Yaoundé, Cameroun",
     "phone": "Tél. : +237 6 93 24 03 96",
+    "whatsapp": "Écrire sur WhatsApp",
     "hours": "Horaires d'ouverture",
     "weekdays": "Lundi – vendredi",
     "saturday": "Samedi",
@@ -99,6 +101,9 @@
   "form": {
     "orderTitle": "Livraison à Yaoundé",
     "quoteTitle": "Votre demande de devis",
+    "quoteWhatsapp": "Votre liste est sur papier ? Prenez-la en photo et envoyez-la-nous par WhatsApp : nous préparons le devis.",
+    "quoteWhatsappCta": "Envoyer la photo par WhatsApp",
+    "quoteWhatsappText": "Bonjour, voici ma liste scolaire pour un devis : ",
     "intro": "Votre récapitulatif est préparé ici. Il n'est envoyé à la librairie que si vous cliquez sur « Envoyer par WhatsApp ».",
     "name": "Nom du destinataire",
     "phone": "Téléphone",
@@ -111,11 +116,14 @@
     "slotPhone": "À convenir par téléphone",
     "payment": "Paiement à la réception",
     "paymentCash": "Espèces",
+    "paymentOrange": "Orange Money",
+    "paymentMtn": "MTN MoMo",
     "notes": "Instructions ou liste scolaire",
     "consent": "Je comprends que les prix, le stock et le délai de livraison doivent être confirmés par la librairie.",
     "submit": "Créer mon récapitulatif",
     "slotHelp": "À confirmer par la librairie.",
     "paymentHelp": "Orange Money et MTN MoMo sous réserve d'activation.",
+    "notSpecified": "À convenir",
     "phoneHelp": "Numéro camerounais, par exemple 6 93 24 03 96",
     "errPhone": "Numéro invalide : 9 chiffres commençant par 6 ou 2 (+237 facultatif).",
     "emptyOrder": "Votre panier est vide : ajoutez des articles avant de préparer la commande."

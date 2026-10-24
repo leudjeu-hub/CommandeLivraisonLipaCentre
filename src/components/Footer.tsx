@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Link as MuiLink, Typography } from '@mui/material';
 import PlaceIcon from '@mui/icons-material/Place';
 import PhoneIcon from '@mui/icons-material/Phone';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { whatsappLink } from '../data/catalogue';
 
 const MAP_URL =
   'https://www.google.com/maps/search/?api=1&query=Librairie+Papeterie+du+Centre+Yaoundé&query_place_id=ChIJi_YsDY3PixARKBsGbQXsDHM';
@@ -31,6 +33,10 @@ export default function Footer() {
             <br />
             <MuiLink href="tel:+237693240396" sx={linkSx}>
               <PhoneIcon fontSize="small" aria-hidden /> +237 6 93 24 03 96
+            </MuiLink>
+            <br />
+            <MuiLink href={whatsappLink()} target="_blank" rel="noopener" sx={linkSx}>
+              <WhatsAppIcon fontSize="small" aria-hidden /> {t('footer.whatsapp')}
             </MuiLink>
           </Box>
           <Box>

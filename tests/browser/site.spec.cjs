@@ -81,13 +81,17 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   await page.click('button:has-text("Créer mon récapitulatif")');
 
   await expect(page.locator('text=Votre récapitulatif est prêt')).toBeVisible();
-  const wa = page.locator('a[href*="wa.me"]');
+  // (le pied de page a aussi un lien WhatsApp)
+  const wa = page.getByRole('link', { name: 'Envoyer par WhatsApp' });
   await expect(wa).toBeVisible();
   const href = await wa.getAttribute('href');
   expect(href.startsWith('https://wa.me/237693240396?text=')).toBe(true);
   const text = decodeURIComponent(href.split('?text=')[1]);
   expect(text).toContain('Client Test');
   expect(text).toContain('Essos');
+  // Créneau et paiement non choisis : « À convenir », jamais une valeur vide
+  expect(text).toContain('Créneau souhaité : À convenir');
+  expect(text).toContain('Paiement à réception : À convenir');
 
   const mail = page.getByRole('link', { name: 'Envoyer par e-mail' });
   await expect(mail).toBeVisible();
@@ -361,4 +365,59 @@ test('API injoignable à la première visite : message et WhatsApp, pas d’arti
   up = true;
   await box.getByRole('button', { name: 'Réessayer' }).click();
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(8);
+});
+
+test('récapitulatif : créneau et paiement en toutes lettres, pas « morning » ni « cash »', async ({ page }) => {
+  await page.goto('/catalogue');
+  await page.click('button:has-text("Ajouter")');
+  await page.click('button:has-text("Ajouter")');
+  await page.goto('/commander');
+  await page.getByLabel('Nom du destinataire').fill('Client Test');
+  await page.getByLabel('Téléphone').fill('690000000');
+  await page.getByRole('combobox', { name: 'Quartier' }).click();
+  await page.getByRole('option', { name: 'Essos', exact: true }).click();
+  await page.getByLabel('Adresse et repère').fill('Près du rond-point');
+  await page.getByRole('combobox', { name: 'Créneau souhaité' }).click();
+  await page.getByRole('option', { name: 'Matin' }).click();
+  await page.getByRole('combobox', { name: 'Paiement à la réception' }).click();
+  await page.getByRole('option', { name: 'Espèces' }).click();
+  await page.getByRole('checkbox').check();
+  await page.click('button:has-text("Créer mon récapitulatif")');
+  const summary = page.locator('pre');
+  await expect(summary).toContainText('Créneau souhaité : Matin');
+  await expect(summary).toContainText('Paiement à réception : Espèces');
+  await expect(summary).not.toContainText('morning');
+  await expect(summary).not.toContainText('cash');
+});
+
+test('WhatsApp joignable : accueil, pied de page, devis et attente du catalogue', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: /Commandez sur WhatsApp/ })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396\?text=/);
+  await expect(page.locator('footer').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
+  await page.goto('/commander?type=quote');
+  await expect(page.getByRole('link', { name: 'Envoyer la photo par WhatsApp' })).toBeVisible();
+});
+
+test('première visite, serveur en veille : WhatsApp proposé pendant le chargement', async ({ page }) => {
+  // L'API ne répond jamais : le message de chargement reste, avec une autre issue
+  await page.route(`${API}/products/`, () => {});
+  await page.goto('/catalogue');
+  await expect(page.locator('text=Chargement du catalogue')).toBeVisible();
+  await expect(page.locator('main').getByRole('link', { name: 'Commander par WhatsApp' })).toBeVisible();
+});
+
+test('sans JavaScript : écran de démarrage avec WhatsApp et téléphone', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto('/');
+  await expect(page.locator('h1')).toContainText('Yaoundé');
+  await expect(page.getByRole('link', { name: 'Commander par WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
+  await expect(page.locator('a[href="tel:+237693240396"]')).toBeVisible();
+  await context.close();
+});
+
+test('écran de démarrage remplacé par le site une fois React lancé', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('h1')).toContainText('Une page');
+  await expect(page.locator('.shell')).toHaveCount(0);
 });
