@@ -37,6 +37,7 @@ export const CATEGORIES = ['Tout', 'Scolaire', 'Bureau', 'Livres'];
 
 export const SHOP = {
   whatsapp: '237693240396',
+  email: 'Lipacentre237@gmail.com',
 };
 
 export const DELIVERY_RULES: DeliveryRules = {
