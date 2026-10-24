@@ -95,15 +95,20 @@ test('le gérant voit les totaux et corrige un pointage', async ({ page }) => {
   await expect(page.getByTestId('entry-row').last()).toContainText('corrigé');
 });
 
-test('le responsable ne voit que les heures et ne corrige pas les siennes', async ({ page }) => {
+test('le responsable voit les commandes et les heures, et ne corrige pas les siennes', async ({ page }) => {
   const entries = [
     entry(1, EMPLOYEE, todayAt(0, 0), todayAt(2, 0)),
     entry(2, MANAGER, todayAt(0, 0), todayAt(1, 0)),
   ];
   await mockApi(page, MANAGER, entries);
+  await page.route(/\/orders\/$/, (route) => route.fulfill({ contentType: 'application/json', body: '[]' }));
   await page.goto('/gestion');
-  await expect(page.getByRole('heading', { name: 'Heures' })).toBeVisible();
-  await expect(page.getByRole('tab')).toHaveCount(0); // ni articles ni utilisateurs
+  await expect(page.getByRole('heading', { name: 'Gestion', exact: true })).toBeVisible();
+  // Ni articles ni utilisateurs ; les commandes s'ouvrent d'abord
+  await expect(page.getByRole('tab')).toHaveText(['Commandes', 'Heures']);
+  await expect(page.getByRole('tab', { name: 'Commandes' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('Aucune commande ici.')).toBeVisible();
+  await page.getByRole('tab', { name: 'Heures' }).click();
   await page.getByRole('button', { name: "Aujourd'hui" }).click();
   await expect(page.getByTestId('entry-row')).toHaveCount(2);
   await expect(page.getByRole('button', { name: /Corriger le pointage de awa@exemple.cm/ })).toHaveCount(1);

@@ -28,8 +28,8 @@ import HoursAdmin from './HoursAdmin';
 import OrdersAdmin from './OrdersAdmin';
 import CatalogueImport, { exportCatalogue } from './CatalogueImport';
 
-// Gestion des articles, des commandes, des comptes et des heures : administrateurs ; les responsables n'ont que
-// l'onglet « Heures » (l'API le vérifie aussi).
+// Gestion des articles, des commandes, des comptes et des heures : administrateurs ; les responsables
+// n'ont que les onglets « Commandes » et « Heures » (l'API le vérifie aussi).
 
 type FormValues = Record<
   'category' | 'name' | 'family' | 'description' | 'price' | 'label' | 'name_en' | 'description_en' | 'label_en' | 'color' | 'image' | 'stock',
@@ -104,7 +104,7 @@ export default function AdminPage() {
   const { t } = useTranslation();
   const { user, ready, offline } = useAuth();
   const { pathname } = useLocation();
-  const [tab, setTab] = useState<'products' | 'orders' | 'users' | 'hours'>('products');
+  const [tab, setTab] = useState<'products' | 'orders' | 'users' | 'hours' | null>(null);
 
   if (!ready || (offline && !user)) return <SessionWait />;
   if (!user) return <Navigate to={`/connexion?suite=${encodeURIComponent(pathname)}`} replace />;
@@ -118,20 +118,18 @@ export default function AdminPage() {
   }
 
   const isAdmin = user.role === 'admin';
-  const shown = isAdmin ? tab : 'hours';
+  const shown = !isAdmin && (tab === 'products' || tab === 'users') ? 'orders' : tab ?? (isAdmin ? 'products' : 'orders');
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="overline" color="secondary">{t('admin.eyebrow')}</Typography>
-      <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>{isAdmin ? t('admin.title') : t('admin.tabHours')}</Typography>
-      {isAdmin && (
-        <Tabs value={shown} onChange={(_, v) => setTab(v)} variant="scrollable" allowScrollButtonsMobile sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
-          <Tab value="products" label={t('admin.tabProducts')} />
-          <Tab value="orders" label={t('admin.tabOrders')} />
-          <Tab value="users" label={t('admin.tabUsers')} />
-          <Tab value="hours" label={t('admin.tabHours')} />
-        </Tabs>
-      )}
+      <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>{isAdmin ? t('admin.title') : t('admin.titleManager')}</Typography>
+      <Tabs value={shown} onChange={(_, v) => setTab(v)} variant="scrollable" allowScrollButtonsMobile sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
+        {isAdmin && <Tab value="products" label={t('admin.tabProducts')} />}
+        <Tab value="orders" label={t('admin.tabOrders')} />
+        {isAdmin && <Tab value="users" label={t('admin.tabUsers')} />}
+        <Tab value="hours" label={t('admin.tabHours')} />
+      </Tabs>
       {shown === 'products' && <ProductsAdmin />}
       {shown === 'orders' && <OrdersAdmin />}
       {shown === 'users' && <UsersAdmin currentUserId={user.id} />}
