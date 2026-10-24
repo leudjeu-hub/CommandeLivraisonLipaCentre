@@ -161,10 +161,13 @@ test('commandes : filtrer, voir le détail, changer le statut', async ({ page })
   const order = (id, extra = {}) => ({
     id, kind: 'order', customer_name: 'Awa', phone: '+237 690 00 00 00', status: 'new', total: 3000,
     delivery_fee: 1000, area: 'Bastos', address: 'Près de l’ambassade', slot: 'Matin', payment: 'Orange Money',
-    notes: null, created_at: '2026-10-24T08:30:00Z',
+    notes: null, created_at: '2026-10-24T08:30:00Z', status_changed_at: null,
     items: [{ id: 1, product_id: 2, product_name: 'Stylo bleu', quantity: 6, unit_price: 500, line_total: 3000 }], ...extra,
   });
-  const orders = [order(2), order(1, { customer_name: 'Paul', status: 'delivered', kind: 'quote', items: [], total: 0 })];
+  const orders = [
+    order(3, { customer_name: 'Zoé', status: 'cancelled', status_changed_at: '2026-10-24T10:00:00Z' }),
+    order(2), order(1, { customer_name: 'Paul', status: 'delivered', kind: 'quote', items: [], total: 0 }),
+  ];
   const patches = [];
   await page.route(/\/orders\/(\d+\/status)?$/, (route) => {
     const req = route.request();
@@ -181,9 +184,14 @@ test('commandes : filtrer, voir le détail, changer le statut', async ({ page })
   await expect(orderRows).toHaveCount(1);
   await expect(orderRows.first()).toContainText('N° 2 · Awa');
   await expect(orderRows.first()).toContainText('4 000 FCFA');
-  await page.getByRole('button', { name: /Toutes \(2\)/ }).click();
-  await expect(orderRows).toHaveCount(2);
-  await expect(orderRows.nth(1)).toContainText('Devis');
+  await page.getByRole('button', { name: /Toutes \(3\)/ }).click();
+  await expect(orderRows).toHaveCount(3);
+  await expect(orderRows.nth(2)).toContainText('Devis');
+  await page.getByRole('button', { name: /Annulées \(1\)/ }).click();
+  await expect(page.getByText('supprimées définitivement 30 jours')).toBeVisible();
+  await expect(orderRows).toHaveCount(1);
+  await expect(orderRows.first()).toContainText('Supprimée le 23/11/2026');
+  await page.getByRole('button', { name: /À traiter \(1\)/ }).click();
 
   await orderRows.first().getByRole('button', { name: 'Détails' }).click();
   await expect(orderRows.first()).toContainText('6 × Stylo bleu');

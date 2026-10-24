@@ -54,6 +54,11 @@ export default function OrdersAdmin() {
     }
   };
 
+  // Même règle que l'API : 30 jours après l'annulation (ou la création, pour les anciennes)
+  const purgeDate = (o: Order) =>
+    new Date(new Date(o.status_changed_at ?? o.created_at).getTime() + 30 * 86_400_000)
+      .toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
+
   const date = (iso: string) =>
     new Date(iso).toLocaleString(locale, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
@@ -75,6 +80,7 @@ export default function OrdersAdmin() {
           <ToggleButton key={f} value={f}>{t(`orders.filter_${f}`)} ({counts[f]})</ToggleButton>
         ))}
       </ToggleButtonGroup>
+      {filter === 'cancelled' && <Alert severity="info" sx={{ mb: 2 }}>{t('orders.purgeInfo')}</Alert>}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {!orders && !error && <Typography color="text.secondary">{t('admin.loading')}</Typography>}
       {orders && shown.length === 0 && <Typography color="text.secondary">{t('orders.empty')}</Typography>}
@@ -94,6 +100,9 @@ export default function OrdersAdmin() {
                   </Typography>
                   <Stack direction="row" spacing={0.5} sx={{ mt: 0.5, flexWrap: 'wrap' }}>
                     <Chip size="small" color={STATUS_COLOR[o.status]} label={t(`orders.status.${o.status}`)} />
+                    {o.status === 'cancelled' && (
+                      <Chip size="small" variant="outlined" label={t('orders.purgeOn', { date: purgeDate(o) })} />
+                    )}
                     {o.kind === 'quote' && <Chip size="small" variant="outlined" label={t('orders.quote')} />}
                     {o.kind === 'order' && (
                       <Chip size="small" variant="outlined" label={money(o.total + (fee ?? 0), locale)} />
