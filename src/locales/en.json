@@ -122,11 +122,14 @@
   },
   "result": {
     "title": "Your summary is ready",
-    "text": "Send it to the bookshop via WhatsApp: your order will be confirmed by message or phone.",
+    "text": "Send it to the bookshop via WhatsApp or e-mail: your order will be confirmed by message or phone.",
     "whatsapp": "Send via WhatsApp",
+    "email": "Send by e-mail",
+    "emailSubjectOrder": "Order – {{name}}",
+    "emailSubjectQuote": "Quote request – {{name}}",
     "download": "Download",
     "copy": "Copy text",
-    "afterSend": "Has your message been sent on WhatsApp? Empty your basket so you don't send the same order again by mistake.",
+    "afterSend": "Has your message been sent (WhatsApp or e-mail)? Empty your basket so you don't send the same order again by mistake.",
     "clearCart": "Empty my basket",
     "keepCart": "Keep my basket"
   },

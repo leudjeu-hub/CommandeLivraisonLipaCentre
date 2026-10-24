@@ -106,7 +106,11 @@ export default function CheckoutPage() {
     setShowResult(true);
   };
 
-  const handleWhatsAppClick = () => {
+  // Ouvre l'application mail du client (mailto:) avec le récapitulatif ; aucun envoi côté serveur
+  const emailSubject = t(type === 'quote' ? 'result.emailSubjectQuote' : 'result.emailSubjectOrder', { name });
+  const mailtoHref = `mailto:${SHOP.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(summary)}`;
+
+  const handleSendClick = () => {
     if (type !== 'quote' && items.length > 0) setShowAfterSend(true);
   };
 
@@ -267,9 +271,12 @@ export default function CheckoutPage() {
               href={`https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(summary)}`}
               target="_blank"
               rel="noopener"
-              onClick={handleWhatsAppClick}
+              onClick={handleSendClick}
             >
               {t('result.whatsapp')}
+            </Button>
+            <Button variant="contained" href={mailtoHref} onClick={handleSendClick}>
+              {t('result.email')}
             </Button>
             <Button variant="outlined" onClick={handleDownload}>{t('result.download')}</Button>
             <Button variant="outlined" onClick={handleCopy}>{t('result.copy')}</Button>

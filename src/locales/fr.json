@@ -122,11 +122,14 @@
   },
   "result": {
     "title": "Votre récapitulatif est prêt",
-    "text": "Envoyez-le à la librairie par WhatsApp : votre commande sera confirmée par message ou par téléphone.",
+    "text": "Envoyez-le à la librairie par WhatsApp ou par e-mail : votre commande sera confirmée par message ou par téléphone.",
     "whatsapp": "Envoyer par WhatsApp",
+    "email": "Envoyer par e-mail",
+    "emailSubjectOrder": "Bon de commande – {{name}}",
+    "emailSubjectQuote": "Demande de devis – {{name}}",
     "download": "Télécharger",
     "copy": "Copier le texte",
-    "afterSend": "Votre message est parti sur WhatsApp ? Videz votre panier pour ne pas renvoyer la même commande par erreur.",
+    "afterSend": "Votre message est parti (WhatsApp ou e-mail) ? Videz votre panier pour ne pas renvoyer la même commande par erreur.",
     "clearCart": "Vider mon panier",
     "keepCart": "Garder le panier"
   },

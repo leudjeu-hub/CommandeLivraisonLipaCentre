@@ -88,6 +88,14 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   const text = decodeURIComponent(href.split('?text=')[1]);
   expect(text).toContain('Client Test');
   expect(text).toContain('Essos');
+
+  const mail = page.getByRole('link', { name: 'Envoyer par e-mail' });
+  await expect(mail).toBeVisible();
+  const mailHref = await mail.getAttribute('href');
+  expect(mailHref.startsWith('mailto:Lipacentre237@gmail.com?subject=')).toBe(true);
+  const params = new URLSearchParams(mailHref.split('?')[1]);
+  expect(params.get('subject')).toBe('Bon de commande – Client Test');
+  expect(params.get('body')).toBe(text);
 });
 
 test('article sur devis : ouvre la demande de devis', async ({ page }) => {
