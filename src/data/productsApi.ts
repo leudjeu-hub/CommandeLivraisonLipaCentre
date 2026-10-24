@@ -68,7 +68,7 @@ export async function request<T>(path: string, init?: RequestInit & { timeout?: 
   const timer = controller ? setTimeout(() => controller.abort(), timeout) : undefined;
   let res: Response;
   try {
-    res = await fetch(import.meta.env.VITE_API_URL + path, { ...options, headers, signal: controller?.signal });
+    res = await fetch(import.meta.env.VITE_API_URL + path, controller ? { ...options, headers, signal: controller.signal } : { ...options, headers });
   } catch {
     clearTimeout(timer);
     throw new ApiError(
