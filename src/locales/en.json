@@ -201,6 +201,7 @@
   "admin": {
     "eyebrow": "Administration",
     "title": "Manage items",
+    "titleManager": "Management",
     "intro": "Changes are saved on the server and show up straight away in the site's catalogue.",
     "new": "New item",
     "edit": "Edit",
@@ -244,7 +245,7 @@
     "tabProducts": "Items",
     "tabOrders": "Orders",
     "tabUsers": "Users",
-    "usersIntro": "An employee clocks in from “My account”. A manager also sees and corrects the team's hours (not their own). An administrator also manages products and accounts. A blocked account can no longer log in. The last administrator cannot be demoted, blocked or deleted.",
+    "usersIntro": "An employee clocks in from “My account”. A manager also manages orders, and sees and corrects the team's hours (not their own). An administrator also manages products and accounts. A blocked account can no longer log in. The last administrator cannot be demoted, blocked or deleted.",
     "you": "you",
     "roleChanged": "Role of {{email}} changed.",
     "tabHours": "Hours",

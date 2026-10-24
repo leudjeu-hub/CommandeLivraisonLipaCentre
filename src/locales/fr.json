@@ -201,6 +201,7 @@
   "admin": {
     "eyebrow": "Administration",
     "title": "Gestion des articles",
+    "titleManager": "Gestion",
     "intro": "Les modifications sont enregistrées sur le serveur et apparaissent aussitôt dans le catalogue du site.",
     "new": "Nouvel article",
     "edit": "Modifier",
@@ -244,7 +245,7 @@
     "tabProducts": "Articles",
     "tabOrders": "Commandes",
     "tabUsers": "Utilisateurs",
-    "usersIntro": "Un employé pointe ses heures depuis « Mon compte ». Un responsable voit et corrige aussi les heures de l'équipe (pas les siennes). Un administrateur gère en plus les articles et les comptes. Un compte bloqué ne peut plus se connecter. Le dernier administrateur ne peut être ni rétrogradé, ni bloqué, ni supprimé.",
+    "usersIntro": "Un employé pointe ses heures depuis « Mon compte ». Un responsable gère aussi les commandes, et voit et corrige les heures de l'équipe (pas les siennes). Un administrateur gère en plus les articles et les comptes. Un compte bloqué ne peut plus se connecter. Le dernier administrateur ne peut être ni rétrogradé, ni bloqué, ni supprimé.",
     "you": "vous",
     "roleChanged": "Rôle de {{email}} modifié.",
     "tabHours": "Heures",
