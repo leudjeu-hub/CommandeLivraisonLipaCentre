@@ -10,7 +10,8 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Poids (clients en 3G) : seul l'accueil est dans le fichier principal ; les autres pages sont chargées
   à part (`lazy` dans `src/App.tsx`) et celles du parcours de commande préchargées après l'affichage.
   React et react-router sont dans un fichier `react-*.js` séparé (gardé en cache d'une mise en ligne à
-  l'autre). Ne pas regrouper MUI dans un fichier à part : cela ramènerait tous ses composants dans la
+  l'autre). Avant React, `#root` contient un écran statique (`index.html` + `src/shell.css` : titre,
+  WhatsApp, téléphone), remplacé au premier rendu ; c'est aussi la page vue sans JavaScript. Ne pas regrouper MUI dans un fichier à part : cela ramènerait tous ses composants dans la
   première visite.
 - Images (photos, logo, favicon) : `public/img/`, copiées telles quelles dans `dist/img/`. Dans le code,
   les préfixer par `import.meta.env.BASE_URL` (le site publié vit sous `/CommandeLivraisonLipaCentre/`).
@@ -30,7 +31,8 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Articles : `useCatalogue()` / `useProducts()` (`src/data/useProducts.ts`). La dernière liste reçue de
   `GET /products/` est gardée dans localStorage (`centre-catalogue`) et affichée tout de suite au retour,
   puis remplacée par la réponse de l'API (serveur Render en veille : ~40 s). Première visite : statut
-  `loading` (« Chargement du catalogue… »). API injoignable et rien en mémoire → statut `unavailable` :
+  `loading` (« Chargement du catalogue… », avec un lien WhatsApp) ; `GET /products/` est abandonné après
+  60 s (`PRODUCTS_TIMEOUT`). API injoignable et rien en mémoire → statut `unavailable` :
   message avec « Commander par WhatsApp » et « Réessayer » (`src/components/CatalogueUnavailable.tsx`),
   jamais d'articles inventés (décision d'Alain, 2026-10-22 ; `catalogue.ts` n'a plus d'articles).
 - Catalogue (~1 500 articles) : `/catalogue` affiche 24 cartes puis « Afficher plus » ; Gestion > Articles

@@ -56,20 +56,28 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
   onUnauthorized = handler;
 }
 
-export async function request<T>(path: string, init?: RequestInit): Promise<T> {
+// timeout (ms) : au-delà, la requête est abandonnée comme si le serveur était injoignable
+// (sans délai, une connexion figée en 3G laisserait « Chargement… » affiché indéfiniment)
+export async function request<T>(path: string, init?: RequestInit & { timeout?: number }): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
+  const { timeout, ...options } = init ?? {};
+  // AbortController + setTimeout plutôt qu'AbortSignal.timeout(), absent des navigateurs un peu anciens
+  const controller = timeout ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), timeout) : undefined;
   let res: Response;
   try {
-    res = await fetch(import.meta.env.VITE_API_URL + path, { ...init, headers });
+    res = await fetch(import.meta.env.VITE_API_URL + path, controller ? { ...options, headers, signal: controller.signal } : { ...options, headers });
   } catch {
+    clearTimeout(timer);
     throw new ApiError(
       import.meta.env.DEV
         ? 'API injoignable (http://localhost:8000). Est-elle démarrée ?'
         : 'Serveur injoignable. Vérifiez votre connexion et réessayez.'
     );
   }
+  clearTimeout(timer);
   if (res.status === 401 && token) onUnauthorized?.();
   if (res.status === 204) return undefined as T;
   const body = await res.json().catch(() => null);
@@ -84,7 +92,9 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
-export const listProducts = () => request<ApiProduct[]>('/products/');
+// Une minute : le serveur Render en veille met ~40 s à répondre (message « Chargement… » du catalogue)
+export const PRODUCTS_TIMEOUT = 60_000;
+export const listProducts = () => request<ApiProduct[]>('/products/', { timeout: PRODUCTS_TIMEOUT });
 
 export const createProduct = (input: ProductInput) =>
   request<ApiProduct>('/products/', { method: 'POST', body: JSON.stringify(input) });

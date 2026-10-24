@@ -2,7 +2,7 @@ import { useDeferredValue, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Chip, Container, InputAdornment, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { CATEGORIES, type Product } from '../data/catalogue';
+import { CATEGORIES, whatsappLink, type Product } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
 import CatalogueUnavailable from '../components/CatalogueUnavailable';
@@ -136,9 +136,14 @@ export default function CataloguePage() {
       {status === 'unavailable' ? (
         <CatalogueUnavailable onRetry={retry} />
       ) : status === 'loading' ? (
-        <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', py: 6 }}>
-          {t('catalogue.loading')}
-        </Typography>
+        // Première visite, serveur en veille : une autre issue que l'attente
+        <Box sx={{ textAlign: 'center', py: 6 }} role="status">
+          <Typography variant="body1" color="text.secondary">{t('catalogue.loading')}</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>{t('catalogue.loadingWhatsapp')}</Typography>
+          <Button variant="outlined" color="success" href={whatsappLink(t('catalogue.unavailableWhatsapp'))} target="_blank" rel="noopener" sx={{ mt: 1.5, bgcolor: '#fff' }}>
+            {t('catalogue.orderWhatsapp')}
+          </Button>
+        </Box>
       ) : filtered.length === 0 ? (
         <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', py: 6 }}>
           {t('common.noResults')}

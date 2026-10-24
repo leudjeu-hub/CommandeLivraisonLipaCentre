@@ -5,7 +5,7 @@ import {
   ToggleButton, ToggleButtonGroup, Typography,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { money } from '../data/catalogue';
+import { money, PAYMENT_LABELS, SLOT_LABELS } from '../data/catalogue';
 import {
   customerWhatsApp, listOrders, ORDER_STATUSES, setOrderStatus, type Order, type OrderStatus,
 } from '../data/ordersApi';
@@ -116,8 +116,8 @@ export default function OrdersAdmin() {
               <Collapse in={open === o.id} unmountOnExit>
                 <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
                   <Detail label={t('orders.address')} value={o.address} />
-                  <Detail label={t('orders.slot')} value={o.slot} />
-                  <Detail label={t('orders.payment')} value={o.payment} />
+                  <Detail label={t('orders.slot')} value={o.slot && SLOT_LABELS[o.slot] ? t(SLOT_LABELS[o.slot]) : o.slot} />
+                  <Detail label={t('orders.payment')} value={o.payment && PAYMENT_LABELS[o.payment] ? t(PAYMENT_LABELS[o.payment]) : o.payment} />
                   <Detail label={t('orders.notes')} value={o.notes} />
                   {o.items.length > 0 && (
                     <Box component="ul" sx={{ pl: 2.5, my: 1 }}>

@@ -21,7 +21,7 @@
     "intro": "Books, school supplies and office stationery. Fill your basket in a few clicks for home delivery in Yaoundé, with payment on delivery.",
     "cta": "Browse the catalogue",
     "list": "My school list",
-    "channels": "Phone · WhatsApp · Online order"
+    "whatsapp": "Prefer to text? Order on WhatsApp"
   },
   "strip": {
     "title": "How it works",
@@ -43,6 +43,7 @@
     "otherFamily": "Other items",
     "noteLive": "Prices in FCFA, confirmed by the bookshop before delivery",
     "loading": "Loading the catalogue… (up to a minute if the server was asleep)",
+    "loadingWhatsapp": "In a hurry? Send us your list on WhatsApp while you wait.",
     "more": "Show more ({{count}} left)",
     "unavailable": "The catalogue is temporarily unavailable (server unreachable). Try again in a moment, or send us your list directly by WhatsApp.",
     "orderWhatsapp": "Order by WhatsApp",
@@ -74,6 +75,7 @@
     "services": "Stationery, books and delivery service.",
     "address": "Carrefour Abbia, opposite the Manège, Yaoundé, Cameroon",
     "phone": "Tel.: +237 6 93 24 03 96",
+    "whatsapp": "Message us on WhatsApp",
     "hours": "Opening hours",
     "weekdays": "Monday – Friday",
     "saturday": "Saturday",
@@ -99,6 +101,9 @@
   "form": {
     "orderTitle": "Delivery in Yaoundé",
     "quoteTitle": "Your quote request",
+    "quoteWhatsapp": "Is your list on paper? Take a photo and send it to us on WhatsApp: we will prepare the quote.",
+    "quoteWhatsappCta": "Send the photo on WhatsApp",
+    "quoteWhatsappText": "Hello, here is my school list for a quote: ",
     "intro": "Your summary is prepared here. It is only sent to the bookshop if you click \"Send via WhatsApp\".",
     "name": "Recipient's name",
     "phone": "Phone",
@@ -111,11 +116,14 @@
     "slotPhone": "To be arranged by phone",
     "payment": "Payment on delivery",
     "paymentCash": "Cash",
+    "paymentOrange": "Orange Money",
+    "paymentMtn": "MTN MoMo",
     "notes": "Instructions or school list",
     "consent": "I understand that prices, stock and delivery time must be confirmed by the bookshop.",
     "submit": "Create my summary",
     "slotHelp": "To be confirmed by the bookshop.",
     "paymentHelp": "Orange Money and MTN MoMo subject to activation.",
+    "notSpecified": "To be arranged",
     "phoneHelp": "Cameroonian number, e.g. 6 93 24 03 96",
     "errPhone": "Invalid number: 9 digits starting with 6 or 2 (+237 optional).",
     "emptyOrder": "Your basket is empty: add items before preparing your order."

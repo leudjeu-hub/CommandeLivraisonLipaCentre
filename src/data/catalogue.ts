@@ -40,6 +40,22 @@ export const SHOP = {
   email: 'Lipacentre237@gmail.com',
 };
 
+// Lien WhatsApp vers la librairie, avec un début de message facultatif
+export const whatsappLink = (text?: string) =>
+  `https://wa.me/${SHOP.whatsapp}` + (text ? `?text=${encodeURIComponent(text)}` : '');
+
+// Créneau et paiement : valeur enregistrée → clé du libellé (récapitulatif, Gestion > Commandes)
+export const SLOT_LABELS: Record<string, string> = {
+  morning: 'form.slotMorning',
+  afternoon: 'form.slotAfternoon',
+  phone: 'form.slotPhone',
+};
+export const PAYMENT_LABELS: Record<string, string> = {
+  cash: 'form.paymentCash',
+  orange: 'form.paymentOrange',
+  mtn: 'form.paymentMtn',
+};
+
 export const DELIVERY_RULES: DeliveryRules = {
   freeFrom: 25000,
   freeZones: [1, 2],

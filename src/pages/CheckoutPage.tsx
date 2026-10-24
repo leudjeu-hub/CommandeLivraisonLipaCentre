@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
-import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../data/catalogue';
+import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP, SLOT_LABELS, PAYMENT_LABELS, whatsappLink } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
 import { showToast } from '../components/Toast';
 import CatalogueUnavailable from '../components/CatalogueUnavailable';
@@ -70,8 +70,9 @@ export default function CheckoutPage() {
       t('common.sumPhone') + phone,
       t('common.sumArea') + (area === OTHER_AREA ? areaOther : area),
       t('common.sumAddress') + address,
-      t('common.sumSlot') + slot,
-      t('common.sumPayment') + payment,
+      // Libellés traduits (pas « morning » ni « cash ») ; rien choisi : « À convenir »
+      t('common.sumSlot') + (slot ? t(SLOT_LABELS[slot]) : t('form.notSpecified')),
+      t('common.sumPayment') + (payment ? t(PAYMENT_LABELS[payment]) : t('form.notSpecified')),
       '',
     ];
     if (type !== 'quote') {
@@ -174,6 +175,16 @@ export default function CheckoutPage() {
 
       <Alert severity="info" sx={{ mb: 3 }}>{t('form.intro')}</Alert>
 
+      {/* Liste scolaire sur papier : la photo par WhatsApp évite de tout retaper */}
+      {type === 'quote' && !showResult && (
+        <Alert severity="success" icon={false} sx={{ mb: 3, flexDirection: 'column', alignItems: 'flex-start' }}>
+          {t('form.quoteWhatsapp')}
+          <Button variant="contained" color="success" href={whatsappLink(t('form.quoteWhatsappText'))} target="_blank" rel="noopener" sx={{ mt: 1.5 }}>
+            {t('form.quoteWhatsappCta')}
+          </Button>
+        </Alert>
+      )}
+
       {/* Rappel du panier : le client voit ce qu'il commande sans revenir en arrière */}
       {type === 'order' && cartProducts.length > 0 && !showResult && (
         <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
@@ -251,9 +262,7 @@ export default function CheckoutPage() {
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel id="slot-label">{t('form.slot')}</InputLabel>
             <Select labelId="slot-label" value={slot} onChange={(e) => setSlot(e.target.value)} label={t('form.slot')}>
-              <MenuItem value="morning">{t('form.slotMorning')}</MenuItem>
-              <MenuItem value="afternoon">{t('form.slotAfternoon')}</MenuItem>
-              <MenuItem value="phone">{t('form.slotPhone')}</MenuItem>
+              {Object.entries(SLOT_LABELS).map(([value, key]) => <MenuItem key={value} value={value}>{t(key)}</MenuItem>)}
             </Select>
             <FormHelperText>{t('form.slotHelp')}</FormHelperText>
           </FormControl>
@@ -261,9 +270,7 @@ export default function CheckoutPage() {
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel id="payment-label">{t('form.payment')}</InputLabel>
             <Select labelId="payment-label" value={payment} onChange={(e) => setPayment(e.target.value)} label={t('form.payment')}>
-              <MenuItem value="cash">{t('form.paymentCash')}</MenuItem>
-              <MenuItem value="orange">Orange Money</MenuItem>
-              <MenuItem value="mtn">MTN MoMo</MenuItem>
+              {Object.entries(PAYMENT_LABELS).map(([value, key]) => <MenuItem key={value} value={value}>{t(key)}</MenuItem>)}
             </Select>
             <FormHelperText>{t('form.paymentHelp')}</FormHelperText>
           </FormControl>
@@ -293,7 +300,7 @@ export default function CheckoutPage() {
             <Button
               variant="contained"
               color="success"
-              href={`https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(summary)}`}
+              href={whatsappLink(summary)}
               target="_blank"
               rel="noopener"
               onClick={handleSendClick}
