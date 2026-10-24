@@ -98,6 +98,44 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   expect(params.get('body')).toBe(text);
 });
 
+test('commande enregistrée dans l’API une seule fois, à l’envoi du récapitulatif', async ({ page }) => {
+  const sent = [];
+  await mockApi(page, (path, req) => {
+    if (path === '/products/') return { body: PRODUCTS };
+    if (path === '/orders/submit') {
+      sent.push(req.postDataJSON());
+      return { status: 201, body: { id: 1 } };
+    }
+    return { status: 404 };
+  });
+  await page.goto('/catalogue');
+  await page.click('button:has-text("Ajouter")');
+  await page.click('button:has-text("Ajouter")');
+  await page.getByRole('button', { name: 'Panier' }).click();
+  await page.click('text=Préparer ma commande');
+  await page.getByLabel('Nom du destinataire').fill('Client Test');
+  await page.getByLabel('Téléphone').fill('+237 600 00 00 00');
+  await page.getByRole('combobox', { name: 'Quartier' }).click();
+  await page.getByRole('option', { name: 'Essos', exact: true }).click();
+  await page.getByLabel('Adresse et repère').fill('Près du rond-point');
+  await page.getByRole('checkbox').check();
+  await page.click('button:has-text("Créer mon récapitulatif")');
+  // Rien n'est enregistré tant que le client n'envoie pas
+  await expect(page.locator('text=Votre récapitulatif est prêt')).toBeVisible();
+  expect(sent).toHaveLength(0);
+
+  await page.getByRole('button', { name: 'Copier' }).click();
+  await expect.poll(() => sent.length).toBe(1);
+  expect(sent[0]).toMatchObject({
+    kind: 'order', customer_name: 'Client Test', phone: '+237 600 00 00 00', area: 'Essos',
+    address: 'Près du rond-point', delivery_fee: 2000,
+  });
+  expect(sent[0].items.reduce((n, i) => n + i.quantity, 0)).toBe(2);
+  await page.getByRole('button', { name: 'Copier' }).click();
+  await page.waitForTimeout(300);
+  expect(sent).toHaveLength(1);
+});
+
 test('article sur devis : ouvre la demande de devis', async ({ page }) => {
   await page.goto('/catalogue');
   await page.click('button:has-text("Demander")');

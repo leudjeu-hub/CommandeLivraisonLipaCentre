@@ -156,3 +156,41 @@ test('rechercher un article et afficher la liste par pages', async ({ page }) =>
   await page.getByLabel('Rechercher (article, n°, famille)').fill('stylos');
   await expect(rows(page)).toHaveCount(50);
 });
+
+test('commandes : filtrer, voir le détail, changer le statut', async ({ page }) => {
+  const order = (id, extra = {}) => ({
+    id, kind: 'order', customer_name: 'Awa', phone: '+237 690 00 00 00', status: 'new', total: 3000,
+    delivery_fee: 1000, area: 'Bastos', address: 'Près de l’ambassade', slot: 'Matin', payment: 'Orange Money',
+    notes: null, created_at: '2026-10-24T08:30:00Z',
+    items: [{ id: 1, product_id: 2, product_name: 'Stylo bleu', quantity: 6, unit_price: 500, line_total: 3000 }], ...extra,
+  });
+  const orders = [order(2), order(1, { customer_name: 'Paul', status: 'delivered', kind: 'quote', items: [], total: 0 })];
+  const patches = [];
+  await page.route(/\/orders\/(\d+\/status)?$/, (route) => {
+    const req = route.request();
+    if (req.method() === 'GET') return route.fulfill({ contentType: 'application/json', body: JSON.stringify(orders) });
+    const id = Number(new URL(req.url()).pathname.split('/')[2]);
+    patches.push([id, req.postDataJSON().status]);
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ...orders.find((o) => o.id === id), ...req.postDataJSON() }) });
+  });
+  await page.goto('/gestion');
+  await page.getByRole('tab', { name: 'Commandes' }).click();
+
+  const orderRows = page.getByTestId('order-row');
+  // « À traiter » par défaut : la commande livrée est masquée
+  await expect(orderRows).toHaveCount(1);
+  await expect(orderRows.first()).toContainText('N° 2 · Awa');
+  await expect(orderRows.first()).toContainText('4 000 FCFA');
+  await page.getByRole('button', { name: /Toutes \(2\)/ }).click();
+  await expect(orderRows).toHaveCount(2);
+  await expect(orderRows.nth(1)).toContainText('Devis');
+
+  await orderRows.first().getByRole('button', { name: 'Détails' }).click();
+  await expect(orderRows.first()).toContainText('6 × Stylo bleu');
+  await expect(orderRows.first()).toContainText('Orange Money');
+  await expect(orderRows.first().getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237690000000');
+  await orderRows.first().getByRole('combobox', { name: 'Statut' }).click();
+  await page.getByRole('option', { name: 'Confirmée' }).click();
+  await expect(orderRows.first()).toContainText('Confirmée');
+  expect(patches).toEqual([[2, 'confirmed']]);
+});
