@@ -47,9 +47,15 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   (jeton `centre-auth-token` dans localStorage, envoyé en `Authorization: Bearer` par `request()` de
   `src/data/productsApi.ts`). Rôles : `user` (client) et `admin`. Commander reste possible sans compte.
   Seul un 401 de l'API efface la session ; API injoignable → session gardée, `SessionWait` propose de réessayer.
-- Gestion (articles et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
+- Gestion (articles, commandes et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
   uniquement** (les responsables n'y voient que les heures) (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
   dans le dépôt de l'API ; un admin peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).
+- Commandes : le formulaire (`CheckoutPage.tsx`) enregistre chaque commande ou devis via le
+  `POST /orders/submit` public de l'API (`src/data/ordersApi.ts`), une fois par récapitulatif, au premier
+  envoi (WhatsApp, e-mail, copie, téléchargement), sans attendre la réponse (`keepalive`) : API en veille
+  ou en erreur → la commande part quand même par WhatsApp / e-mail. Pas de retrait de stock. Gestion >
+  Commandes (`src/pages/OrdersAdmin.tsx`, admins) : filtre par statut (« À traiter » = nouvelle +
+  confirmée), détail, changement de statut, lien WhatsApp vers le client.
 - Import / export CSV des articles (Gestion > Articles, `src/pages/CatalogueImport.tsx`) : l'export et le modèle
   sont générés dans le navigateur (`;`, BOM UTF-8 pour Excel) ; l'import envoie le texte du fichier à
   `POST /products/import` (aperçu `dry_run`, puis import). C'est l'API qui vérifie et renvoie les erreurs par

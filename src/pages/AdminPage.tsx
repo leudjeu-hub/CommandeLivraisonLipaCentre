@@ -25,9 +25,10 @@ import {
   canManageHours, deleteUser, listUsers, ROLE_LABEL, ROLES, setActive, setRole, type Role, type User,
 } from '../data/authApi';
 import HoursAdmin from './HoursAdmin';
+import OrdersAdmin from './OrdersAdmin';
 import CatalogueImport, { exportCatalogue } from './CatalogueImport';
 
-// Gestion des articles, des comptes et des heures : administrateurs ; les responsables n'ont que
+// Gestion des articles, des commandes, des comptes et des heures : administrateurs ; les responsables n'ont que
 // l'onglet « Heures » (l'API le vérifie aussi).
 
 type FormValues = Record<
@@ -103,7 +104,7 @@ export default function AdminPage() {
   const { t } = useTranslation();
   const { user, ready, offline } = useAuth();
   const { pathname } = useLocation();
-  const [tab, setTab] = useState<'products' | 'users' | 'hours'>('products');
+  const [tab, setTab] = useState<'products' | 'orders' | 'users' | 'hours'>('products');
 
   if (!ready || (offline && !user)) return <SessionWait />;
   if (!user) return <Navigate to={`/connexion?suite=${encodeURIComponent(pathname)}`} replace />;
@@ -124,13 +125,15 @@ export default function AdminPage() {
       <Typography variant="overline" color="secondary">{t('admin.eyebrow')}</Typography>
       <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>{isAdmin ? t('admin.title') : t('admin.tabHours')}</Typography>
       {isAdmin && (
-        <Tabs value={shown} onChange={(_, v) => setTab(v)} sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={shown} onChange={(_, v) => setTab(v)} variant="scrollable" allowScrollButtonsMobile sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
           <Tab value="products" label={t('admin.tabProducts')} />
+          <Tab value="orders" label={t('admin.tabOrders')} />
           <Tab value="users" label={t('admin.tabUsers')} />
           <Tab value="hours" label={t('admin.tabHours')} />
         </Tabs>
       )}
       {shown === 'products' && <ProductsAdmin />}
+      {shown === 'orders' && <OrdersAdmin />}
       {shown === 'users' && <UsersAdmin currentUserId={user.id} />}
       {shown === 'hours' && <HoursAdmin currentUser={user} />}
     </Container>

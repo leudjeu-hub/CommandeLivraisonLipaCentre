@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
@@ -7,6 +7,7 @@ import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP } from '../da
 import { useCatalogue } from '../data/useProducts';
 import { showToast } from '../components/Toast';
 import CatalogueUnavailable from '../components/CatalogueUnavailable';
+import { submitOrder } from '../data/ordersApi';
 
 const OTHER_AREA = '__autre';
 // Numéro camerounais : 9 chiffres commençant par 6 (mobile) ou 2 (fixe), indicatif +237 facultatif
@@ -110,7 +111,29 @@ export default function CheckoutPage() {
   const emailSubject = t(type === 'quote' ? 'result.emailSubjectQuote' : 'result.emailSubjectOrder', { name });
   const mailtoHref = `mailto:${SHOP.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(summary)}`;
 
+  // Enregistre la commande pour Gestion > Commandes, une fois par récapitulatif, dès que le client
+  // l'envoie (WhatsApp, e-mail, copie ou téléchargement). Sans attendre ni bloquer : si l'API est
+  // en veille ou injoignable, la commande part quand même par WhatsApp ou e-mail.
+  const recorded = useRef('');
+  const recordOrder = () => {
+    if (recorded.current === summary) return;
+    recorded.current = summary;
+    submitOrder({
+      kind: type,
+      customer_name: name,
+      phone,
+      area: area === OTHER_AREA ? areaOther : area,
+      address,
+      slot,
+      payment,
+      notes,
+      delivery_fee: fee,
+      items: type === 'order' ? cartProducts.map(({ product, quantity }) => ({ product_id: product.id, quantity })) : [],
+    }).catch(() => undefined);
+  };
+
   const handleSendClick = () => {
+    recordOrder();
     if (type !== 'quote' && items.length > 0) setShowAfterSend(true);
   };
 
@@ -122,6 +145,7 @@ export default function CheckoutPage() {
   };
 
   const handleDownload = () => {
+    recordOrder();
     const blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -133,6 +157,7 @@ export default function CheckoutPage() {
   };
 
   const handleCopy = async () => {
+    recordOrder();
     try {
       await navigator.clipboard.writeText(summary);
       showToast(t('toast.copied'));
