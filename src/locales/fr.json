@@ -420,6 +420,8 @@
     "whatsapp": "Écrire sur WhatsApp",
     "call": "Appeler",
     "statusChanged": "Commande n° {{id}} : {{status}}.",
+    "purgeInfo": "Les commandes annulées sont supprimées définitivement 30 jours après leur annulation.",
+    "purgeOn": "Supprimée le {{date}}",
     "status": {
       "new": "Nouvelle",
       "confirmed": "Confirmée",

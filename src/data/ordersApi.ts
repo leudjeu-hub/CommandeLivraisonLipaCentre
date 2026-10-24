@@ -31,6 +31,8 @@ export interface Order {
   payment: string | null;
   notes: string | null;
   created_at: string;
+  // Dernier changement de statut : une commande annulée est supprimée 30 jours après
+  status_changed_at: string | null;
   items: OrderItem[];
 }
 

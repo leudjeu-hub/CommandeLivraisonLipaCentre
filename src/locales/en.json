@@ -420,6 +420,8 @@
     "whatsapp": "Message on WhatsApp",
     "call": "Call",
     "statusChanged": "Order no. {{id}}: {{status}}.",
+    "purgeInfo": "Cancelled orders are permanently deleted 30 days after they were cancelled.",
+    "purgeOn": "Deleted on {{date}}",
     "status": {
       "new": "New",
       "confirmed": "Confirmed",

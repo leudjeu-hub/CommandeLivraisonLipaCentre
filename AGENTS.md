@@ -55,7 +55,8 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   envoi (WhatsApp, e-mail, copie, téléchargement), sans attendre la réponse (`keepalive`) : API en veille
   ou en erreur → la commande part quand même par WhatsApp / e-mail. Pas de retrait de stock. Gestion >
   Commandes (`src/pages/OrdersAdmin.tsx`, admins) : filtre par statut (« À traiter » = nouvelle +
-  confirmée), détail, changement de statut, lien WhatsApp vers le client.
+  confirmée), détail, changement de statut, lien WhatsApp vers le client. Les commandes annulées
+  sont supprimées par l'API 30 jours après l'annulation (date affichée sur la commande).
 - Import / export CSV des articles (Gestion > Articles, `src/pages/CatalogueImport.tsx`) : l'export et le modèle
   sont générés dans le navigateur (`;`, BOM UTF-8 pour Excel) ; l'import envoie le texte du fichier à
   `POST /products/import` (aperçu `dry_run`, puis import). C'est l'API qui vérifie et renvoie les erreurs par
