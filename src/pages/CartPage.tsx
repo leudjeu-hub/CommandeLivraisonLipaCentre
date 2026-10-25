@@ -60,7 +60,7 @@ export default function CartPage() {
                   <Box sx={{ minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 600, lineHeight: 1.3 }}>{name}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {product.price !== null ? money(product.price, locale) : t('common.onQuote')}
+                      {t('common.ref', { id: product.id })} · {product.price !== null ? money(product.price, locale) : t('common.onQuote')}
                     </Typography>
                     {/* Quantité : boutons −/+ de 44 px, plus faciles au doigt qu'un champ numérique */}
                     <Box role="group" aria-label={t('common.quantity', { name })} sx={{ display: 'inline-flex', alignItems: 'center', mt: 1, border: '1px solid', borderColor: 'divider', borderRadius: 999 }}>

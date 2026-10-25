@@ -261,7 +261,7 @@ function ProductsAdmin() {
 
   // Recherche par nom, numéro (#12) ou famille
   const matching = useMemo(
-    () => (products ?? []).filter((p) => !query || `#${p.id} ${fold(p.name)} ${fold(p.family ?? '')}`.includes(query)),
+    () => (products ?? []).filter((p) => !query || `#${p.id} ref. ${p.id} ${fold(p.name)} ${fold(p.family ?? '')}`.includes(query)),
     [products, query]
   );
 
@@ -379,7 +379,7 @@ function ProductsAdmin() {
             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
               <Typography sx={{ fontWeight: 700 }}>{p.name}</Typography>
               <Typography variant="body2" color="text.secondary">
-                #{p.id} · {t(`cat.${p.category}`)} · {p.price === null ? t('common.onQuote') : money(Math.round(p.price), locale)}
+                {t('common.ref', { id: p.id })} · {t(`cat.${p.category}`)} · {p.price === null ? t('common.onQuote') : money(Math.round(p.price), locale)}
                 {' · '}{t('admin.stock', { count: p.stock })}
               </Typography>
               {!p.available && <Chip size="small" label={t('admin.hidden')} sx={{ mt: 0.5 }} />}

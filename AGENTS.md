@@ -82,6 +82,8 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Tests : projet Playwright `admin` (Vite sur 4201, API simulée : `admin.spec.cjs`, `auth.spec.cjs`, `time.spec.cjs`) ;
   `site.spec.cjs` (build de production) simule l'API Render (indisponible par défaut, `mockApi()`).
   `npm test` vérifie que le build n'appelle que l'API Render (CSP, pas de `localhost:8000`).
+- Référence d'un article = son n° dans l'API (`id`, colonne `id` du CSV), affichée « Réf. 12 » (`common.ref`)
+  dans le panier, le bon de commande (WhatsApp / e-mail), Gestion > Commandes et Gestion > Articles.
 - Les zones de livraison ne viennent pas de l’API (elle n’en fournit pas).
 
 ## Tests

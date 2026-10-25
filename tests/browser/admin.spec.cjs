@@ -151,9 +151,9 @@ test('rechercher un article et afficher la liste par pages', async ({ page }) =>
   await expect(rows(page)).toHaveCount(50);
   await page.getByRole('button', { name: /Afficher plus \(70/ }).click();
   await expect(rows(page)).toHaveCount(120);
-  await page.getByLabel('Rechercher (article, n°, famille)').fill('#7');
+  await page.getByLabel('Rechercher (article, réf., famille)').fill('#7');
   await expect(rows(page)).toHaveCount(11); // #7 et #70 à #79
-  await page.getByLabel('Rechercher (article, n°, famille)').fill('stylos');
+  await page.getByLabel('Rechercher (article, réf., famille)').fill('stylos');
   await expect(rows(page)).toHaveCount(50);
 });
 
@@ -194,7 +194,7 @@ test('commandes : filtrer, voir le détail, changer le statut', async ({ page })
   await page.getByRole('button', { name: /À traiter \(1\)/ }).click();
 
   await orderRows.first().getByRole('button', { name: 'Détails' }).click();
-  await expect(orderRows.first()).toContainText('6 × Stylo bleu');
+  await expect(orderRows.first()).toContainText('6 × Stylo bleu (Réf. 2) : 3 000 FCFA');
   await expect(orderRows.first()).toContainText('Orange Money');
   await expect(orderRows.first().getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237690000000');
   await orderRows.first().getByRole('combobox', { name: 'Statut' }).click();

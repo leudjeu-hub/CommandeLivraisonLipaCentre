@@ -123,7 +123,7 @@ export default function OrdersAdmin() {
                     <Box component="ul" sx={{ pl: 2.5, my: 1 }}>
                       {o.items.map((i) => (
                         <li key={i.id}>
-                          {i.quantity} × {i.product_name} : {i.unit_price ? money(i.line_total, locale) : t('orders.onRequest')}
+                          {i.quantity} × {i.product_name} ({t('common.ref', { id: i.product_id })}) : {i.unit_price ? money(i.line_total, locale) : t('orders.onRequest')}
                         </li>
                       ))}
                     </Box>

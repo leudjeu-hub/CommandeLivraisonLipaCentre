@@ -77,7 +77,7 @@ export default function CheckoutPage() {
     if (type !== 'quote') {
       cartProducts.forEach(({ product, quantity }) => {
         const pname = i18n.language === 'fr' ? product.name : product.en?.name || product.name;
-        lines.push(`${quantity} × ${pname} : ${money((product.price || 0) * quantity, locale)}`);
+        lines.push(`${quantity} × ${pname} (${t('common.ref', { id: product.id })}) : ${money((product.price || 0) * quantity, locale)}`);
       });
       lines.push(t('common.sumTotal') + money(subtotal, locale));
     }
@@ -190,7 +190,7 @@ export default function CheckoutPage() {
           <Typography variant="overline" color="text.secondary">{t('cart.summary')}</Typography>
           {cartProducts.map(({ product, quantity }) => (
             <Box key={product.id} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, fontSize: '0.9375rem' }}>
-              <span>{quantity} × {i18n.language === 'fr' ? product.name : product.en?.name || product.name}</span>
+              <span>{quantity} × {i18n.language === 'fr' ? product.name : product.en?.name || product.name} ({t('common.ref', { id: product.id })})</span>
               {product.price !== null && <Box component="span" sx={{ whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{money(product.price * quantity, locale)}</Box>}
             </Box>
           ))}
