@@ -80,13 +80,6 @@ export default function HomePage() {
                 {t('hero.list')}
               </Button>
             </Box>
-            {/* WhatsApp, le canal que beaucoup de clients préfèrent : joignable dès l'accueil */}
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              <MuiLink href={whatsappLink(t('catalogue.unavailableWhatsapp'))} target="_blank" rel="noopener" sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, minHeight: 44, fontWeight: 600, color: 'success.main' }}>
-                <WhatsAppIcon fontSize="small" aria-hidden />
-                {t('hero.whatsapp')}
-              </MuiLink>
-            </Typography>
           </Box>
 
           {/* Engagements : livraison, gratuité, paiement (les questions que l'on se pose avant de commander) */}
@@ -236,6 +229,14 @@ export default function HomePage() {
             </Box>
           ))}
         </Box>
+        {/* WhatsApp après la dernière réponse : la question n'y est pas, on écrit directement à la librairie
+            (l'en-tête et le pied de page gardent aussi un lien WhatsApp) */}
+        <Typography sx={{ mt: 3 }}>
+          <MuiLink href={whatsappLink(t('catalogue.unavailableWhatsapp'))} target="_blank" rel="noopener" sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, minHeight: 44, fontWeight: 600, color: 'success.main' }}>
+            <WhatsAppIcon fontSize="small" aria-hidden />
+            {t('hero.whatsapp')}
+          </MuiLink>
+        </Typography>
       </Container>
     </>
   );

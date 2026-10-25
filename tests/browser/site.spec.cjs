@@ -406,6 +406,8 @@ test('récapitulatif : créneau et paiement en toutes lettres, pas « morning »
 test('WhatsApp joignable : accueil, pied de page, devis et attente du catalogue', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('link', { name: /Commandez sur WhatsApp/ })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396\?text=/);
+  // Placé après la dernière réponse des questions fréquentes (demande d'Alain, 2026-10-25)
+  await expect(page.locator('section[aria-labelledby="faq-title"]').getByRole('link', { name: /Commandez sur WhatsApp/ })).toBeVisible();
   await expect(page.locator('footer').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
   await page.goto('/commander?type=quote');
   await expect(page.getByRole('link', { name: 'Envoyer la photo par WhatsApp' })).toBeVisible();
