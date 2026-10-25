@@ -493,5 +493,10 @@
     "order": "Your order · Librairie Papeterie du Centre",
     "cart": "Your basket · Librairie Papeterie du Centre",
     "other": "Librairie Papeterie du Centre · Yaoundé"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "This address does not exist or no longer exists. The catalogue, delivery prices and ordering by WhatsApp are one tap away.",
+    "home": "Back to the home page"
   }
 }

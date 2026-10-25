@@ -559,3 +559,27 @@ test('pied de page : le lien Google Maps est nommé d’après son texte visible
   const map = page.getByRole('contentinfo').getByRole('link', { name: 'Nous trouver sur Google Maps (nouvel onglet)' });
   await expect(map).toContainText('Nous trouver');
 });
+
+test('adresse inconnue : page « introuvable » avec en-tête, liens et WhatsApp, jamais une page vide', async ({ page }) => {
+  await page.goto('/produit/12');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Page introuvable');
+  await expect(page.getByRole('main').getByRole('link', { name: "Retour à l'accueil" })).toHaveAttribute('href', /\/CommandeLivraisonLipaCentre\/$|^\/$/);
+  await expect(page.getByRole('main').getByRole('link', { name: 'Le catalogue' })).toHaveAttribute('href', /\/catalogue$/);
+  await expect(page.getByRole('main').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
+  await expect(page.getByRole('contentinfo')).toBeVisible();
+});
+
+test('page chargée à part : pas de pied de page avant la page (aucun décalage de mise en page)', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__cls = 0;
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) if (!e.hadRecentInput) window.__cls += e.value;
+    }).observe({ type: 'layout-shift', buffered: true });
+  });
+  for (const path of ['/catalogue', '/livraison', '/commander?type=quote']) {
+    await page.goto(path);
+    await expect(page.getByRole('contentinfo')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    expect(await page.evaluate(() => window.__cls), path).toBeLessThan(0.05);
+  }
+});
