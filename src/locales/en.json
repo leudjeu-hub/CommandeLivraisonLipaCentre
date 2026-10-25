@@ -17,7 +17,7 @@
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
     "title": "Books and supplies delivered to your door in Yaoundé",
-    "intro": "For school and office. Delivery from {{fee}}, same day in {{zones}} zones. You pay on delivery: cash, Orange Money or MTN MoMo.",
+    "intro": "For school and the office: choose online or on WhatsApp, we prepare and deliver. Nothing to pay in advance.",
     "cta": "Order my supplies",
     "list": "Send my school list",
     "whatsapp": "Easier? Order on WhatsApp"
@@ -350,7 +350,11 @@
   },
   "home": {
     "selectionTitle": "Essentials",
-    "selectionCta": "See the whole catalogue"
+    "selectionCta": "See the whole catalogue",
+    "catsTitle": "What are you looking for?",
+    "catScolaire": "Exercise books, pens, geometry sets, school bags: everything for class.",
+    "catBureau": "Paper, binders, accessories: for the office and home.",
+    "catLivres": "School books, dictionaries and reading, in the right edition."
   },
   "clock": {
     "title": "Time clock",

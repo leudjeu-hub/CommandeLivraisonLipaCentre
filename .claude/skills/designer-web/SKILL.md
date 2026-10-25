@@ -25,10 +25,10 @@ propose mieux. Pas de compliments de politesse.
 
 | Élément | Valeur | Usage |
 |---|---|---|
-| Vert profond | `--green: #153e35` | texte, boutons principaux, bandeaux |
+| Bleu marine (logo) | `#16325c` (`primary` dans `src/theme.ts`) | texte, boutons principaux, bandeaux |
 | Crème | `--cream: #f7f4ec` | fond de page |
 | Ocre | `--orange: #e5ab55` / `#9b6631` | accents, titres en italique |
-| Gris-vert | `--muted: #67736b` | textes secondaires |
+| Gris-bleu | `#545e6e` | textes secondaires |
 | Vert WhatsApp | `#0b7a43` | **uniquement** le bouton d'envoi WhatsApp |
 | Titres | Georgia, serif | ton « librairie », chaleureux et sérieux |
 | Texte | Arial, sans-serif | lisibilité, police système, 0 Ko à charger |

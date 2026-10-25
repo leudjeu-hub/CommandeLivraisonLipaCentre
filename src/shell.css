@@ -1,9 +1,9 @@
 /* Écran de démarrage (index.html, avant React) : mêmes couleurs que le thème MUI (src/theme.ts) */
-body { margin: 0; background: #f7f4ec; color: #1a2e28; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
-.shell-bar { display: flex; align-items: center; min-height: 56px; padding: 0 16px; background: #153e35; }
+body { margin: 0; background: #f7f4ec; color: #1b2433; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+.shell-bar { display: flex; align-items: center; min-height: 56px; padding: 0 16px; background: #16325c; }
 .shell-main { max-width: 560px; margin: 0 auto; padding: 48px 16px; text-align: center; line-height: 1.6; }
 .shell-main h1 { margin: 0 0 16px; font: 400 2rem/1.15 Georgia, "Times New Roman", serif; }
-.shell-wait { color: #56615a; }
-.shell-main a { color: #153e35; font-weight: 600; }
+.shell-wait { color: #545e6e; }
+.shell-main a { color: #16325c; font-weight: 600; }
 .shell-btn { display: inline-block; min-height: 44px; padding: 10px 20px; box-sizing: border-box; border-radius: 10px; background: #0b7a43; color: #fff !important; text-decoration: none; }
-.shell-info { margin-top: 32px; font-size: 0.875rem; color: #56615a; }
+.shell-info { margin-top: 32px; font-size: 0.875rem; color: #545e6e; }

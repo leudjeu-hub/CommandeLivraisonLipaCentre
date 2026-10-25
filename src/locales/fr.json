@@ -17,7 +17,7 @@
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
     "title": "Livres et fournitures livrés à domicile à Yaoundé",
-    "intro": "Pour l'école et le bureau. Livraison dès {{fee}}, le jour même en zones {{zones}}. Vous payez à la réception : espèces, Orange Money ou MTN MoMo.",
+    "intro": "Pour l'école et le bureau : choisissez en ligne ou sur WhatsApp, nous préparons et livrons. Rien à payer d'avance.",
     "cta": "Commander mes fournitures",
     "list": "Envoyer ma liste scolaire",
     "whatsapp": "Plus simple ? Commandez sur WhatsApp"
@@ -350,7 +350,11 @@
   },
   "home": {
     "selectionTitle": "Les incontournables",
-    "selectionCta": "Voir tout le catalogue"
+    "selectionCta": "Voir tout le catalogue",
+    "catsTitle": "Que cherchez-vous ?",
+    "catScolaire": "Cahiers, stylos, géométrie, cartables : tout pour la classe.",
+    "catBureau": "Papier, classeurs, accessoires : pour l’entreprise et la maison.",
+    "catLivres": "Livres scolaires, dictionnaires et lectures, à la bonne édition."
   },
   "clock": {
     "title": "Pointage",
