@@ -483,3 +483,34 @@ test('accueil : engagements chiffrés, écoles et entreprises, FAQ ; titre propr
   await page.goto('/livraison');
   await expect(page).toHaveTitle(/Livraison à Yaoundé/);
 });
+
+// WCAG 2.4.7 / 1.4.11 : MUI met `outline: 0` sur ses boutons ; le thème doit redonner un anneau visible,
+// marine sur fond clair, ocre clair sur les bandeaux marine (en-tête, pied de page)
+test('focus clavier : anneau visible sur les contrôles MUI, couleur adaptée au fond', async ({ page }) => {
+  await page.goto('/');
+  const ringOf = (locator) => locator.evaluate((e) => {
+    const s = getComputedStyle(e);
+    return `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}`;
+  });
+  const NAVY = 'solid 3px rgb(22, 50, 92)';
+  const OCHRE = 'solid 3px rgb(229, 171, 85)';
+  const stops = [
+    [page.getByRole('link', { name: 'Commander mes fournitures' }), NAVY],
+    [page.getByRole('link', { name: 'Voir les tarifs de votre quartier' }), NAVY],
+    [page.getByRole('contentinfo').getByRole('link', { name: /^Nous trouver/ }), OCHRE],
+    [page.getByRole('button', { name: 'Conditions et confidentialité' }), OCHRE],
+  ];
+  // Tabulation jusqu'à chaque élément : :focus-visible ne s'applique qu'au focus clavier
+  for (const [locator, ring] of stops) {
+    for (let i = 0; i < 40 && !(await locator.evaluate((e) => e === document.activeElement)); i++) await page.keyboard.press('Tab');
+    // poll : la règle « mouvement réduit » (0,01 ms sur tout) laisse une transition infime sur la couleur
+    await expect.poll(() => ringOf(locator)).toBe(ring);
+  }
+});
+
+// WCAG 2.5.3 : le nom accessible contient le texte visible (commande vocale « cliquer sur Nous trouver »)
+test('pied de page : le lien Google Maps est nommé d’après son texte visible', async ({ page }) => {
+  await page.goto('/');
+  const map = page.getByRole('contentinfo').getByRole('link', { name: 'Nous trouver sur Google Maps (nouvel onglet)' });
+  await expect(map).toContainText('Nous trouver');
+});

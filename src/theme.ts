@@ -9,6 +9,14 @@ const CREAM = '#f7f4ec';
 const OCHRE = '#8a5a2b';
 const SERIF = 'Georgia, "Times New Roman", serif';
 
+// Focus clavier (WCAG 2.4.7 et 1.4.11) : anneau marine sur fond clair (11,6:1 sur crème), ocre clair sur
+// les bandeaux marine (6,3:1) ; un bandeau sombre bascule l'anneau avec `'--focus-ring': FOCUS_ON_DARK`.
+// L'ocre clair seul ne fait que 2:1 sur crème, d'où les deux couleurs.
+export const FOCUS_ON_DARK = '#e5ab55';
+const focusRing = { outline: `3px solid var(--focus-ring, ${NAVY})`, outlineOffset: 2 };
+// Dans un menu ou une liste, l'anneau est dessiné à l'intérieur pour ne pas être coupé par le conteneur
+const focusRingInset = { ...focusRing, outlineOffset: -3 };
+
 export const theme = createTheme({
   palette: {
     primary: { main: NAVY, light: '#2b4c7e', dark: '#0e2240', contrastText: '#ffffff' },
@@ -38,11 +46,14 @@ export const theme = createTheme({
     button: { textTransform: 'none', fontWeight: 600, fontSize: '0.975rem' },
   },
   components: {
+    // ButtonBase (boutons, icônes, puces, éléments de menu) remet `outline: 0` : sans cette règle, aucun
+    // anneau n'apparaît sur ces contrôles au clavier
+    MuiButtonBase: { styleOverrides: { root: { '&.Mui-focusVisible': focusRing } } },
     MuiCssBaseline: {
       styleOverrides: {
         body: { WebkitFontSmoothing: 'antialiased' },
         // Focus clavier bien visible partout (le halo MUI seul est trop discret)
-        ':focus-visible': { outline: '3px solid #e5ab55', outlineOffset: 2 },
+        ':focus-visible': focusRing,
         '@media (prefers-reduced-motion: reduce)': {
           '*, *::before, *::after': { animationDuration: '0.01ms !important', transitionDuration: '0.01ms !important' },
         },
@@ -57,7 +68,11 @@ export const theme = createTheme({
       },
     },
     MuiIconButton: { styleOverrides: { root: { minWidth: 44, minHeight: 44 } } },
-    MuiChip: { styleOverrides: { root: { height: 40, borderRadius: 999, fontWeight: 600, fontSize: '0.9375rem' } } },
+    MuiChip: {
+      styleOverrides: { root: { height: 40, borderRadius: 999, fontWeight: 600, fontSize: '0.9375rem', '&.Mui-focusVisible': focusRing } },
+    },
+    MuiMenuItem: { styleOverrides: { root: { '&.Mui-focusVisible': focusRingInset } } },
+    MuiListItemButton: { styleOverrides: { root: { '&.Mui-focusVisible': focusRingInset } } },
     // Cartes et panneaux : bordure fine + ombre douce plutôt que l'ombre « Material » marquée
     MuiPaper: {
       styleOverrides: {
@@ -69,7 +84,8 @@ export const theme = createTheme({
     MuiAlert: { styleOverrides: { root: { borderRadius: 10, alignItems: 'center' } } },
     MuiTextField: { defaultProps: { variant: 'outlined' } },
     MuiOutlinedInput: { styleOverrides: { root: { backgroundColor: '#ffffff' } } },
-    MuiLink: { defaultProps: { underline: 'hover' } },
-    MuiAppBar: { styleOverrides: { root: { borderBottom: '1px solid rgba(255,255,255,0.08)' } } },
+    // Lien en <button> (« Conditions… ») : MUI met `outline: auto`, remplacé par le même anneau
+    MuiLink: { defaultProps: { underline: 'hover' }, styleOverrides: { root: { '&.Mui-focusVisible, &:focus-visible': focusRing } } },
+    MuiAppBar: { styleOverrides: { root: { borderBottom: '1px solid rgba(255,255,255,0.08)', '--focus-ring': FOCUS_ON_DARK } } },
   },
 });
