@@ -260,6 +260,8 @@
     "tabHours": "Heures",
     "role": "Rôle",
     "blocked": "Bloqué",
+    "lastLogin": "Dernière connexion : {{date}}",
+    "lastLoginNone": "Dernière connexion : pas encore enregistrée",
     "block": "Bloquer",
     "unblock": "Débloquer",
     "userBlocked": "{{email}} est bloqué.",
