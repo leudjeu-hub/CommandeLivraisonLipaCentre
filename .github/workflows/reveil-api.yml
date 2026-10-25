@@ -3,20 +3,43 @@
 # Un appel à GET / (statut, quelques octets) toutes les 10 min, de 5 h à 23 h à Yaoundé (UTC+1) :
 # ~570 h par mois, sous les 750 h gratuites de Render. La nuit, le serveur se rendort.
 # GitHub peut retarder ou sauter une exécution planifiée : un réveil reste possible de temps en temps.
+#
+# Alerte : si l'API ne répond pas (après 3 essais), un ticket « API injoignable » est ouvert et
+# assigné au propriétaire du dépôt (GitHub l'envoie par e-mail) ; il est refermé tout seul quand
+# l'API répond de nouveau. Un seul ticket par panne, pas un e-mail toutes les 10 min. Ce n'est
+# qu'un filet : la sonde UptimeRobot (toutes les 5 min, jour et nuit) prévient plus vite.
 name: Réveil de l'API
 on:
   schedule:
     - cron: '*/10 4-21 * * *'
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  issues: write
 
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TITLE: API injoignable
+      API_URL: https://papeterie-api-kshr.onrender.com/
     steps:
-      # Un échec n'est qu'un avertissement : pas de courriel d'erreur toutes les 10 min si Render est en panne
       - run: |
-          curl -fsS --max-time 120 --retry 2 -o /dev/null -w "HTTP %{http_code} en %{time_total} s\n" https://papeterie-api-kshr.onrender.com/ \
-            || echo "::warning::API Render injoignable"
+          number=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+          if curl -fsS --max-time 120 --retry 2 --retry-delay 30 --retry-all-errors -o /dev/null \
+              -w "HTTP %{http_code} en %{time_total} s\n" "$API_URL"; then
+            if [ -n "$number" ]; then
+              gh issue close "$number" --comment "L'API répond de nouveau ($(date -u '+%d/%m %H:%M') UTC)."
+            fi
+          else
+            echo "::warning::API Render injoignable"
+            if [ -z "$number" ]; then
+              gh issue create --title "$TITLE" --assignee "${{ github.repository_owner }}" \
+                --body "$API_URL ne répond pas depuis $(date -u '+%d/%m %H:%M') UTC (3 essais en 2 min environ).
+          Le site affiche alors sa copie du catalogue ; les commandes partent encore par WhatsApp mais ne sont plus enregistrées dans Gestion > Commandes.
+          À regarder : Render (Events, Logs) puis Neon. Ce ticket se ferme tout seul quand l'API répond."
+            fi
+          fi
