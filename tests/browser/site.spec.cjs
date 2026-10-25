@@ -462,6 +462,15 @@ test('copie publiée : les articles indisponibles n’apparaissent pas', async (
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(7);
 });
 
+test('accueil : un raccourci de catégorie ouvre le catalogue filtré', async ({ page }) => {
+  await snapshot(page, PRODUCTS);
+  await page.goto('/');
+  await page.getByRole('link', { name: /^Bureau/ }).click();
+  await expect(page).toHaveURL(/\/catalogue\?cat=Bureau$/);
+  await expect(page.getByRole('button', { name: 'Bureau', pressed: true })).toBeVisible();
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(PRODUCTS.filter((p) => p.category === 'Bureau').length);
+});
+
 test('accueil : engagements chiffrés, écoles et entreprises, FAQ ; titre propre à chaque page', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/Librairie Yaoundé/);

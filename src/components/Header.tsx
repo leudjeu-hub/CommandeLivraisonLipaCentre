@@ -55,7 +55,7 @@ export default function Header() {
   return (
     <AppBar position="sticky" color="primary" elevation={0}>
       <Toolbar>
-        {/* Logo à mot-symbole blanc : la version d'origine (bleu marine) est illisible sur le vert */}
+        {/* Logo à mot-symbole blanc : le texte bleu marine du logo d'origine disparaîtrait sur le bandeau marine */}
         <Link to="/" aria-label={t('brand.name')} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit', flexGrow: 1, minHeight: 44 }}>
           <img src={`${import.meta.env.BASE_URL}img/logo-clair.svg`} alt="" width={138} height={38} />
         </Link>

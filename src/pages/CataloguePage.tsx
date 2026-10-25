@@ -1,4 +1,5 @@
 import { useDeferredValue, useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Chip, Container, InputAdornment, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -18,7 +19,9 @@ export default function CataloguePage() {
   const [search, setSearch] = useState('');
   // La saisie reste fluide : le filtrage suit avec un léger retard si le téléphone est lent
   const query = useDeferredValue(search);
-  const [category, setCategory] = useState('Tout');
+  // Catégorie de départ : lien de l'accueil (/catalogue?cat=Scolaire), sinon « Tout »
+  const [params] = useSearchParams();
+  const [category, setCategory] = useState(() => (CATEGORIES.includes(params.get('cat') ?? '') ? params.get('cat')! : 'Tout'));
   // Famille choisie dans la catégorie ('' = toutes) ; les familles viennent de l'API (Gestion, import CSV)
   const [family, setFamily] = useState('');
 
