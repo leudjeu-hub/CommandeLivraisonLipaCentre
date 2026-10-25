@@ -421,3 +421,44 @@ test('écran de démarrage remplacé par le site une fois React lancé', async (
   await expect(page.locator('h1')).toContainText('Une page');
   await expect(page.locator('.shell')).toHaveCount(0);
 });
+
+// Copie du catalogue publiée avec le site (dist/catalogue.json, vide dans les tests sauf ici)
+const snapshot = (page, list) =>
+  page.route('**/catalogue.json', (route) => route.fulfill({ contentType: 'application/json', body: JSON.stringify(list) }));
+
+test('première visite, serveur en veille : la copie du catalogue s’affiche sans attendre l’API', async ({ page }) => {
+  await snapshot(page, PRODUCTS);
+  await page.route(`${API}/products/`, () => {}); // l'API ne répond jamais
+  await page.goto('/catalogue');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(8);
+  await expect(page.locator('text=Chargement du catalogue')).toHaveCount(0);
+});
+
+test('API injoignable à la première visite, copie publiée : articles de la copie, pas « indisponible »', async ({ page }) => {
+  await snapshot(page, PRODUCTS);
+  await mockApi(page, () => ({ status: 503, body: { detail: 'indisponible' } }));
+  await page.goto('/catalogue');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(8);
+  await expect(page.getByTestId('catalogue-unavailable')).toHaveCount(0);
+});
+
+test('copie publiée puis réponse de l’API : la liste de l’API remplace la copie', async ({ page }) => {
+  await snapshot(page, PRODUCTS);
+  let answer;
+  const api = new Promise((resolve) => (answer = resolve));
+  await page.route(`${API}/products/`, async (route) => {
+    await api;
+    route.fulfill({ contentType: 'application/json', body: JSON.stringify(PRODUCTS.slice(0, 2)) });
+  });
+  await page.goto('/catalogue');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(8);
+  answer();
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(2);
+});
+
+test('copie publiée : les articles indisponibles n’apparaissent pas', async ({ page }) => {
+  await snapshot(page, PRODUCTS.map((p, i) => ({ ...p, available: i !== 0 })));
+  await page.route(`${API}/products/`, () => {});
+  await page.goto('/catalogue');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(7);
+});

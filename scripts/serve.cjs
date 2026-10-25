@@ -19,6 +19,7 @@ const types = {
   '.webp': 'image/webp',
   '.ico': 'image/x-icon',
   '.xml': 'application/xml',
+  '.json': 'application/json; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8'
 };
 // Même CSP que la balise meta du index.html construit (qui autorise l'API, voir vite.config.ts),

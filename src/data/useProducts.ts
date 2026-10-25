@@ -5,8 +5,10 @@ import { listProducts, type ApiProduct } from './productsApi';
 // Les articles viennent de l'API (GET /products/ : API locale en développement, Render sur le site
 // publié). La dernière liste reçue est gardée dans le navigateur : au retour, le catalogue s'affiche
 // tout de suite (puis se met à jour), même si le serveur Render est en veille (~40 s) ou injoignable.
-// Première visite sans réponse : « chargement ». API injoignable et rien en mémoire : « indisponible »
-// (message avec WhatsApp), jamais d'articles inventés.
+// Première visite : la copie du catalogue publiée avec le site (catalogue.json, tirée de l'API à
+// chaque déploiement, voir scripts/catalogue-snapshot.mjs) s'affiche en attendant l'API ; sans copie,
+// « chargement ». API injoignable et ni mémoire ni copie : « indisponible » (message avec WhatsApp),
+// jamais d'articles inventés.
 
 // 'loading' : rien encore ; 'cache' : liste de la visite précédente ; 'api' : liste à jour ;
 // 'unavailable' : API injoignable et aucune liste en mémoire
@@ -66,6 +68,19 @@ function writeCache(list: Product[]) {
   }
 }
 
+// Copie publiée avec le site : [] dans le dépôt (public/catalogue.json), remplie au déploiement
+let snapshot: Promise<Product[] | null> | null = null;
+function loadSnapshot(): Promise<Product[] | null> {
+  snapshot ??= fetch(`${import.meta.env.BASE_URL}catalogue.json`)
+    .then((res) => (res.ok ? res.json() : null))
+    .then((list: ApiProduct[] | null) => {
+      if (!Array.isArray(list) || list.length === 0) return null;
+      return list.filter((p) => p.available !== false).map(fromApi).sort((a, b) => a.id - b.id);
+    })
+    .catch(() => null);
+  return snapshot;
+}
+
 let loaded: Catalogue | null = null;
 let pending: Promise<Catalogue> | null = null;
 
@@ -76,9 +91,9 @@ function loadFromApi(): Promise<Catalogue> {
       writeCache(products);
       return { products, status: 'api' as const };
     })
-    .catch((err) => {
-      const previous = readCache();
-      console.warn(`Catalogue : ${err.message} ${previous ? 'Liste de la visite précédente utilisée.' : 'Catalogue indisponible.'}`);
+    .catch(async (err) => {
+      const previous = readCache() ?? (await loadSnapshot());
+      console.warn(`Catalogue : ${err.message} ${previous ? 'Liste de la visite précédente ou copie du site utilisée.' : 'Catalogue indisponible.'}`);
       return previous ? { products: previous, status: 'cache' as const } : { products: [], status: 'unavailable' as const };
     })
     .then((result) => (loaded = result));
@@ -101,6 +116,12 @@ export function useCatalogue(): Catalogue & { retry: () => void } {
   const [catalogue, setCatalogue] = useState<Catalogue>(initial);
   useEffect(() => {
     let active = true;
+    // Première visite : la copie du site d'abord (quelques secondes), l'API ensuite (jusqu'à ~40 s)
+    if (!loaded && !readCache()) {
+      loadSnapshot().then((list) => {
+        if (active && list && !loaded) setCatalogue({ products: list, status: 'cache' });
+      });
+    }
     loadFromApi().then((result) => active && setCatalogue(result));
     return () => {
       active = false;
