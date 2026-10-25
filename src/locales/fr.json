@@ -17,7 +17,7 @@
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
     "title": "Livres et fournitures livrés à domicile à Yaoundé",
-    "intro": "Pour l'école et le bureau. Livraison dès {{fee}}, le jour même en zones {{zones}}. Vous payez à la réception.",
+    "intro": "Pour l'école et le bureau. Livraison dès {{fee}}, le jour même en zones {{zones}}. Vous payez à la réception : espèces, Orange Money ou MTN MoMo.",
     "cta": "Commander mes fournitures",
     "list": "Envoyer ma liste scolaire",
     "whatsapp": "Plus simple ? Commandez sur WhatsApp"
@@ -72,7 +72,7 @@
     "zonesTitle": "Frais de livraison par quartier"
   },
   "footer": {
-    "services": "Vente de fournitures de papeterie, livres et service de livraison.",
+    "services": "Vente de fournitures de papeterie, livres et service de livraison. Paiement à la réception : espèces, Orange Money ou MTN MoMo.",
     "address": "Carrefour Abbia, face Manège, Yaoundé, Cameroun",
     "phone": "Tél. : +237 6 93 24 03 96",
     "whatsapp": "Écrire sur WhatsApp",
@@ -104,7 +104,7 @@
     "quoteWhatsapp": "Votre liste est sur papier ? Prenez-la en photo et envoyez-la-nous par WhatsApp : nous préparons le devis.",
     "quoteWhatsappCta": "Envoyer la photo par WhatsApp",
     "quoteWhatsappText": "Bonjour, voici ma liste scolaire pour un devis : ",
-    "intro": "Votre récapitulatif est préparé ici. Il n'est envoyé à la librairie que si vous cliquez sur « Envoyer par WhatsApp ».",
+    "intro": "Votre récapitulatif est préparé ici. Il n'est envoyé à la librairie que si vous cliquez sur « Envoyer ma commande sur WhatsApp ».",
     "name": "Nom du destinataire",
     "phone": "Téléphone",
     "area": "Quartier",
