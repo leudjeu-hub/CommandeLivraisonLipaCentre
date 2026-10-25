@@ -241,3 +241,17 @@ test('serveur en veille : la connexion abandonne au bout de 15 s, « Réessayer 
   await page.getByRole('button', { name: 'Réessayer' }).click();
   await expect(page.getByText(`Connecté en tant que ${ADMIN.email}`)).toBeVisible();
 });
+
+test('bouton « Votre compte » en haut : connexion si déconnecté, page du compte si connecté', async ({ page }) => {
+  await page.goto('/');
+  const banner = page.getByRole('banner');
+  await banner.getByRole('link', { name: 'Votre compte' }).click();
+  await expect(page).toHaveURL(/\/connexion$/);
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+  await page.goto('/');
+  await banner.getByRole('link', { name: 'Votre compte' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+});
