@@ -201,6 +201,58 @@ test('article sur devis : ouvre la demande de devis', async ({ page }) => {
   await expect(page.locator('h1')).toContainText('Votre demande de devis');
 });
 
+test('quartier manquant : message sous le champ visible, focus sur la liste, astérisque', async ({ page }) => {
+  await page.goto('/catalogue');
+  await page.click('button:has-text("Ajouter")');
+  await page.click('button:has-text("Ajouter")');
+  await page.goto('/commander');
+  await expect(page.locator('h1')).toHaveText('Votre commande');
+  await expect(page.locator('#area-label')).toContainText('*');
+  await page.getByLabel('Nom du destinataire').fill('Client Test');
+  await page.getByLabel('Téléphone').fill('+237 600 00 00 00');
+  await page.getByLabel('Adresse et repère').fill('Près du rond-point');
+  await page.click('button:has-text("Vérifier ma commande")');
+  const area = page.getByRole('combobox', { name: 'Quartier' });
+  await expect(page.getByText('Choisissez votre quartier')).toBeVisible();
+  await expect(area).toBeFocused();
+  await expect(area).toHaveAttribute('aria-describedby', 'area-error');
+  await expect(page.locator('text=Votre récapitulatif est prêt')).toHaveCount(0);
+  // Le message disparaît dès qu'un quartier est choisi
+  await area.click();
+  await page.getByRole('option', { name: 'Essos', exact: true }).click();
+  await expect(page.getByText('Choisissez votre quartier')).toHaveCount(0);
+});
+
+test('demande de devis : adresse facultative, textes « demande »', async ({ page }) => {
+  await page.goto('/commander?type=quote');
+  await expect(page.getByText('Votre demande est préparée ici')).toBeVisible();
+  await page.getByLabel('Nom du destinataire').fill('Parent Test');
+  await page.getByLabel('Téléphone').fill('6 93 24 03 96');
+  await page.getByRole('combobox', { name: 'Quartier' }).click();
+  await page.getByRole('option', { name: 'Essos', exact: true }).click();
+  await page.click('button:has-text("Vérifier ma demande")');
+  await expect(page.locator('pre')).toContainText('Adresse / repère : À convenir');
+});
+
+test('vignette sans photo : texte blanc lisible (≥ 4,5:1) même avec une couleur claire', async ({ page }) => {
+  const light = PRODUCTS.filter((p) => p.category === 'Bureau').map((p) => ({ ...p, image: null }));
+  light[0] = { ...light[0], color: null };
+  light[1] = { ...light[1], color: '#c6a157' };
+  await page.route(`${API}/products/`, (route) => route.fulfill({ contentType: 'application/json', body: JSON.stringify(light) }));
+  await page.goto('/catalogue');
+  await expect(page.getByText(light[1].name)).toBeVisible();
+  const ratios = await page.evaluate(() => {
+    const lum = (rgb) => rgb.map((c) => (c / 255 <= 0.04045 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4))
+      .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+    // Fond de la vignette = premier enfant de la carte
+    return [...document.querySelectorAll('[data-testid="product-card"] > :first-child')]
+      .map((e) => getComputedStyle(e).backgroundColor)
+      .map((c) => 1.05 / (lum(c.match(/\d+/g).slice(0, 3).map(Number)) + 0.05));
+  });
+  expect(ratios.length).toBeGreaterThan(0);
+  for (const r of ratios) expect(r).toBeGreaterThanOrEqual(4.5);
+});
+
 test('langue : passage en anglais', async ({ page, isMobile }) => {
   await page.goto('/');
   if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { Alert, Button, Container, Link, Paper, Stack, TextField, Typography } from '@mui/material';
@@ -13,6 +13,12 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Après connexion : retour à la page demandée (?suite=/gestion), seulement un chemin interne
 const safeNext = (next: string | null) => (next && /^\/(?!\/)/.test(next) ? next : '/compte');
 
+// Serveur Render en veille : ~40 s pour démarrer, chaque requête abandonnée après 15 s. On réessaie
+// tout seul jusqu'à 4 fois (≈ 1 min) au lieu d'afficher une erreur au bout de 15 s.
+const ATTEMPTS = 4;
+// Délai dépassé, ou passerelle Render qui répond pendant le démarrage
+const isWaking = (err: unknown) => err instanceof ApiError && (err.timedOut || [502, 503, 504].includes(err.status));
+
 export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const { t } = useTranslation();
   const auth = useAuth();
@@ -26,9 +32,20 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
-  // Délai dépassé (serveur en veille) : bouton « Réessayer » dans le message
+  // Toujours pas de réponse après tous les essais : bouton « Réessayer » dans le message
   const [timedOut, setTimedOut] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Essai en cours (1 à ATTEMPTS) : à partir du 2e, le message dit que le serveur démarre
+  const [attempt, setAttempt] = useState(1);
+  // Page quittée pendant l'attente : ne plus réessayer ni naviguer
+  const left = useRef(false);
+  useEffect(() => {
+    // Remis à false au montage : en développement, React monte, démonte puis remonte (StrictMode)
+    left.current = false;
+    return () => {
+      left.current = true;
+    };
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -44,13 +61,35 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
 
     setBusy(true);
     try {
-      if (isRegister) await auth.register(email.trim(), password);
-      else await auth.login(email.trim(), password);
+      let lateBefore = false;
+      for (let n = 1; ; n++) {
+        if (left.current) return;
+        setAttempt(n);
+        try {
+          if (isRegister) {
+            try {
+              await auth.register(email.trim(), password);
+            } catch (err) {
+              // Inscription dont la réponse s'est perdue (délai dépassé) : le compte existe peut-être déjà,
+              // et le nouvel essai répond 409. On se connecte alors avec les mêmes identifiants.
+              if (!(lateBefore && err instanceof ApiError && err.status === 409)) throw err;
+              await auth.login(email.trim(), password).catch(() => {
+                throw err;
+              });
+            }
+          } else await auth.login(email.trim(), password);
+          break;
+        } catch (err) {
+          if (!isWaking(err) || n >= ATTEMPTS) throw err;
+          lateBefore = true;
+        }
+      }
+      if (left.current) return;
       showToast(t('auth.welcome'));
       navigate(next, { replace: true });
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0;
-      const late = err instanceof ApiError && err.timedOut;
+      const late = isWaking(err);
       setTimedOut(late);
       setError(
         late ? t('auth.errTimeout')
@@ -120,7 +159,7 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
               {error}
             </Alert>
           )}
-          {busy && <Alert severity="info">{t('auth.slow')}</Alert>}
+          {busy && <Alert severity="info" role="status">{t(attempt > 1 ? 'auth.waking' : 'auth.slow', { n: attempt, total: ATTEMPTS })}</Alert>}
           <Button type="submit" variant="contained" size="large" disabled={busy} fullWidth>
             {isRegister ? t('auth.registerSubmit') : t('auth.loginSubmit')}
           </Button>

@@ -34,6 +34,9 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState(false);
   const [area, setArea] = useState('');
+  // Quartier manquant : message sous le champ (pas la bulle du navigateur sur le champ caché de MUI)
+  const [areaError, setAreaError] = useState(false);
+  const areaRef = useRef<HTMLDivElement>(null);
   const [areaOther, setAreaOther] = useState('');
   const [address, setAddress] = useState('');
   const [slot, setSlot] = useState('');
@@ -85,7 +88,7 @@ export default function CheckoutPage() {
       t('common.sumName') + name,
       t('common.sumPhone') + phone,
       t('common.sumArea') + (area === OTHER_AREA ? areaOther : area),
-      t('common.sumAddress') + address,
+      t('common.sumAddress') + (address.trim() || t('form.notSpecified')),
       // Libellés traduits (pas « morning » ni « cash ») ; rien choisi : « À convenir »
       t('common.sumSlot') + (slot ? t(SLOT_LABELS[slot]) : t('form.notSpecified')),
       t('common.sumPayment') + (payment ? t(PAYMENT_LABELS[payment]) : t('form.notSpecified')),
@@ -117,6 +120,11 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (!validPhone(phone)) {
       setPhoneError(true);
+      return;
+    }
+    if (!area) {
+      setAreaError(true);
+      areaRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus();
       return;
     }
     const ref = newReference();
@@ -195,7 +203,7 @@ export default function CheckoutPage() {
         {type === 'quote' ? t('form.quoteTitle') : t('form.orderTitle')}
       </Typography>
 
-      <Alert severity="info" sx={{ mb: 3 }}>{t('form.intro')}</Alert>
+      <Alert severity="info" sx={{ mb: 3 }}>{t(type === 'quote' ? 'form.introQuote' : 'form.intro')}</Alert>
 
       {/* Liste scolaire sur papier : la photo par WhatsApp évite de tout retaper */}
       {type === 'quote' && !showResult && (
@@ -255,9 +263,18 @@ export default function CheckoutPage() {
             sx={{ mb: 2 }}
           />
 
-          <FormControl fullWidth sx={{ mb: 2 }}>
+          {/* required sur le FormControl (astérisque, aria-required) et pas sur le Select : sinon le
+              navigateur valide l'<input> caché de MUI et affiche sa bulle hors de l'écran */}
+          <FormControl fullWidth required error={areaError} ref={areaRef} sx={{ mb: 2 }}>
             <InputLabel id="area-label">{t('form.area')}</InputLabel>
-            <Select labelId="area-label" value={area} onChange={(e) => setArea(e.target.value)} label={t('form.area')} required>
+            <Select
+              labelId="area-label"
+              value={area}
+              onChange={(e) => { setArea(e.target.value); setAreaError(false); }}
+              label={t('form.area')}
+              aria-describedby={areaError ? 'area-error' : undefined}
+              inputProps={{ required: false }}
+            >
               <MenuItem value="" disabled>{t('common.chooseArea')}</MenuItem>
               {/* Tous les quartiers, groupés par zone (MUI Select n'accepte pas de Fragment : liste à plat) */}
               {DELIVERY.flatMap((z) => [
@@ -269,6 +286,7 @@ export default function CheckoutPage() {
               <ListSubheader>{t('common.otherGroup')}</ListSubheader>
               <MenuItem value={OTHER_AREA}>{t('common.otherArea')}</MenuItem>
             </Select>
+            {areaError && <FormHelperText id="area-error">{t('form.errArea')}</FormHelperText>}
           </FormControl>
 
           {area === OTHER_AREA && (
@@ -279,7 +297,8 @@ export default function CheckoutPage() {
             <Alert severity="info" sx={{ mb: 2 }}>{feeLine}</Alert>
           )}
 
-          <TextField fullWidth required multiline rows={2} label={t('form.address')} value={address} onChange={(e) => setAddress(e.target.value)} sx={{ mb: 2 }} />
+          {/* Devis : l'adresse peut attendre, le nom et le téléphone suffisent pour envoyer un prix */}
+          <TextField fullWidth required={type !== 'quote'} multiline rows={2} label={t('form.address')} value={address} onChange={(e) => setAddress(e.target.value)} sx={{ mb: 2 }} />
 
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel id="slot-label">{t('form.slot')}</InputLabel>
@@ -302,7 +321,7 @@ export default function CheckoutPage() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t('form.confirmNote')}</Typography>
 
           <Button type="submit" variant="contained" fullWidth size="large">
-            {t('form.submit')}
+            {t(type === 'quote' ? 'form.submitQuote' : 'form.submit')}
           </Button>
         </Paper>
       ) : (
