@@ -6,6 +6,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import PhoneIcon from '@mui/icons-material/Phone';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { whatsappLink } from '../data/catalogue';
+import { FOCUS_ON_DARK } from '../theme';
 import { useAuth } from '../context/AuthContext';
 
 const MAP_URL =
@@ -20,7 +21,7 @@ export default function Footer() {
   const linkSx = { display: 'inline-flex', alignItems: 'center', gap: 1, minHeight: 44, color: 'inherit', fontWeight: 600 };
 
   return (
-    <Box component="footer" sx={{ bgcolor: 'primary.main', color: 'rgba(255,255,255,0.92)', mt: 8 }}>
+    <Box component="footer" sx={{ bgcolor: 'primary.main', color: 'rgba(255,255,255,0.92)', mt: 8, '--focus-ring': FOCUS_ON_DARK }}>
       <Container maxWidth="lg" sx={{ py: { xs: 5, md: 6 } }}>
         <Box sx={{ display: 'grid', gap: { xs: 4, md: 6 }, gridTemplateColumns: { xs: '1fr', md: '1.4fr 1fr 1fr' } }}>
           <Box>

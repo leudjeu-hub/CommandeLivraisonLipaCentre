@@ -100,8 +100,9 @@ export default function CataloguePage() {
           onChange={(e) => setSearch(e.target.value)}
           slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> } }}
         />
-        {/* Une seule ligne qui défile horizontalement sur mobile */}
-        <Box sx={{ display: 'flex', gap: 1, mt: 1.5, overflowX: 'auto', pb: 0.5, scrollbarWidth: 'none' }}>
+        {/* Une seule ligne qui défile horizontalement sur mobile ; marge de 6 px pour ne pas couper
+            l'anneau de focus des puces (5 px) */}
+        <Box sx={{ display: 'flex', gap: 1, mt: 0.75, mx: -0.75, p: 0.75, overflowX: 'auto', scrollbarWidth: 'none' }}>
           {CATEGORIES.map((c) => (
             <Chip
               key={c}
@@ -114,8 +115,9 @@ export default function CataloguePage() {
             />
           ))}
         </Box>
+        {/* Même marge de 6 px que la ligne des catégories */}
         {families.length > 0 && (
-          <Box role="group" aria-label={t('catalogue.families')} sx={{ display: 'flex', gap: 1, mt: 1, overflowX: 'auto', pb: 0.5, scrollbarWidth: 'none' }}>
+          <Box role="group" aria-label={t('catalogue.families')} sx={{ display: 'flex', gap: 1, mt: 0.25, mx: -0.75, p: 0.75, overflowX: 'auto', scrollbarWidth: 'none' }}>
             {['', ...families].map((f) => (
               <Chip
                 key={f || 'all'}
