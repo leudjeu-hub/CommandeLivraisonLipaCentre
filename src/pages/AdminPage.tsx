@@ -139,7 +139,11 @@ export default function AdminPage() {
 }
 
 function UsersAdmin({ currentUserId }: { currentUserId: number }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
+  const lastLogin = (iso: string | null | undefined) => iso
+    ? t('admin.lastLogin', { date: new Date(iso).toLocaleString(locale, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) })
+    : t('admin.lastLoginNone');
   const [users, setUsers] = useState<User[] | null>(null);
   const [error, setError] = useState('');
   const [toDelete, setToDelete] = useState<User | null>(null);
@@ -191,6 +195,7 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
                 <Chip size="small" label={t(ROLE_LABEL[u.role])} color={u.role === 'user' ? 'default' : 'primary'} />
                 {!u.is_active && <Chip size="small" color="error" label={t('admin.blocked')} />}
               </Stack>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{lastLogin(u.last_login_at)}</Typography>
             </Box>
             {/* Se retirer ses propres droits ou se bloquer ferait perdre l'accès à cette page */}
             {u.id !== currentUserId && (
@@ -265,8 +270,9 @@ function ProductsAdmin() {
     [products, query]
   );
 
+  // Toujours la liste à jour (pas le cache HTTP de 60 s), sinon une modification semblerait perdue
   const load = useCallback(() => {
-    listProducts()
+    listProducts(true)
       .then((list) => {
         setProducts([...list].sort((a, b) => a.id - b.id));
         setLoadError('');

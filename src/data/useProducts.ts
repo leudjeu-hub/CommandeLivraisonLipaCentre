@@ -83,10 +83,13 @@ function loadSnapshot(): Promise<Product[] | null> {
 
 let loaded: Catalogue | null = null;
 let pending: Promise<Catalogue> | null = null;
+// Après une modification : relire l'API sans passer par le cache HTTP du navigateur
+let stale = false;
 
 function loadFromApi(): Promise<Catalogue> {
-  pending ??= listProducts()
+  pending ??= listProducts(stale)
     .then((list) => {
+      stale = false;
       const products = list.filter((p) => p.available !== false).map(fromApi).sort((a, b) => a.id - b.id);
       writeCache(products);
       return { products, status: 'api' as const };
@@ -102,6 +105,7 @@ function loadFromApi(): Promise<Catalogue> {
 
 // Après une création, modification ou suppression : relire l'API au prochain affichage
 export function invalidateProducts() {
+  stale = true;
   loaded = null;
   pending = null;
 }

@@ -26,6 +26,8 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
+  // Délai dépassé (serveur en veille) : bouton « Réessayer » dans le message
+  const [timedOut, setTimedOut] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -37,6 +39,7 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
     if (isRegister && confirm !== password) found.confirm = t('auth.errConfirm');
     setErrors(found);
     setError('');
+    setTimedOut(false);
     if (Object.keys(found).length) return;
 
     setBusy(true);
@@ -47,8 +50,11 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       navigate(next, { replace: true });
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0;
+      const late = err instanceof ApiError && err.timedOut;
+      setTimedOut(late);
       setError(
-        status === 401 ? t('auth.errCredentials')
+        late ? t('auth.errTimeout')
+          : status === 401 ? t('auth.errCredentials')
           : status === 403 ? t('auth.errBlocked')
           : status === 409 ? t('auth.errTaken')
           : status === 429 ? t(isRegister ? 'auth.errTooManyRegister' : 'auth.errTooMany')
@@ -106,7 +112,14 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
               fullWidth
             />
           )}
-          {error && <Alert severity="error">{error}</Alert>}
+          {error && (
+            <Alert
+              severity="error"
+              action={timedOut ? <Button color="inherit" type="submit" disabled={busy}>{t('auth.retry')}</Button> : undefined}
+            >
+              {error}
+            </Alert>
+          )}
           {busy && <Alert severity="info">{t('auth.slow')}</Alert>}
           <Button type="submit" variant="contained" size="large" disabled={busy} fullWidth>
             {isRegister ? t('auth.registerSubmit') : t('auth.loginSubmit')}

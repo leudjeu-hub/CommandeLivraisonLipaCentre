@@ -104,6 +104,20 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   expect(params.get('body')).toBe(text);
 });
 
+test('lecture du catalogue sans Content-Type ni jeton : pas de requête préalable OPTIONS', async ({ page }) => {
+  const reads = [];
+  await mockApi(page, (path, req) => {
+    if (path === '/products/') reads.push(req.headers());
+    return { body: path === '/products/' ? PRODUCTS : null };
+  });
+  // Même connecté, la liste publique part sans jeton (un en-tête Authorization imposerait un OPTIONS)
+  await page.addInitScript(() => localStorage.setItem('centre-auth-token', 'jeton-test'));
+  await page.goto('/catalogue');
+  await expect.poll(() => reads.length).toBeGreaterThan(0);
+  expect(reads[0]['content-type']).toBeUndefined();
+  expect(reads[0].authorization).toBeUndefined();
+});
+
 test('commande enregistrée dans l’API une seule fois, à l’envoi du récapitulatif', async ({ page }) => {
   const sent = [];
   await mockApi(page, (path, req) => {
@@ -139,6 +153,35 @@ test('commande enregistrée dans l’API une seule fois, à l’envoi du récapi
   await page.getByRole('button', { name: 'Copier' }).click();
   await page.waitForTimeout(300);
   expect(sent).toHaveLength(1);
+});
+
+test('confirmation à l’écran après « Envoyer par e-mail », avec la référence', async ({ page }) => {
+  await mockApi(page, (path) => {
+    if (path === '/products/') return { body: PRODUCTS };
+    if (path === '/orders/submit') return { status: 201, body: { id: 42 } };
+    return { status: 404 };
+  });
+  await page.goto('/catalogue');
+  await page.click('button:has-text("Ajouter")');
+  await page.click('button:has-text("Ajouter")');
+  await page.getByRole('button', { name: 'Panier' }).click();
+  await page.click('text=Préparer ma commande');
+  await page.getByLabel('Nom du destinataire').fill('Client Test');
+  await page.getByLabel('Téléphone').fill('+237 600 00 00 00');
+  await page.getByRole('combobox', { name: 'Quartier' }).click();
+  await page.getByRole('option', { name: 'Essos', exact: true }).click();
+  await page.getByLabel('Adresse et repère').fill('Près du rond-point');
+  await page.click('button:has-text("Vérifier ma commande")');
+  await expect(page.getByText('Merci pour votre commande !')).toHaveCount(0);
+
+  // mailto: n'ouvre rien dans le navigateur de test ; on garde la page
+  await page.getByRole('link', { name: 'Envoyer par e-mail' }).evaluate((a) => a.addEventListener('click', (e) => e.preventDefault()));
+  await page.getByRole('link', { name: 'Envoyer par e-mail' }).click();
+  const status = page.getByRole('status').filter({ hasText: 'Merci pour votre commande !' });
+  await expect(status).toBeFocused();
+  await expect(status).toContainText('Votre e-mail est prêt dans votre messagerie');
+  await expect(status).toContainText('n° 42');
+  await expect(status).toContainText('Nous vous recontacterons dans les plus brefs délais');
 });
 
 test('article sur devis : ouvre la demande de devis', async ({ page }) => {
@@ -392,6 +435,8 @@ test('récapitulatif : créneau et paiement en toutes lettres, pas « morning »
 test('WhatsApp joignable : accueil, pied de page, devis et attente du catalogue', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('link', { name: /Commandez sur WhatsApp/ })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396\?text=/);
+  // Placé après la dernière réponse des questions fréquentes (demande d'Alain, 2026-10-25)
+  await expect(page.locator('section[aria-labelledby="faq-title"]').getByRole('link', { name: /Commandez sur WhatsApp/ })).toBeVisible();
   await expect(page.locator('footer').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
   await page.goto('/commander?type=quote');
   await expect(page.getByRole('link', { name: 'Envoyer la photo par WhatsApp' })).toBeVisible();

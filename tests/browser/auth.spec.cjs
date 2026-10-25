@@ -1,7 +1,8 @@
 // Connexion et rôles (développement) : l'API /auth et /users est simulée en mémoire.
 const { test, expect } = require('@playwright/test');
 
-const ADMIN = { id: 1, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00', is_active: true };
+const ADMIN = { id: 1, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00', is_active: true, last_login_at: null };
+const LOGIN_TIME = '2026-10-25T11:40:00Z';
 
 test.beforeEach(async ({ page }) => {
   const users = new Map([[1, { ...ADMIN, password: 'admin-123' }]]);
@@ -10,9 +11,12 @@ test.beforeEach(async ({ page }) => {
   page.on('pageerror', (e) => { throw e; });
   const json = (route, status, body) =>
     route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
-  const publicUser = ({ password, ...u }) => u;
+  // /auth/* ne renvoie pas last_login_at, seule la liste /users/ (administrateurs) le donne
+  const publicUser = ({ password, last_login_at, ...u }) => u;
+  const adminUser = ({ password, ...u }) => u;
   const session = (route, user) => {
     const token = `jeton-${user.id}-${tokens.size}`;
+    user.last_login_at = LOGIN_TIME;
     tokens.set(token, user.id);
     return json(route, route.request().url().endsWith('/register') ? 201 : 200, { token, user: publicUser(user) });
   };
@@ -38,7 +42,7 @@ test.beforeEach(async ({ page }) => {
     if (path === '/auth/me') return json(route, 200, publicUser(user));
     if (path === '/auth/logout') return route.fulfill({ status: 204 });
     if (user.role !== 'admin') return json(route, 403, { detail: 'Administrator access required' });
-    if (path === '/users/') return json(route, 200, [...users.values()].map(publicUser));
+    if (path === '/users/') return json(route, 200, [...users.values()].map(adminUser));
     const id = Number(path.split('/')[2]);
     if (req.method() === 'DELETE') {
       if (users.get(id).hasHours) return json(route, 409, { detail: 'This account has recorded hours and cannot be deleted; block it instead' });
@@ -47,7 +51,7 @@ test.beforeEach(async ({ page }) => {
     }
     if (path.endsWith('/active')) users.get(id).is_active = body.active;
     else users.get(id).role = body.role;
-    return json(route, 200, publicUser(users.get(id)));
+    return json(route, 200, adminUser(users.get(id)));
   });
   await page.route(/\/products\/$/, (route) => json(route, 200, []));
 });
@@ -142,6 +146,29 @@ test('un administrateur change le rôle d’un client', async ({ page }) => {
   await expect(rows.nth(1).locator('.MuiChip-root')).toHaveText('Administrateur');
 });
 
+test.describe('dernière connexion', () => {
+  test.use({ timezoneId: 'Africa/Douala' });
+
+  test('l’administrateur voit la dernière connexion de chaque compte, à l’heure de Yaoundé', async ({ page }) => {
+    await page.goto('/connexion?suite=/gestion');
+    await page.getByLabel('E-mail').fill('admin@exemple.cm');
+    await page.getByLabel('Mot de passe').fill('admin-123');
+    await page.getByRole('button', { name: 'Se connecter' }).click();
+    // Un compte créé avant le suivi n'a pas encore de date
+    await page.route(/\/users\/$/, (route) => route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify([
+        { ...ADMIN, last_login_at: LOGIN_TIME },
+        { id: 2, email: 'ancien@exemple.cm', role: 'user', created_at: '2026-10-01T08:00:00', is_active: true, last_login_at: null },
+      ]),
+    }));
+    await page.getByRole('tab', { name: 'Utilisateurs' }).click();
+    const rows = page.getByTestId('user-row');
+    await expect(rows.first()).toContainText('Dernière connexion : 25/10/2026 12:40');
+    await expect(rows.nth(1)).toContainText('Dernière connexion : pas encore enregistrée');
+  });
+});
+
 test('session expirée : retour à l’état déconnecté', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('centre-auth-token', 'jeton-perime'));
   await page.goto('/compte');
@@ -194,4 +221,37 @@ test('inscription refusée par la limite de l’API : message clair', async ({ p
   await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
   await page.getByRole('button', { name: 'Créer mon compte' }).click();
   await expect(page.getByText('Trop de comptes ont été créés récemment')).toBeVisible();
+});
+
+test('serveur en veille : la connexion abandonne au bout de 15 s, « Réessayer » aboutit', async ({ page }) => {
+  await page.clock.install();
+  let first = true;
+  // Premier essai : l'API ne répond jamais (serveur figé ou en train de démarrer)
+  await page.route(/\/auth\/login$/, (route) => {
+    if (!first) return route.fallback();
+    first = false;
+  });
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill(ADMIN.email);
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page.getByText('Connexion au serveur…')).toBeVisible();
+  await page.clock.runFor(15_000);
+  await expect(page.getByText('Le serveur ne répond pas.')).toBeVisible();
+  await page.getByRole('button', { name: 'Réessayer' }).click();
+  await expect(page.getByText(`Connecté en tant que ${ADMIN.email}`)).toBeVisible();
+});
+
+test('bouton « Votre compte » en haut : connexion si déconnecté, page du compte si connecté', async ({ page }) => {
+  await page.goto('/');
+  const banner = page.getByRole('banner');
+  await banner.getByRole('link', { name: 'Votre compte' }).click();
+  await expect(page).toHaveURL(/\/connexion$/);
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+  await page.goto('/');
+  await banner.getByRole('link', { name: 'Votre compte' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
 });

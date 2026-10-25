@@ -25,7 +25,8 @@ export interface ApiProduct {
 export type ProductInput = Omit<ApiProduct, 'id'>;
 
 export class ApiError extends Error {
-  constructor(message: string, readonly status = 0) {
+  // timedOut : abandon après le délai (serveur figé ou en train de démarrer)
+  constructor(message: string, readonly status = 0, readonly timedOut = false) {
     super(message);
   }
 }
@@ -56,13 +57,26 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
   onUnauthorized = handler;
 }
 
-// timeout (ms) : au-delà, la requête est abandonnée comme si le serveur était injoignable
-// (sans délai, une connexion figée en 3G laisserait « Chargement… » affiché indéfiniment)
-export async function request<T>(path: string, init?: RequestInit & { timeout?: number }): Promise<T> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  const token = getToken();
+// Délai par défaut (ms) : au-delà, la requête est abandonnée (sans délai, une connexion figée en 3G
+// laisserait « Chargement… » affiché indéfiniment). Le serveur Render en veille met ~40 s à répondre :
+// la première requête le réveille même abandonnée, et « Réessayer » aboutit une fois qu'il a démarré.
+export const DEFAULT_TIMEOUT = 15_000;
+
+export interface RequestOptions extends RequestInit {
+  // ms ; 0 = aucun délai
+  timeout?: number;
+  // false : sans jeton (lecture publique, évite la requête préalable CORS « OPTIONS »)
+  auth?: boolean;
+}
+
+export async function request<T>(path: string, init?: RequestOptions): Promise<T> {
+  // Content-Type seulement s'il y a un corps : sur une lecture, cet en-tête imposerait au navigateur
+  // une requête préalable OPTIONS (CORS) avant chaque GET
+  const headers: Record<string, string> = {};
+  if (init?.body) headers['Content-Type'] = 'application/json';
+  const { timeout = DEFAULT_TIMEOUT, auth = true, ...options } = init ?? {};
+  const token = auth ? getToken() : null;
   if (token) headers.Authorization = `Bearer ${token}`;
-  const { timeout, ...options } = init ?? {};
   // AbortController + setTimeout plutôt qu'AbortSignal.timeout(), absent des navigateurs un peu anciens
   const controller = timeout ? new AbortController() : null;
   const timer = controller ? setTimeout(() => controller.abort(), timeout) : undefined;
@@ -71,10 +85,15 @@ export async function request<T>(path: string, init?: RequestInit & { timeout?: 
     res = await fetch(import.meta.env.VITE_API_URL + path, controller ? { ...options, headers, signal: controller.signal } : { ...options, headers });
   } catch {
     clearTimeout(timer);
+    const timedOut = !!controller?.signal.aborted;
     throw new ApiError(
       import.meta.env.DEV
         ? 'API injoignable (http://localhost:8000). Est-elle démarrée ?'
-        : 'Serveur injoignable. Vérifiez votre connexion et réessayez.'
+        : timedOut
+          ? 'Le serveur ne répond pas. S\'il était en veille, il démarre (jusqu\'à une minute) : réessayez dans quelques secondes.'
+          : 'Serveur injoignable. Vérifiez votre connexion et réessayez.',
+      0,
+      timedOut
     );
   }
   clearTimeout(timer);
@@ -94,7 +113,10 @@ export async function request<T>(path: string, init?: RequestInit & { timeout?: 
 
 // Une minute : le serveur Render en veille met ~40 s à répondre (message « Chargement… » du catalogue)
 export const PRODUCTS_TIMEOUT = 60_000;
-export const listProducts = () => request<ApiProduct[]>('/products/', { timeout: PRODUCTS_TIMEOUT });
+// Lecture publique sans jeton : requête « simple », sans OPTIONS préalable, même connecté.
+// fresh : ignorer le cache HTTP du navigateur (l'API autorise 60 s), après une modification d'article
+export const listProducts = (fresh = false) =>
+  request<ApiProduct[]>('/products/', { timeout: PRODUCTS_TIMEOUT, auth: false, cache: fresh ? 'no-cache' : 'default' });
 
 export const createProduct = (input: ProductInput) =>
   request<ApiProduct>('/products/', { method: 'POST', body: JSON.stringify(input) });
