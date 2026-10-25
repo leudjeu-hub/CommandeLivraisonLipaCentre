@@ -19,7 +19,19 @@ export interface Catalogue {
   status: CatalogueStatus;
 }
 
-const DEFAULT_COLORS: Record<string, string> = { Scolaire: '#31574b', Bureau: '#c6a157', Livres: '#a95540' };
+const DEFAULT_COLORS: Record<string, string> = { Scolaire: '#31574b', Bureau: '#8a6a2b', Livres: '#a95540' };
+
+// Texte blanc sur la vignette : contraste d'au moins 4,5:1 (WCAG 1.4.3). Une couleur trop claire
+// (choisie dans Gestion, ou l'ancien ocre #c6a157 à 2,4:1) est assombrie jusqu'à ce seuil.
+const luminance = (rgb: number[]) =>
+  rgb.map((c) => (c / 255 <= 0.04045 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4))
+    .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+export function readableOnWhiteText(hex: string): string {
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) return hex;
+  let rgb = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  while (1.05 / (luminance(rgb) + 0.05) < 4.5) rgb = rgb.map((c) => Math.floor(c * 0.95));
+  return '#' + rgb.map((c) => c.toString(16).padStart(2, '0')).join('');
+}
 const CACHE_KEY = 'centre-catalogue';
 
 // « CAHIER / 200 PAGES » → « CAHIER\n200 PAGES » ; sans vignette : le nom en majuscules
@@ -31,7 +43,7 @@ export function fromApi(p: ApiProduct): Product {
     id: p.id,
     cat: p.category,
     price: p.price === null ? null : Math.round(p.price),
-    color: p.color || DEFAULT_COLORS[p.category] || '#486473',
+    color: readableOnWhiteText(p.color || DEFAULT_COLORS[p.category] || '#486473'),
     name: p.name,
     desc: p.description,
     label: label(p.label, p.name),

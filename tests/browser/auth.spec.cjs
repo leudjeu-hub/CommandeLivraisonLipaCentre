@@ -223,10 +223,10 @@ test('inscription refusée par la limite de l’API : message clair', async ({ p
   await expect(page.getByText('Trop de comptes ont été créés récemment')).toBeVisible();
 });
 
-test('serveur en veille : la connexion abandonne au bout de 15 s, « Réessayer » aboutit', async ({ page }) => {
+test('serveur en veille : après 15 s sans réponse, nouvel essai automatique sans recliquer', async ({ page }) => {
   await page.clock.install();
   let first = true;
-  // Premier essai : l'API ne répond jamais (serveur figé ou en train de démarrer)
+  // Premier essai : l'API ne répond jamais (serveur en train de démarrer)
   await page.route(/\/auth\/login$/, (route) => {
     if (!first) return route.fallback();
     first = false;
@@ -237,9 +237,47 @@ test('serveur en veille : la connexion abandonne au bout de 15 s, « Réessayer 
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(page.getByText('Connexion au serveur…')).toBeVisible();
   await page.clock.runFor(15_000);
-  await expect(page.getByText('Le serveur ne répond pas.')).toBeVisible();
+  await expect(page.getByText(`Connecté en tant que ${ADMIN.email}`)).toBeVisible();
+  // Aucune erreur affichée pendant le réveil
+  await expect(page.getByText('Le serveur ne répond toujours pas')).toHaveCount(0);
+});
+
+test('serveur en veille : message d’attente pendant les essais, erreur et « Réessayer » après une minute', async ({ page }) => {
+  await page.clock.install();
+  let calls = 0;
+  await page.route(/\/auth\/login$/, (route) => {
+    calls += 1;
+    if (calls > 4) return route.fallback();
+  });
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill(ADMIN.email);
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await page.clock.runFor(15_000);
+  await expect(page.getByRole('status').filter({ hasText: 'Nouvel essai automatique, 2 sur 4' })).toBeVisible();
+  await page.clock.runFor(45_000);
+  await expect(page.getByText('Le serveur ne répond toujours pas après une minute')).toBeVisible();
+  expect(calls).toBe(4);
   await page.getByRole('button', { name: 'Réessayer' }).click();
   await expect(page.getByText(`Connecté en tant que ${ADMIN.email}`)).toBeVisible();
+});
+
+test('serveur en veille à l’inscription : compte créé par l’essai perdu (409), connexion automatique', async ({ page }) => {
+  await page.clock.install();
+  let first = true;
+  // Le premier essai n'obtient pas de réponse ; l'adresse existe déjà au deuxième (créée par le premier)
+  await page.route(/\/auth\/register$/, (route) => {
+    if (!first) return route.fallback();
+    first = false;
+  });
+  await page.goto('/inscription');
+  await page.getByLabel('E-mail').fill(ADMIN.email);
+  await page.getByLabel('Mot de passe', { exact: false }).first().fill('admin-123');
+  await page.getByLabel('Confirmer le mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await page.clock.runFor(15_000);
+  await expect(page.getByText(`Connecté en tant que ${ADMIN.email}`)).toBeVisible();
+  await expect(page.getByText('déjà utilisée')).toHaveCount(0);
 });
 
 test('bouton « Votre compte » en haut : connexion si déconnecté, page du compte si connecté', async ({ page }) => {
