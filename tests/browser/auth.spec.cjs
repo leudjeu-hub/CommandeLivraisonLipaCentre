@@ -195,3 +195,22 @@ test('inscription refusée par la limite de l’API : message clair', async ({ p
   await page.getByRole('button', { name: 'Créer mon compte' }).click();
   await expect(page.getByText('Trop de comptes ont été créés récemment')).toBeVisible();
 });
+
+test('serveur en veille : la connexion abandonne au bout de 15 s, « Réessayer » aboutit', async ({ page }) => {
+  await page.clock.install();
+  let first = true;
+  // Premier essai : l'API ne répond jamais (serveur figé ou en train de démarrer)
+  await page.route(/\/auth\/login$/, (route) => {
+    if (!first) return route.fallback();
+    first = false;
+  });
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill(ADMIN.email);
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page.getByText('Connexion au serveur…')).toBeVisible();
+  await page.clock.runFor(15_000);
+  await expect(page.getByText('Le serveur ne répond pas.')).toBeVisible();
+  await page.getByRole('button', { name: 'Réessayer' }).click();
+  await expect(page.getByText(`Connecté en tant que ${ADMIN.email}`)).toBeVisible();
+});

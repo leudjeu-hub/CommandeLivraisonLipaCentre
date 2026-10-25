@@ -28,6 +28,11 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   https://papeterie-api-kshr.onrender.com, appelée directement (`PROD_API_URL` au build). Le préfixe
   est `import.meta.env.VITE_API_URL` (défini dans `vite.config.ts`, vide en dev) ; le plugin `api-csp`
   ajoute l'API à `connect-src` du build, et `scripts/serve.cjs` reprend la CSP du `index.html` construit.
+- `request()` (`src/data/productsApi.ts`) : `Content-Type` seulement avec un corps et `GET /products/`
+  sans jeton (`auth: false`), pour éviter la requête préalable CORS `OPTIONS`. Délai par défaut 15 s
+  (`ApiError.timedOut` → message « serveur en veille » + « Réessayer ») ; catalogue 60 s ; `submitOrder`
+  sans délai (envoi unique en `keepalive`, l'abandonner perdrait la commande). L'API autorise 60 s de
+  cache HTTP sur `GET /products/` : après une modification, relire avec `listProducts(true)`.
 - Articles : `useCatalogue()` / `useProducts()` (`src/data/useProducts.ts`). La dernière liste reçue de
   `GET /products/` est gardée dans localStorage (`centre-catalogue`) et affichée tout de suite au retour,
   puis remplacée par la réponse de l'API (serveur Render en veille : ~40 s). Première visite : la copie

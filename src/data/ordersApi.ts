@@ -49,9 +49,11 @@ export interface OrderSubmit {
   items: { product_id: number; quantity: number }[];
 }
 
-// keepalive : l'envoi aboutit même si le client quitte la page pour WhatsApp ou l'e-mail
+// keepalive : l'envoi aboutit même si le client quitte la page pour WhatsApp ou l'e-mail.
+// Aucun délai : envoi sans attente ni nouvel essai (CheckoutPage) ; l'abandonner au bout de 15 s,
+// pendant le réveil du serveur (~40 s), perdrait la commande au lieu d'éviter un doublon.
 export const submitOrder = (order: OrderSubmit) =>
-  request<Order>('/orders/submit', { method: 'POST', body: JSON.stringify(order), keepalive: true });
+  request<Order>('/orders/submit', { method: 'POST', body: JSON.stringify(order), keepalive: true, timeout: 0 });
 
 export const listOrders = () => request<Order[]>('/orders/');
 
