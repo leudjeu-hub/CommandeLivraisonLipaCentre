@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Box, CircularProgress } from '@mui/material';
 import Header from './Header';
 import Footer from './Footer';
 import Toast from './Toast';
@@ -25,10 +26,15 @@ export default function Layout() {
   return (
     <>
       <Header />
-      <main>
-        <Outlet />
-      </main>
-      <Footer />
+      {/* Page chargée à part (voir App.tsx) : en attendant, un indicateur sur toute la hauteur de l'écran,
+          et le pied de page n'arrive qu'avec la page. Sinon il s'affiche en haut puis saute vers le bas
+          (décalage de mise en page, CLS). */}
+      <Suspense fallback={<Box sx={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}><CircularProgress aria-label="…" /></Box>}>
+        <main>
+          <Outlet />
+        </main>
+        <Footer />
+      </Suspense>
       <Toast />
     </>
   );

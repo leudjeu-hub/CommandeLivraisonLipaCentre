@@ -141,8 +141,9 @@ export default function CataloguePage() {
       {status === 'unavailable' ? (
         <CatalogueUnavailable onRetry={retry} />
       ) : status === 'loading' ? (
-        // Première visite, serveur en veille : une autre issue que l'attente
-        <Box sx={{ textAlign: 'center', py: 6 }} role="status">
+        // Première visite, serveur en veille : une autre issue que l'attente. Hauteur d'un écran : les
+        // articles arrivent ensuite sans faire sauter le pied de page (CLS)
+        <Box sx={{ textAlign: 'center', py: 6, minHeight: '100vh' }} role="status">
           <Typography variant="body1" color="text.secondary">{t('catalogue.loading')}</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>{t('catalogue.loadingWhatsapp')}</Typography>
           <Button variant="outlined" color="success" href={whatsappLink(t('catalogue.unavailableWhatsapp'))} target="_blank" rel="noopener" sx={{ mt: 1.5, bgcolor: '#fff' }}>

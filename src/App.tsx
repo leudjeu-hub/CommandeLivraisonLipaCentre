@@ -1,6 +1,5 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Box, CircularProgress } from '@mui/material';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 
@@ -15,6 +14,7 @@ const pages = {
   admin: () => import('./pages/AdminPage'),
   auth: () => import('./pages/AuthPage'),
   account: () => import('./pages/AccountPage'),
+  notFound: () => import('./pages/NotFoundPage'),
 };
 const CataloguePage = lazy(pages.catalogue);
 const DeliveryPage = lazy(pages.delivery);
@@ -24,6 +24,7 @@ const CheckoutPage = lazy(pages.checkout);
 const AdminPage = lazy(pages.admin);
 const AuthPage = lazy(pages.auth);
 const AccountPage = lazy(pages.account);
+const NotFoundPage = lazy(pages.notFound);
 
 // Pages du parcours de commande, téléchargées en arrière-plan une fois l'accueil affiché
 function prefetch() {
@@ -34,25 +35,21 @@ function prefetch() {
 if (document.readyState === 'complete') prefetch();
 else window.addEventListener('load', prefetch, { once: true });
 
-const page = (element: ReactNode) => (
-  <Suspense fallback={<Box sx={{ display: 'grid', placeItems: 'center', py: 10 }}><CircularProgress aria-label="…" /></Box>}>
-    {element}
-  </Suspense>
-);
-
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
-        <Route path="catalogue" element={page(<CataloguePage />)} />
-        <Route path="livraison" element={page(<DeliveryPage />)} />
-        <Route path="panier" element={page(<CartPage />)} />
-        <Route path="commander" element={page(<CheckoutPage />)} />
-        <Route path="gestion" element={page(<AdminPage />)} />
-        <Route path="connexion" element={page(<AuthPage mode="login" />)} />
-        <Route path="inscription" element={page(<AuthPage mode="register" />)} />
-        <Route path="compte" element={page(<AccountPage />)} />
+        <Route path="catalogue" element={<CataloguePage />} />
+        <Route path="livraison" element={<DeliveryPage />} />
+        <Route path="panier" element={<CartPage />} />
+        <Route path="commander" element={<CheckoutPage />} />
+        <Route path="gestion" element={<AdminPage />} />
+        <Route path="connexion" element={<AuthPage mode="login" />} />
+        <Route path="inscription" element={<AuthPage mode="register" />} />
+        <Route path="compte" element={<AccountPage />} />
+        {/* Adresse inconnue : jamais de page vide */}
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );
