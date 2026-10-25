@@ -487,5 +487,23 @@
     "order": "Your order · Librairie Papeterie du Centre",
     "cart": "Your basket · Librairie Papeterie du Centre",
     "other": "Librairie Papeterie du Centre · Yaoundé"
+  },
+  "reset": {
+    "requestTitle": "Forgot your password",
+    "requestIntro": "Enter your account's e-mail: we will send you a link to choose a new password.",
+    "requestSubmit": "Send me the link",
+    "sent": "If an account exists for {{email}}, an e-mail with a link valid for 30 minutes is on its way.",
+    "sentHelp": "Nothing after a few minutes? Check your spam folder, check the address, then ask again.",
+    "backToLogin": "Back to log in",
+    "resetTitle": "New password",
+    "resetIntro": "Choose your new password. You will be logged out on all your devices.",
+    "newPassword": "New password",
+    "resetSubmit": "Save password",
+    "done": "Password changed. Log in with the new one.",
+    "expired": "This link is no longer valid: it expired (30 minutes), was already used, or a newer link was requested.",
+    "noToken": "This link is incomplete. Open the full link from the e-mail, or ask for a new one.",
+    "askAgain": "Ask for a new link",
+    "errTooMany": "Too many requests right now. Try again in an hour.",
+    "forgot": "Forgot your password?"
   }
 }

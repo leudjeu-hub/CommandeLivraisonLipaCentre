@@ -39,6 +39,16 @@ export const register = (email: string, password: string) =>
 export const login = (email: string, password: string) =>
   request<TokenResponse>('/auth/login', credentials(email, password));
 
+// Mot de passe oublié : la réponse est la même que le compte existe ou non (202).
+// 60 s : souvent le premier appel après une longue pause (serveur en veille). Abandonner à 15 s
+// ne servirait à rien : le serveur traiterait quand même la demande en se réveillant, et le lien,
+// à usage unique, serait déjà consommé quand la personne réessaierait.
+export const requestPasswordReset = (email: string) =>
+  request<{ detail: string }>('/auth/password-reset/request', { method: 'POST', body: JSON.stringify({ email }), auth: false, timeout: 60_000 });
+
+export const confirmPasswordReset = (token: string, password: string) =>
+  request<void>('/auth/password-reset/confirm', { method: 'POST', body: JSON.stringify({ token, password }), auth: false, timeout: 60_000 });
+
 export const logout = () => request<void>('/auth/logout', { method: 'POST' });
 
 export const me = () => request<User>('/auth/me');
