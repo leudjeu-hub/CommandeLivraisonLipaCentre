@@ -98,6 +98,12 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Ne jamais committer de secrets (`.env` est ignoré).
 - Site bilingue FR/EN : tout nouveau texte visible passe par `t('…')` avec une clé dans
   `src/locales/fr.json` et `src/locales/en.json`.
-- Interface en français par défaut ; conserver les avertissements « version de présentation »
-  tant que les commandes ne sont pas réellement transmises.
+- Interface en français par défaut. Le site est ouvert au public (décision d'Alain, 2026-10-25) : pas de
+  `noindex`, pas de texte « version de présentation », « prix illustratifs » ou « après activation ».
+- Référencement : `index.html` porte le titre, la description, l'adresse canonique et la fiche JSON-LD
+  de la boutique (`Store` ; données, pas un script : permis par la CSP). Le build écrit une copie par route
+  (`dist/catalogue.html`, `livraison.html`… : code 200 sur GitHub Pages) avec son titre, sa description et
+  son adresse canonique, `noindex` pour panier, commande, compte et gestion (`PAGES` dans `vite.config.ts`).
+  Dans le navigateur, `Layout.tsx` met le titre de l'onglet à jour (clés `seo.*`). Les chiffres de livraison
+  affichés (accueil, FAQ, description) viennent toujours de `DELIVERY` / `DELIVERY_RULES`.
 - Après toute modification : `npm test` puis `npm run test:browser`.

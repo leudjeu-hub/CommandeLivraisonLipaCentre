@@ -2,28 +2,62 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Container, Link as MuiLink, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { whatsappLink } from '../data/catalogue';
+import { DELIVERY, DELIVERY_RULES, money, whatsappLink } from '../data/catalogue';
 import { useProducts } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
 
 export default function HomePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const fr = i18n.language === 'fr';
+  const locale = fr ? 'fr-FR' : 'en-GB';
   // Quelques articles avec prix, pour montrer le catalogue dès l'accueil
   const selection = useProducts().filter((p) => p.price !== null).slice(0, 4);
   const steps = [1, 2, 3].map((n) => ({ n, title: t(`strip.step${n}Title`), text: t(`strip.step${n}Text`) }));
 
+  // Arguments chiffrés tirés de la grille de livraison (src/data/catalogue.ts), jamais écrits en dur
+  const list = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} ${t('common.and')} ${items[items.length - 1]}` : items[0] ?? '');
+  const zoneName = (z: (typeof DELIVERY)[number]) => (fr ? z.name : z.en.name);
+  const delayOf = (z: (typeof DELIVERY)[number]) => (fr ? z.delay : z.en.delay);
+  const sameDay = DELIVERY.filter((z) => z.en.delay === 'Same day');
+  const minFee = money(Math.min(...DELIVERY.map((z) => z.fee)), locale);
+  const sameDayZones = list(sameDay.map(zoneName));
+  const freeZones = list(DELIVERY.filter((z) => DELIVERY_RULES.freeZones.includes(z.zone)).map(zoneName));
+  const first = DELIVERY[0];
+  const last = DELIVERY[DELIVERY.length - 1];
+  // « Le jour même (Centre, Proche), sous 24 h (Éloigné)… » : zones regroupées par délai
+  const delays = [...new Set(DELIVERY.map(delayOf))]
+    .map((d, i) => `${i ? d.charAt(0).toLowerCase() + d.slice(1) : d} (${DELIVERY.filter((z) => delayOf(z) === d).map(zoneName).join(', ')})`)
+    .join(', ');
+  const faq = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
+    n,
+    q: t(`faq.q${n}`),
+    a: t(`faq.a${n}`, {
+      min: money(n === 7 ? DELIVERY_RULES.minOrder : first.fee, locale),
+      max: money(last.fee, locale),
+      firstZone: zoneName(first),
+      firstAreas: first.areas.slice(0, 3).join(', '),
+      lastZone: zoneName(last),
+      lastAreas: last.areas.slice(0, 3).join(', '),
+      from: money(DELIVERY_RULES.freeFrom, locale),
+      freeZones,
+      delays,
+    }),
+  }));
+  const trust = [
+    { title: t('trust.sameDayTitle'), text: t('trust.sameDayText', { zones: sameDayZones, areas: sameDay.flatMap((z) => z.areas).slice(3, 6).join(', '), fee: minFee }) },
+    { title: t('trust.freeTitle'), text: t('trust.freeText', { from: money(DELIVERY_RULES.freeFrom, locale), zones: freeZones }) },
+    { title: t('trust.payTitle'), text: t('trust.payText') },
+  ];
+
   return (
     <>
-      {/* Accroche : une action principale (catalogue), une secondaire (liste scolaire) */}
-      <Box component="section" sx={{ py: { xs: 6, md: 10 }, textAlign: 'center' }}>
+      {/* Accroche : ce que l'on vend, où, à quel prix ; une action principale (catalogue), une secondaire (liste scolaire) */}
+      <Box component="section" sx={{ pt: { xs: 6, md: 10 }, pb: { xs: 4, md: 6 }, textAlign: 'center' }}>
         <Container maxWidth="md">
           <Typography variant="overline" color="secondary">{t('hero.eyebrow')}</Typography>
-          <Typography variant="h1" sx={{ mt: 1, mb: 2.5 }}>
-            {t('hero.title')}<br />
-            <Box component="em" sx={{ color: 'secondary.main' }}>{t('hero.titleEm')}</Box>
-          </Typography>
+          <Typography variant="h1" sx={{ mt: 1, mb: 2.5 }}>{t('hero.title')}</Typography>
           <Typography sx={{ maxWidth: 560, mx: 'auto', mb: 4, fontSize: { xs: '1rem', md: '1.125rem' }, color: 'text.secondary' }}>
-            {t('hero.intro')}
+            {t('hero.intro', { fee: minFee, zones: sameDayZones })}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'center', flexDirection: { xs: 'column', sm: 'row' }, maxWidth: { xs: 360, sm: 'none' }, mx: 'auto' }}>
             <Button variant="contained" size="large" component={Link} to="/catalogue" endIcon={<ArrowForwardIcon />}>
@@ -41,6 +75,24 @@ export default function HomePage() {
           </Typography>
         </Container>
       </Box>
+
+      {/* Engagements : livraison, gratuité, paiement (les questions que l'on se pose avant de commander) */}
+      <Container component="section" maxWidth="lg" aria-labelledby="trust-title" sx={{ pb: { xs: 5, md: 7 } }}>
+        <Typography id="trust-title" variant="overline" component="h2" color="secondary" sx={{ display: 'block', mb: 2, textAlign: { md: 'center' } }}>
+          {t('trust.title')}
+        </Typography>
+        <Box component="ul" sx={{ listStyle: 'none', m: 0, p: 0, display: 'grid', gap: 1.5, gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' } }}>
+          {trust.map((item) => (
+            <Box component="li" key={item.title} sx={{ bgcolor: '#fff', border: '1px solid', borderColor: 'divider', borderRadius: 2, p: 2.5 }}>
+              <Typography variant="h6" component="h3">{item.title}</Typography>
+              <Typography variant="body2" color="text.secondary">{item.text}</Typography>
+            </Box>
+          ))}
+        </Box>
+        <Box sx={{ mt: 2, textAlign: { md: 'center' } }}>
+          <Button component={Link} to="/livraison" endIcon={<ArrowForwardIcon />}>{t('trust.link')}</Button>
+        </Box>
+      </Container>
 
       {/* Comment ça marche : 3 étapes numérotées, lisibles d'un coup d'œil */}
       <Box component="section" aria-labelledby="steps-title" sx={{ bgcolor: 'primary.main', color: '#fff', py: { xs: 5, md: 7 } }}>
@@ -85,11 +137,44 @@ export default function HomePage() {
             <Typography variant="h3" component="h2" sx={{ mb: 1.5 }}>{t('lists.title')}</Typography>
             <Typography color="text.secondary">{t('lists.text')}</Typography>
           </Box>
-          <Box sx={{ justifySelf: { md: 'end' } }}>
+          <Box sx={{ justifySelf: { md: 'end' }, display: 'grid', gap: 1.5 }}>
             <Button variant="contained" size="large" component={Link} to="/commander?type=quote" endIcon={<ArrowForwardIcon />} fullWidth>
               {t('lists.cta')}
             </Button>
+            {/* Liste sur papier : la photo par WhatsApp est le plus rapide pour un parent */}
+            <Button variant="outlined" size="large" href={whatsappLink(t('form.quoteWhatsappText'))} target="_blank" rel="noopener" fullWidth>
+              {t('lists.photoCta')}
+            </Button>
           </Box>
+        </Box>
+      </Container>
+
+      {/* Écoles et entreprises : besoins récurrents, devis */}
+      <Container component="section" maxWidth="lg" aria-labelledby="business-title" sx={{ pt: { xs: 2, md: 3 }, pb: { xs: 2, md: 4 } }}>
+        <Box sx={{ bgcolor: '#fff', border: '1px solid', borderColor: 'divider', borderRadius: 3, p: { xs: 3, md: 6 }, display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1.6fr 1fr' }, alignItems: 'center' }}>
+          <Box>
+            <Typography variant="overline" color="secondary">{t('business.eyebrow')}</Typography>
+            <Typography id="business-title" variant="h3" component="h2" sx={{ mb: 1.5 }}>{t('business.title')}</Typography>
+            <Typography color="text.secondary">{t('business.text')}</Typography>
+          </Box>
+          <Box sx={{ justifySelf: { md: 'end' } }}>
+            <Button variant="contained" size="large" component={Link} to="/commander?type=quote" endIcon={<ArrowForwardIcon />} fullWidth>
+              {t('business.cta')}
+            </Button>
+          </Box>
+        </Box>
+      </Container>
+
+      {/* Questions fréquentes : réponses courtes et chiffrées, lisibles par les moteurs de recherche */}
+      <Container component="section" maxWidth="md" aria-labelledby="faq-title" sx={{ py: { xs: 5, md: 8 } }}>
+        <Typography id="faq-title" variant="h3" component="h2" sx={{ mb: 3 }}>{t('faq.title')}</Typography>
+        <Box sx={{ display: 'grid', gap: 2.5 }}>
+          {faq.map((f) => (
+            <Box key={f.n}>
+              <Typography variant="h6" component="h3" sx={{ mb: 0.5 }}>{f.q}</Typography>
+              <Typography color="text.secondary">{f.a}</Typography>
+            </Box>
+          ))}
         </Box>
       </Container>
     </>

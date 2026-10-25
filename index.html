@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
-    <title>Librairie Papeterie du Centre · Yaoundé</title>
-    <meta name="description" content="Livres et fournitures de papeterie : préparez votre commande pour une livraison à Yaoundé." />
-    <meta name="robots" content="noindex" />
+    <title>Librairie Yaoundé : livres et fournitures livrés chez vous</title>
+    <meta name="description" content="Livres, fournitures scolaires et de bureau livrés à Yaoundé, le jour même au centre-ville. Paiement à la réception, commande en ligne ou sur WhatsApp." />
+    <link rel="canonical" href="https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/" />
     <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
     <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
@@ -22,6 +22,35 @@
     <meta property="og:locale:alternate" content="en_GB" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="stylesheet" href="/src/shell.css" />
+    <!-- Fiche de la boutique pour les moteurs de recherche et les assistants IA (données, jamais exécutées : la CSP ne s'applique pas) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Store",
+        "name": "Librairie Papeterie du Centre",
+        "alternateName": ["LIPACE", "LipaCentre"],
+        "description": "Librairie et papeterie à Yaoundé : livres, fournitures scolaires et de bureau, livraison à domicile et paiement à la réception.",
+        "url": "https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/",
+        "logo": "https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/img/apple-touch-icon.png",
+        "image": "https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/img/partage.png",
+        "telephone": "+237693240396",
+        "email": "Lipacentre237@gmail.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Carrefour Abbia, face Manège",
+          "addressLocality": "Yaoundé",
+          "addressCountry": "CM"
+        },
+        "openingHoursSpecification": [
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "08:00", "closes": "18:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "15:00" }
+        ],
+        "paymentAccepted": "Cash, Orange Money, MTN Mobile Money",
+        "currenciesAccepted": "XAF",
+        "areaServed": { "@type": "City", "name": "Yaoundé" },
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=Librairie+Papeterie+du+Centre+Yaound%C3%A9&query_place_id=ChIJi_YsDY3PixARKBsGbQXsDHM"
+      }
+    </script>
   </head>
   <body>
     <!-- Écran affiché avant le démarrage de React (3G : plusieurs secondes), remplacé au premier rendu.
@@ -34,6 +63,7 @@
           <p class="shell-wait">Chargement du site… Si rien ne s’affiche, commandez directement par WhatsApp ou par téléphone.</p>
           <p><a class="shell-btn" href="https://wa.me/237693240396">Commander par WhatsApp</a></p>
           <p><a href="tel:+237693240396">+237 6 93 24 03 96</a></p>
+          <p class="shell-info">Librairie Papeterie du Centre · Carrefour Abbia, face Manège, Yaoundé<br />Lundi – vendredi 8 h – 18 h · samedi 9 h – 15 h · paiement à la réception</p>
         </div>
       </div>
     </div>

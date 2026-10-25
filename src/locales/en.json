@@ -11,17 +11,16 @@
     "admin": "Manage",
     "login": "Log in",
     "account": "My account",
-    "menu": "Menu"
+    "menu": "Menu",
+    "whatsapp": "Message us on WhatsApp"
   },
-  "notice": "Preview version · Illustrative items and prices · Every order is confirmed by the bookshop.",
   "hero": {
-    "eyebrow": "Your essentials, at your door",
-    "title": "A page opens.",
-    "titleEm": "We deliver it to you.",
-    "intro": "Books, school supplies and office stationery. Fill your basket in a few clicks for home delivery in Yaoundé, with payment on delivery.",
-    "cta": "Browse the catalogue",
-    "list": "My school list",
-    "whatsapp": "Prefer to text? Order on WhatsApp"
+    "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
+    "title": "Books and supplies delivered to your door in Yaoundé",
+    "intro": "For school and office. Delivery from {{fee}}, same day in {{zones}} zones. You pay on delivery.",
+    "cta": "Order my supplies",
+    "list": "Send my school list",
+    "whatsapp": "Easier? Order on WhatsApp"
   },
   "strip": {
     "title": "How it works",
@@ -30,11 +29,11 @@
     "step2Title": "Give your address",
     "step2Text": "Neighbourhood, landmark and preferred time slot.",
     "step3Title": "Pay on delivery",
-    "step3Text": "Cash, Orange Money or MTN MoMo, once activated."
+    "step3Text": "Cash, Orange Money or MTN MoMo, after checking your parcel."
   },
   "catalogue": {
     "eyebrow": "The Centre's selection",
-    "title": "It all starts here.",
+    "title": "School supplies, office supplies and books",
     "searchPlaceholder": "Search for a notebook, a pen…",
     "searchLabel": "Search for a product",
     "count": "{{count}} item(s)",
@@ -58,17 +57,18 @@
     "editionText": "Each book must be confirmed by its title, author and edition. Any substitution requires your approval.",
     "businessTitle": "For businesses too.",
     "businessText": "Paper, binders, pens and supplies: list your recurring needs in your quote request.",
-    "whatsapp": "Send your list directly via WhatsApp from the quote form."
+    "whatsapp": "Send your list directly via WhatsApp from the quote form.",
+    "photoCta": "Send a photo of my list"
   },
   "delivery": {
     "eyebrow": "A local service",
-    "title": "Delivery, made clear.",
+    "title": "Delivery in Yaoundé: fees and lead times by neighbourhood",
     "step1Title": "Your neighbourhood",
     "step1Text": "Give your neighbourhood and a precise landmark. Delivery areas will be confirmed by the bookshop.",
     "step2Title": "Your time slot",
     "step2Text": "Fees depend on your neighbourhood (table below). Availability and lead time are confirmed before dispatch.",
     "step3Title": "Your payment",
-    "step3Text": "Check your parcel, then pay on delivery. No online payment is requested in this version.",
+    "step3Text": "Check your parcel, then pay on delivery. Nothing to pay in advance.",
     "zonesTitle": "Delivery fees by neighbourhood"
   },
   "footer": {
@@ -81,7 +81,7 @@
     "saturday": "Saturday",
     "sunday": "Sunday",
     "closed": "Closed",
-    "terms": "Information & privacy",
+    "terms": "Terms and privacy",
     "contact": "Contact",
     "info": "Information",
     "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé"
@@ -119,19 +119,19 @@
     "paymentOrange": "Orange Money",
     "paymentMtn": "MTN MoMo",
     "notes": "Instructions or school list",
-    "consent": "I understand that prices, stock and delivery time must be confirmed by the bookshop.",
-    "submit": "Create my summary",
+    "submit": "Review my order",
     "slotHelp": "To be confirmed by the bookshop.",
-    "paymentHelp": "Orange Money and MTN MoMo subject to activation.",
+    "paymentHelp": "You pay after checking your parcel.",
     "notSpecified": "To be arranged",
     "phoneHelp": "Cameroonian number, e.g. 6 93 24 03 96",
     "errPhone": "Invalid number: 9 digits starting with 6 or 2 (+237 optional).",
-    "emptyOrder": "Your basket is empty: add items before preparing your order."
+    "emptyOrder": "Your basket is empty: add items before preparing your order.",
+    "confirmNote": "Prices, stock and delivery time are confirmed by the bookshop, by message or phone, before your parcel leaves."
   },
   "result": {
     "title": "Your summary is ready",
     "text": "Send it to the bookshop via WhatsApp or e-mail: your order will be confirmed by message or phone.",
-    "whatsapp": "Send via WhatsApp",
+    "whatsapp": "Send my order on WhatsApp",
     "email": "Send by e-mail",
     "emailSubjectOrder": "Order – {{name}}",
     "emailSubjectQuote": "Quote request – {{name}}",
@@ -142,10 +142,10 @@
     "keepCart": "Keep my basket"
   },
   "terms": {
-    "title": "About this version",
-    "p1": "This site is a private preview of the upcoming service of the Librairie Papeterie du Centre. Products, prices and visuals are illustrative.",
-    "p2": "Your basket is stored only in your browser. The form information is used to create your summary.",
-    "p3": "Before commercial launch: complete the legal notice, add real prices and stock, validate the delivery table.",
+    "title": "Terms and privacy",
+    "p1": "Orders and quote requests are confirmed by the bookshop, by message or phone, before delivery: availability, price and lead time. Prices are in FCFA; payment is made on delivery.",
+    "p2": "Your basket is kept in your browser. When you send your summary, the bookshop records your order (name, phone, address, items) to prepare and deliver it. This information is used for nothing else.",
+    "p3": "Librairie Papeterie du Centre, Carrefour Abbia, opposite the Manège, Yaoundé. Phone and WhatsApp: +237 6 93 24 03 96. Email: Lipacentre237@gmail.com.",
     "clear": "Clear my local basket"
   },
   "map": {
@@ -437,5 +437,47 @@
       "delivered": "Delivered",
       "cancelled": "Cancelled"
     }
+  },
+  "trust": {
+    "title": "Our commitments",
+    "sameDayTitle": "Delivered the same day",
+    "sameDayText": "In {{zones}} zones ({{areas}}…), from {{fee}}.",
+    "freeTitle": "Free delivery",
+    "freeText": "From {{from}} of items in {{zones}} zones.",
+    "payTitle": "Pay on delivery",
+    "payText": "Cash, Orange Money or MTN MoMo, after checking your parcel.",
+    "link": "See the fees for your neighbourhood"
+  },
+  "business": {
+    "eyebrow": "Schools and businesses",
+    "title": "For businesses and schools too.",
+    "text": "Paper, binders, pens and office supplies, including recurring needs. List the items and quantities: we will send you a quote.",
+    "cta": "Request a business quote"
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "q1": "How much does delivery cost in Yaoundé?",
+    "a1": "From {{min}} ({{firstZone}} zone: {{firstAreas}}…) to {{max}} ({{lastZone}} zone: {{lastAreas}}…). It is free from {{from}} of items in {{freeZones}} zones.",
+    "q2": "How fast is delivery?",
+    "a2": "{{delays}}. The lead time is confirmed before your parcel leaves.",
+    "q3": "How do I pay?",
+    "a3": "On delivery, after checking your parcel: cash, Orange Money or MTN MoMo. Nothing to pay in advance.",
+    "q4": "Can I send my child's school list?",
+    "a4": "Yes. Take a photo and send it on WhatsApp to +237 6 93 24 03 96: we check titles and editions, then send you a quote. No substitution without your approval.",
+    "q5": "Do you deliver to businesses and schools?",
+    "a5": "Yes: paper, binders, pens and office supplies, including recurring needs. Request a quote from the form or on WhatsApp.",
+    "q6": "Where is the shop?",
+    "a6": "Carrefour Abbia, opposite the Manège, Yaoundé. Open Monday to Friday 8 am to 6 pm and Saturday 9 am to 3 pm.",
+    "q7": "Is there a minimum order?",
+    "a7": "Yes: {{min}} of items."
+  },
+  "seo": {
+    "home": "Yaoundé bookshop: books and supplies delivered to you",
+    "catalogue": "Catalogue: school supplies, office and books · Yaoundé",
+    "delivery": "Delivery in Yaoundé: fees by neighbourhood · Papeterie du Centre",
+    "quote": "School lists delivered in Yaoundé, pay on delivery",
+    "order": "Your order · Librairie Papeterie du Centre",
+    "cart": "Your basket · Librairie Papeterie du Centre",
+    "other": "Librairie Papeterie du Centre · Yaoundé"
   }
 }

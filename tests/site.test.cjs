@@ -13,18 +13,33 @@ test('index.html : structure accessible et SEO de base', () => {
   assert.match(html, /name="viewport"/);
 });
 
+test('index.html : site ouvert aux moteurs de recherche, fiche de la boutique valide', () => {
+  assert.doesNotMatch(html, /name="robots"/, 'noindex retiré : le site est ouvert au public');
+  assert.match(html, /<link rel="canonical" href="https:\/\/leudjeu-hub\.github\.io\/CommandeLivraisonLipaCentre\/"/);
+  const ld = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  assert.ok(ld, 'JSON-LD absent');
+  const store = JSON.parse(ld[1]);
+  assert.equal(store['@type'], 'Store');
+  assert.equal(store.telephone, '+237693240396');
+  assert.match(store.address.streetAddress, /Carrefour Abbia/);
+});
+
 test('index.html : pas de code en ligne ni de script externe', () => {
   assert.doesNotMatch(html, /\son[a-z]+=/i, 'pas de gestionnaire onclick=…');
   assert.doesNotMatch(html, /\sstyle=/i, "pas d'attribut style (CSP)");
   assert.doesNotMatch(html, /<style\b/i, 'CSS dans css/style.css');
   for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+    // Données structurées (JSON-LD) : jamais exécutées, donc permises par la CSP
+    if (/type="application\/ld\+json"/.test(attrs)) continue;
     assert.match(attrs, /src="/, 'script en ligne interdit');
     assert.equal(body.trim(), '');
   }
 });
 
 test('index.html : toutes les ressources locales existent', () => {
-  for (const [, ref] of html.matchAll(/<(?:script|link|img|source)\b[^>]*(?:src|href)="([^"]+)"/g)) {
+  for (const [tag, ref] of html.matchAll(/<(?:script|link|img|source)\b[^>]*(?:src|href)="([^"]+)"/g)) {
+    // L'adresse canonique n'est pas une ressource chargée par le navigateur
+    if (/rel="canonical"/.test(tag)) continue;
     assert.doesNotMatch(ref, /^(https?:)?\/\//, `ressource externe : ${ref}`);
   }
 });
@@ -52,6 +67,18 @@ test('traductions : clés FR et EN présentes', () => {
   for (const key of frKeys) {
     assert.ok(fr[key] && en[key], `traduction manquante : ${key}`);
   }
+});
+
+test('build : une page HTML par route (code 200 sur GitHub Pages), titres propres, noindex sur les pages privées', () => {
+  const page = (route) => fs.readFileSync(`dist/${route}.html`, 'utf8');
+  assert.match(page('livraison'), /<title>Livraison à Yaoundé/);
+  assert.match(page('livraison'), /rel="canonical" href="[^"]+\/livraison"/);
+  assert.match(page('catalogue'), /<title>Catalogue/);
+  for (const route of ['panier', 'commander', 'connexion', 'inscription', 'compte', 'gestion']) {
+    assert.match(page(route), /name="robots" content="noindex"/, route);
+    assert.doesNotMatch(page(route), /rel="canonical"/, route);
+  }
+  assert.match(fs.readFileSync('dist/404.html', 'utf8'), /name="robots" content="noindex"/);
 });
 
 test('build : dist/ existe avec index.html', () => {

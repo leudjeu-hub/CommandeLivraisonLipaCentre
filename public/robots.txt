@@ -1,3 +1,4 @@
-# Version de présentation : ne pas indexer avant l'ouverture commerciale.
+# Site ouvert au public (décision d'Alain, 2026-10-25). Sur github.io, seul le robots.txt de la racine du
+# domaine compte : ce fichier ne servira qu'avec un nom de domaine propre.
 User-agent: *
-Disallow: /
+Allow: /

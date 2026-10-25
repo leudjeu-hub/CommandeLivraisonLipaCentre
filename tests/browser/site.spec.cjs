@@ -38,16 +38,16 @@ test('la page se charge sans erreur et affiche le catalogue', async ({ page }) =
   // Aucune requête en 503 (le navigateur la journaliserait comme une erreur)
   await mockApi(page, (path) => ({ body: path === '/products/' ? PRODUCTS : null }));
   await page.goto('/');
-  await expect(page.locator('h1')).toContainText('Une page');
-  await expect(page.locator('text=Découvrir le catalogue')).toBeVisible();
+  await expect(page.locator('h1')).toContainText('Livres et fournitures livrés');
+  await expect(page.locator('text=Commander mes fournitures')).toBeVisible();
   expect(errors).toEqual([]);
 });
 
 test('navigation vers le catalogue', async ({ page }) => {
   await page.goto('/');
-  await page.click('text=Découvrir le catalogue');
+  await page.click('text=Commander mes fournitures');
   await expect(page).toHaveURL(/\/catalogue/);
-  await expect(page.locator('h1')).toContainText('Tout commence ici');
+  await expect(page.locator('h1')).toContainText('Fournitures scolaires');
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(8);
 });
 
@@ -77,12 +77,11 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   await page.getByRole('option', { name: 'Essos', exact: true }).click();
   await expect(page.locator('text=Livraison zone 2 (Proche)')).toBeVisible();
   await page.getByLabel('Adresse et repère').fill('Près du rond-point');
-  await page.getByRole('checkbox').check();
-  await page.click('button:has-text("Créer mon récapitulatif")');
+  await page.click('button:has-text("Vérifier ma commande")');
 
   await expect(page.locator('text=Votre récapitulatif est prêt')).toBeVisible();
   // (le pied de page a aussi un lien WhatsApp)
-  const wa = page.getByRole('link', { name: 'Envoyer par WhatsApp' });
+  const wa = page.getByRole('link', { name: 'Envoyer ma commande sur WhatsApp' });
   await expect(wa).toBeVisible();
   const href = await wa.getAttribute('href');
   expect(href.startsWith('https://wa.me/237693240396?text=')).toBe(true);
@@ -122,8 +121,7 @@ test('commande enregistrée dans l’API une seule fois, à l’envoi du récapi
   await page.getByRole('combobox', { name: 'Quartier' }).click();
   await page.getByRole('option', { name: 'Essos', exact: true }).click();
   await page.getByLabel('Adresse et repère').fill('Près du rond-point');
-  await page.getByRole('checkbox').check();
-  await page.click('button:has-text("Créer mon récapitulatif")');
+  await page.click('button:has-text("Vérifier ma commande")');
   // Rien n'est enregistré tant que le client n'envoie pas
   await expect(page.locator('text=Votre récapitulatif est prêt')).toBeVisible();
   expect(sent).toHaveLength(0);
@@ -152,9 +150,9 @@ test('langue : passage en anglais', async ({ page, isMobile }) => {
   if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
   await page.getByRole('button', { name: 'English' }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('h1')).toContainText('A page opens');
+  await expect(page.locator('h1')).toContainText('Books and supplies');
   await page.goto('/catalogue');
-  await expect(page.locator('h1')).toContainText('It all starts here');
+  await expect(page.locator('h1')).toContainText('School supplies');
 });
 
 test('menu mobile : ouvre et navigue', async ({ page, isMobile }) => {
@@ -258,8 +256,8 @@ test('site publié : un administrateur se connecte depuis la barre de navigation
     return { status: 404, body: {} };
   });
   await page.goto('/');
-  if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
-  await page.getByRole('link', { name: 'Connexion', exact: true }).click();
+  // « Connexion » est dans le pied de page (un compte n'est pas nécessaire pour commander)
+  await page.getByRole('contentinfo').getByRole('link', { name: 'Connexion', exact: true }).click();
   await expect(page).toHaveURL(/\/connexion$/);
   await page.getByLabel('E-mail').fill('admin@exemple.cm');
   await page.getByLabel('Mot de passe').fill('admin-123');
@@ -330,11 +328,10 @@ test('commande : panier vide et numéro de téléphone invalide', async ({ page 
   await page.getByRole('combobox', { name: 'Quartier' }).click();
   await page.getByRole('option', { name: 'Essos', exact: true }).click();
   await page.getByLabel('Adresse et repère').fill('Près du rond-point');
-  await page.getByRole('checkbox').check();
-  await page.click('button:has-text("Créer mon récapitulatif")');
+  await page.click('button:has-text("Vérifier ma commande")');
   await expect(page.getByText('Numéro invalide')).toBeVisible();
   await page.getByLabel('Téléphone').fill('6 93 24 03 96');
-  await page.click('button:has-text("Créer mon récapitulatif")');
+  await page.click('button:has-text("Vérifier ma commande")');
   await expect(page.locator('text=Votre récapitulatif est prêt')).toBeVisible();
 });
 
@@ -381,8 +378,7 @@ test('récapitulatif : créneau et paiement en toutes lettres, pas « morning »
   await page.getByRole('option', { name: 'Matin' }).click();
   await page.getByRole('combobox', { name: 'Paiement à la réception' }).click();
   await page.getByRole('option', { name: 'Espèces' }).click();
-  await page.getByRole('checkbox').check();
-  await page.click('button:has-text("Créer mon récapitulatif")');
+  await page.click('button:has-text("Vérifier ma commande")');
   const summary = page.locator('pre');
   await expect(summary).toContainText('Créneau souhaité : Matin');
   await expect(summary).toContainText('Paiement à réception : Espèces');
@@ -418,7 +414,7 @@ test('sans JavaScript : écran de démarrage avec WhatsApp et téléphone', asyn
 
 test('écran de démarrage remplacé par le site une fois React lancé', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('h1')).toContainText('Une page');
+  await expect(page.locator('h1')).toContainText('Livres et fournitures livrés');
   await expect(page.locator('.shell')).toHaveCount(0);
 });
 
@@ -461,4 +457,17 @@ test('copie publiée : les articles indisponibles n’apparaissent pas', async (
   await page.route(`${API}/products/`, () => {});
   await page.goto('/catalogue');
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(7);
+});
+
+test('accueil : engagements chiffrés, écoles et entreprises, FAQ ; titre propre à chaque page', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveTitle(/Librairie Yaoundé/);
+  await expect(page.getByRole('heading', { name: 'Livré le jour même' })).toBeVisible();
+  await expect(page.getByText(/^Dès 25\s000 FCFA d'articles en zones Centre et Proche\.$/)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Demander un devis entreprise' })).toHaveAttribute('href', /\/commander\?type=quote$/);
+  await expect(page.getByRole('heading', { name: 'Combien coûte la livraison à Yaoundé ?' })).toBeVisible();
+  await expect(page.getByText(/^De 1\s000 FCFA \(zone Centre/)).toBeVisible();
+  await expect(page.getByRole('banner').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
+  await page.goto('/livraison');
+  await expect(page).toHaveTitle(/Livraison à Yaoundé/);
 });
