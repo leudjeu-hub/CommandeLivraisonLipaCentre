@@ -139,7 +139,13 @@
     "copy": "Copy text",
     "afterSend": "Has your message been sent (WhatsApp or e-mail)? Empty your basket so you don't send the same order again by mistake.",
     "clearCart": "Empty my basket",
-    "keepCart": "Keep my basket"
+    "keepCart": "Keep my basket",
+    "sentTitleOrder": "Thank you for your order!",
+    "sentTitleQuote": "Thank you for your quote request!",
+    "sentWhatsapp": "Your message is ready in WhatsApp. If you haven't already, tap Send to pass it on to the Librairie Papeterie du Centre.",
+    "sentEmail": "Your e-mail is ready in your mail app. If you haven't already, tap Send to pass it on to the Librairie Papeterie du Centre.",
+    "sentRef": "Your reference: no. {{id}} (please mention it if you contact us).",
+    "sentContact": "We will get back to you as soon as possible, by message or phone, to confirm availability, price and delivery."
   },
   "terms": {
     "title": "Terms and privacy",
