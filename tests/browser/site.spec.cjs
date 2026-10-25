@@ -150,6 +150,8 @@ test('commande enregistrée dans l’API une seule fois, à l’envoi du récapi
     address: 'Près du rond-point', delivery_fee: 2000,
   });
   expect(sent[0].items.reduce((n, i) => n + i.quantity, 0)).toBe(2);
+  // Même référence que dans le message, pour retrouver la commande dans Gestion
+  expect(sent[0].notes).toMatch(/^Référence : LC-\d{4}-\d{4}$/);
   await page.getByRole('button', { name: 'Copier' }).click();
   await page.waitForTimeout(300);
   expect(sent).toHaveLength(1);
@@ -172,16 +174,24 @@ test('confirmation à l’écran après « Envoyer par e-mail », avec la réfé
   await page.getByRole('option', { name: 'Essos', exact: true }).click();
   await page.getByLabel('Adresse et repère').fill('Près du rond-point');
   await page.click('button:has-text("Vérifier ma commande")');
-  await expect(page.getByText('Merci pour votre commande !')).toHaveCount(0);
+  await expect(page.getByText('Dernière étape : envoyez votre commande')).toHaveCount(0);
+  // La référence est dans le récapitulatif, donc dans le message WhatsApp et dans l'e-mail
+  const ref = (await page.locator('pre').innerText()).match(/Référence : (LC-\d{4}-\d{4})/)[1];
+  await expect(page.getByRole('link', { name: 'Envoyer ma commande sur WhatsApp' })).toHaveAttribute('href', new RegExp(encodeURIComponent(ref)));
 
   // mailto: n'ouvre rien dans le navigateur de test ; on garde la page
-  await page.getByRole('link', { name: 'Envoyer par e-mail' }).evaluate((a) => a.addEventListener('click', (e) => e.preventDefault()));
-  await page.getByRole('link', { name: 'Envoyer par e-mail' }).click();
-  const status = page.getByRole('status').filter({ hasText: 'Merci pour votre commande !' });
-  await expect(status).toBeFocused();
-  await expect(status).toContainText('Votre e-mail est prêt dans votre messagerie');
-  await expect(status).toContainText('n° 42');
-  await expect(status).toContainText('Nous vous recontacterons dans les plus brefs délais');
+  const email = page.getByRole('link', { name: 'Envoyer par e-mail' });
+  await expect(email).toHaveAttribute('href', new RegExp(encodeURIComponent(ref)));
+  await email.evaluate((a) => a.addEventListener('click', (e) => e.preventDefault()));
+  await email.click();
+  const sent = page.locator('.MuiAlert-root').filter({ hasText: 'Dernière étape : envoyez votre commande' });
+  await expect(sent).toBeFocused();
+  await expect(sent).toContainText('Votre messagerie s\'est ouverte avec votre message');
+  await expect(sent).toContainText(`Votre référence : ${ref}`);
+  await expect(sent).toContainText('Message envoyé ? Videz votre panier');
+  // Plus de « merci » ni de deuxième encadré qui contredirait « À CONFIRMER »
+  await expect(page.getByText('Merci pour votre commande')).toHaveCount(0);
+  await expect(page.locator('.MuiAlert-root').filter({ hasText: 'Message envoyé ?' })).toHaveCount(1);
 });
 
 test('article sur devis : ouvre la demande de devis', async ({ page }) => {
