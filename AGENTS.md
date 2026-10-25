@@ -79,6 +79,8 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Rôles : `user` (client), `employee`, `manager` (responsable : onglets « Commandes » et « Heures » de `/gestion`,
   ne corrige pas ses propres heures), `admin`. Un admin bloque / débloque ou supprime un compte
   (Gestion > Utilisateurs) ; l'API refuse de supprimer un compte qui a des heures (409 → le bloquer).
+- Gestion > Utilisateurs affiche la dernière connexion (`last_login_at`, renvoyé seulement par `/users/`,
+  heure locale du navigateur) ; `null` = « pas encore enregistrée » (compte pas reconnecté depuis le suivi).
 - Pointage des employés : rôle `employee` (attribué dans Gestion > Utilisateurs). Sur `/compte`,
   `src/components/TimeClock.tsx` (entrée / sortie, totaux jour, semaine, mois) ; dans `/gestion`, onglet
   « Heures » (`src/pages/HoursAdmin.tsx` : totaux par employé, détail, correction, export CSV). API `/time/…`

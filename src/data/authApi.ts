@@ -19,6 +19,8 @@ export interface User {
   created_at: string;
   // false = compte bloqué (connexion refusée)
   is_active: boolean;
+  // Liste /users/ (administrateurs) seulement ; null = aucune connexion enregistrée depuis le suivi
+  last_login_at?: string | null;
 }
 
 interface TokenResponse {
