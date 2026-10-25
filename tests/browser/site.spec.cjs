@@ -272,6 +272,48 @@ test('menu mobile : ouvre et navigue', async ({ page, isMobile }) => {
   await expect(page).toHaveURL(/\/livraison/);
 });
 
+test('menu mobile : bouton Fermer, logo, WhatsApp et téléphone', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'menu compact uniquement sur mobile');
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Menu' }).click();
+  const menu = page.locator('.MuiDrawer-paper');
+  await expect(menu.getByRole('img', { name: 'Librairie Papeterie du Centre' })).toBeVisible();
+  await expect(menu.getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
+  await expect(menu.getByRole('link', { name: '+237 6 93 24 03 96' })).toHaveAttribute('href', 'tel:+237693240396');
+  await menu.getByRole('button', { name: 'Fermer le menu' }).click();
+  await expect(menu).toBeHidden();
+});
+
+test('lien « Aller au contenu » : première tabulation, focus sur le contenu', async ({ page }) => {
+  await page.goto('/livraison');
+  await expect(page.locator('h1')).toBeVisible();
+  await page.keyboard.press('Tab');
+  const skip = page.getByRole('link', { name: 'Aller au contenu' });
+  await expect(skip).toBeFocused();
+  await expect(skip).toBeInViewport();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('main')).toBeFocused();
+  // Tabulation suivante : premier lien du contenu, plus ceux de l'en-tête
+  await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => !!document.activeElement?.closest('main'))).toBe(true);
+});
+
+test('logo : lien de la taille du logo, pas de toute la barre', async ({ page }) => {
+  await page.goto('/');
+  const box = await page.getByRole('banner').getByRole('link', { name: 'Librairie Papeterie du Centre' }).boundingBox();
+  expect(box.width).toBeLessThan(160);
+});
+
+test('article ajouté : « Voir le panier » dans le message', async ({ page }) => {
+  await page.goto('/catalogue');
+  await page.click('button:has-text("Ajouter")');
+  const toast = page.locator('.MuiSnackbar-root');
+  await expect(toast).toContainText('Article ajouté au panier');
+  await toast.getByRole('link', { name: 'Voir le panier' }).click();
+  await expect(page).toHaveURL(/\/panier$/);
+  await expect(page.locator('h1')).toContainText('Votre panier');
+});
+
 test('desktop : navigation visible', async ({ page, isMobile }) => {
   test.skip(isMobile, 'ordinateur uniquement');
   await page.goto('/');
@@ -284,6 +326,9 @@ test('livraison : grille affichée', async ({ page }) => {
   await expect(page.locator('text=Frais de livraison par quartier')).toBeVisible();
   await expect(page.locator('text=Zone 1 — Centre')).toBeVisible();
   await expect(page.locator('text=Zone 4 — Périphérie')).toBeVisible();
+  // Après la grille : commander ou écrire sur WhatsApp (la page n'est plus une impasse)
+  await expect(page.locator('main').getByRole('link', { name: 'Commander mes fournitures' })).toHaveAttribute('href', /\/catalogue$/);
+  await expect(page.locator('main').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396\?text=/);
 });
 
 test('panier vide : bouton désactivé', async ({ page }) => {

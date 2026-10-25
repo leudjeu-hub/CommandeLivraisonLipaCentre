@@ -12,6 +12,8 @@
     "login": "Log in",
     "account": "Your account",
     "menu": "Menu",
+    "skip": "Skip to content",
+    "close": "Close menu",
     "whatsapp": "Message us on WhatsApp"
   },
   "hero": {
@@ -63,6 +65,8 @@
   "delivery": {
     "eyebrow": "A local service",
     "title": "Delivery in Yaoundé: fees and lead times by neighbourhood",
+    "ctaText": "Is your area in the table? Choose your items: the fee is added when you order. Not there? Message us and we will tell you whether we deliver to you.",
+    "ctaWhatsappText": "Hello, do you deliver to my area: ",
     "step1Title": "Your neighbourhood",
     "step1Text": "Give your neighbourhood and a precise landmark. Delivery areas will be confirmed by the bookshop.",
     "step2Title": "Your time slot",
@@ -163,6 +167,7 @@
   },
   "toast": {
     "added": "Item added to basket",
+    "viewCart": "View basket",
     "cleared": "Basket cleared",
     "copied": "Summary copied",
     "copyFailed": "Copy unavailable: please download the document.",

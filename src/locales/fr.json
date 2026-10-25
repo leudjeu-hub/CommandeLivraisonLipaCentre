@@ -12,6 +12,8 @@
     "login": "Connexion",
     "account": "Votre compte",
     "menu": "Menu",
+    "skip": "Aller au contenu",
+    "close": "Fermer le menu",
     "whatsapp": "Écrire sur WhatsApp"
   },
   "hero": {
@@ -63,6 +65,8 @@
   "delivery": {
     "eyebrow": "Un service de proximité",
     "title": "Livraison à Yaoundé : tarifs et délais par quartier",
+    "ctaText": "Votre quartier est dans la grille ? Choisissez vos articles : les frais s'ajoutent au moment de commander. Il n'y est pas ? Écrivez-nous, nous vous dirons si nous livrons chez vous.",
+    "ctaWhatsappText": "Bonjour, livrez-vous dans mon quartier : ",
     "step1Title": "Votre quartier",
     "step1Text": "Indiquez votre quartier et un repère précis. Les zones desservies seront confirmées par la librairie.",
     "step2Title": "Votre créneau",
@@ -163,6 +167,7 @@
   },
   "toast": {
     "added": "Article ajouté au panier",
+    "viewCart": "Voir le panier",
     "cleared": "Panier effacé",
     "copied": "Récapitulatif copié",
     "copyFailed": "Copie indisponible : téléchargez le document.",

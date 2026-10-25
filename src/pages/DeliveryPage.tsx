@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import { Box, Container, Paper, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { Box, Button, Container, Paper, Typography } from '@mui/material';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
-import { DELIVERY, DELIVERY_RULES, money } from '../data/catalogue';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { DELIVERY, DELIVERY_RULES, money, whatsappLink } from '../data/catalogue';
 
 export default function DeliveryPage() {
   const { t, i18n } = useTranslation();
@@ -59,6 +61,17 @@ export default function DeliveryPage() {
           </Paper>
         ))}
       </Box>
+
+      {/* Après le tarif : commander, ou écrire si le quartier n'est pas dans la liste */}
+      <Paper sx={{ mt: 4, p: 3, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', justifyContent: 'space-between' }}>
+        <Typography sx={{ flex: '1 1 260px' }}>{t('delivery.ctaText')}</Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+          <Button variant="contained" size="large" component={Link} to="/catalogue">{t('hero.cta')}</Button>
+          <Button variant="outlined" color="success" size="large" href={whatsappLink(t('delivery.ctaWhatsappText'))} target="_blank" rel="noopener" startIcon={<WhatsAppIcon />}>
+            {t('nav.whatsapp')}
+          </Button>
+        </Box>
+      </Paper>
     </Container>
   );
 }

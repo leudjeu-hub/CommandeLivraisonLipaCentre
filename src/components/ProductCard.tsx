@@ -25,7 +25,7 @@ export default memo(function ProductCard({ product: p }: { product: Product }) {
       return;
     }
     addItem(p.id);
-    showToast(t('toast.added'));
+    showToast(t('toast.added'), { label: t('toast.viewCart'), to: '/panier' });
   };
 
   return (
