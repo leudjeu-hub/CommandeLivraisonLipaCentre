@@ -39,10 +39,10 @@ export default function Header() {
   const navLinks = [
     { to: '/catalogue', label: t('nav.catalogue') },
     { to: '/livraison', label: t('nav.delivery') },
-    // Gestion pour les administrateurs et les responsables (heures) ; « Mon compte » si connecté.
-    // « Connexion » est dans le pied de page : un compte n'est pas nécessaire pour commander.
+    // Gestion pour les administrateurs et les responsables (heures)
     ...(user && canManageHours(user.role) ? [{ to: '/gestion', label: t('nav.admin') }] : []),
-    ...(user ? [{ to: '/compte', label: t('nav.account') }] : []),
+    // « Votre compte » : la connexion si personne n'est connecté, sinon la page du compte
+    { to: user ? '/compte' : '/connexion', label: t('nav.account') },
   ];
 
   // WhatsApp, le canal préféré de beaucoup de clients : toujours à portée de pouce
