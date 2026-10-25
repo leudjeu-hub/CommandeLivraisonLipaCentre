@@ -87,7 +87,9 @@ test('build : sitemap.xml = accueil + pages indexables, aux adresses de leur bal
   const canonical = (file) => fs.readFileSync(`dist/${file}`, 'utf8').match(/rel="canonical" href="([^"]+)"/)?.[1];
   assert.deepEqual(locs, [canonical('index.html'), canonical('catalogue.html'), canonical('livraison.html')]);
   // Fichier de vérification Google Search Console (propriété « Préfixe d'URL ») : à garder en ligne
-  assert.equal(fs.readFileSync('dist/google22b032c38b924131.html', 'utf8').trim(), 'google-site-verification: google22b032c38b924131.html');
+  for (const file of ['google22b032c38b924131.html', 'google0fc62c3005d6e561.html']) {
+    assert.equal(fs.readFileSync(`dist/${file}`, 'utf8').trim(), `google-site-verification: ${file}`);
+  }
   for (const route of ['panier', 'commander', 'connexion', 'inscription', 'compte', 'gestion']) {
     assert.ok(!locs.some((loc) => loc.endsWith(`/${route}`)), route);
   }
