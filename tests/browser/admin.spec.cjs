@@ -166,7 +166,7 @@ test('commandes : filtrer, voir le détail, changer le statut', async ({ page })
   });
   const orders = [
     order(3, { customer_name: 'Zoé', status: 'cancelled', status_changed_at: '2026-10-24T10:00:00Z' }),
-    order(2), order(1, { customer_name: 'Paul', status: 'delivered', kind: 'quote', items: [], total: 0 }),
+    order(2, { notes: 'Référence : LC-2410-4821\nSonner deux fois' }), order(1, { customer_name: 'Paul', status: 'delivered', kind: 'quote', items: [], total: 0 }),
   ];
   const patches = [];
   await page.route(/\/orders\/(\d+\/status)?$/, (route) => {
@@ -182,7 +182,9 @@ test('commandes : filtrer, voir le détail, changer le statut', async ({ page })
   const orderRows = page.getByTestId('order-row');
   // « À traiter » par défaut : la commande livrée est masquée
   await expect(orderRows).toHaveCount(1);
-  await expect(orderRows.first()).toContainText('N° 2 · Awa');
+  // La référence citée par le client sur WhatsApp sert de titre ; le N° de Gestion reste en dessous
+  await expect(orderRows.first()).toContainText('LC-2410-4821 · Awa');
+  await expect(orderRows.first()).toContainText('N° 2 · 24/10/2026');
   await expect(orderRows.first()).toContainText('4 000 FCFA');
   await page.getByRole('button', { name: /Toutes \(3\)/ }).click();
   await expect(orderRows).toHaveCount(3);
@@ -196,9 +198,27 @@ test('commandes : filtrer, voir le détail, changer le statut', async ({ page })
   await orderRows.first().getByRole('button', { name: 'Détails' }).click();
   await expect(orderRows.first()).toContainText('6 × Stylo bleu (Réf. 2) : 3 000 FCFA');
   await expect(orderRows.first()).toContainText('Orange Money');
+  await expect(orderRows.first()).toContainText('Remarques : Sonner deux fois');
+  await expect(orderRows.first().getByText(/Remarques :.*Référence/)).toHaveCount(0);
   await expect(orderRows.first().getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237690000000');
   await orderRows.first().getByRole('combobox', { name: 'Statut' }).click();
   await page.getByRole('option', { name: 'Confirmée' }).click();
   await expect(orderRows.first()).toContainText('Confirmée');
   expect(patches).toEqual([[2, 'confirmed']]);
+  await expect(page.getByText('Commande LC-2410-4821 : Confirmée.')).toBeVisible();
+
+  // Recherche : référence (même partielle), nom ou téléphone, tous statuts confondus
+  const search = page.getByLabel('Rechercher (référence LC-…, nom, téléphone)');
+  await search.fill('4821');
+  await expect(orderRows).toHaveCount(1);
+  await expect(orderRows.first()).toContainText('LC-2410-4821');
+  await search.fill('paul');
+  await expect(orderRows).toHaveCount(1);
+  await expect(page.getByText('1 commande trouvée, tous statuts confondus')).toBeVisible();
+  await search.fill('690 00');
+  await expect(orderRows).toHaveCount(3);
+  await search.fill('LC-9999');
+  await expect(orderRows).toHaveCount(0);
+  await search.fill('');
+  await expect(orderRows).toHaveCount(1);
 });
