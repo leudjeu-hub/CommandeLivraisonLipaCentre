@@ -25,14 +25,30 @@ export default function Layout() {
 
   return (
     <>
+      {/* Lien d'évitement (WCAG 2.4.1) : invisible jusqu'à la première tabulation */}
+      <Box
+        component="a"
+        href="#contenu"
+        onClick={(e: React.MouseEvent) => {
+          e.preventDefault();
+          document.getElementById('contenu')?.focus();
+        }}
+        sx={{
+          position: 'absolute', left: 8, top: -64, zIndex: 1300, px: 2, py: 1.25, borderRadius: 1,
+          bgcolor: '#fff', color: 'primary.main', fontWeight: 700, textDecoration: 'none',
+          '&:focus': { top: 8 },
+        }}
+      >
+        {t('nav.skip')}
+      </Box>
       <Header />
       {/* Page chargée à part (voir App.tsx) : en attendant, un indicateur sur toute la hauteur de l'écran,
           et le pied de page n'arrive qu'avec la page. Sinon il s'affiche en haut puis saute vers le bas
           (décalage de mise en page, CLS). */}
-      <Suspense fallback={<Box sx={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}><CircularProgress aria-label="…" /></Box>}>
-        <main>
+      <Suspense fallback={<Box component="main" id="contenu" tabIndex={-1} sx={{ display: 'grid', placeItems: 'center', minHeight: '100vh', '&:focus': { outline: 'none' } }}><CircularProgress aria-label="…" /></Box>}>
+        <Box component="main" id="contenu" tabIndex={-1} sx={{ '&:focus': { outline: 'none' } }}>
           <Outlet />
-        </main>
+        </Box>
         <Footer />
       </Suspense>
       <Toast />
