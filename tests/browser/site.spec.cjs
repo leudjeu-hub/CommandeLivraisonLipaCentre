@@ -155,6 +155,35 @@ test('commande enregistrée dans l’API une seule fois, à l’envoi du récapi
   expect(sent).toHaveLength(1);
 });
 
+test('confirmation à l’écran après « Envoyer par e-mail », avec la référence', async ({ page }) => {
+  await mockApi(page, (path) => {
+    if (path === '/products/') return { body: PRODUCTS };
+    if (path === '/orders/submit') return { status: 201, body: { id: 42 } };
+    return { status: 404 };
+  });
+  await page.goto('/catalogue');
+  await page.click('button:has-text("Ajouter")');
+  await page.click('button:has-text("Ajouter")');
+  await page.getByRole('button', { name: 'Panier' }).click();
+  await page.click('text=Préparer ma commande');
+  await page.getByLabel('Nom du destinataire').fill('Client Test');
+  await page.getByLabel('Téléphone').fill('+237 600 00 00 00');
+  await page.getByRole('combobox', { name: 'Quartier' }).click();
+  await page.getByRole('option', { name: 'Essos', exact: true }).click();
+  await page.getByLabel('Adresse et repère').fill('Près du rond-point');
+  await page.click('button:has-text("Vérifier ma commande")');
+  await expect(page.getByText('Merci pour votre commande !')).toHaveCount(0);
+
+  // mailto: n'ouvre rien dans le navigateur de test ; on garde la page
+  await page.getByRole('link', { name: 'Envoyer par e-mail' }).evaluate((a) => a.addEventListener('click', (e) => e.preventDefault()));
+  await page.getByRole('link', { name: 'Envoyer par e-mail' }).click();
+  const status = page.getByRole('status').filter({ hasText: 'Merci pour votre commande !' });
+  await expect(status).toBeFocused();
+  await expect(status).toContainText('Votre e-mail est prêt dans votre messagerie');
+  await expect(status).toContainText('n° 42');
+  await expect(status).toContainText('Nous vous recontacterons dans les plus brefs délais');
+});
+
 test('article sur devis : ouvre la demande de devis', async ({ page }) => {
   await page.goto('/catalogue');
   await page.click('button:has-text("Demander")');

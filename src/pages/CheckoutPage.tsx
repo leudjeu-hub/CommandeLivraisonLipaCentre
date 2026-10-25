@@ -40,6 +40,15 @@ export default function CheckoutPage() {
   const [summary, setSummary] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [showAfterSend, setShowAfterSend] = useState(false);
+  // Canal choisi par le client : le site ouvre seulement WhatsApp ou la messagerie, il ne peut pas
+  // savoir si le message est vraiment parti. La confirmation le dit honnêtement.
+  const [sentVia, setSentVia] = useState<'whatsapp' | 'email' | null>(null);
+  const [orderRef, setOrderRef] = useState<number | null>(null);
+  const sentRef = useRef<HTMLDivElement>(null);
+  // Focus sur la confirmation : lecteurs d'écran, et visible au retour sur l'onglet
+  useEffect(() => {
+    if (sentVia) sentRef.current?.focus();
+  }, [sentVia]);
 
   const cartProducts = items
     .map((item) => ({ ...item, product: products.find((p) => p.id === item.productId)! }))
@@ -105,6 +114,7 @@ export default function CheckoutPage() {
     const text = buildSummary();
     setSummary(text);
     setShowResult(true);
+    setSentVia(null);
   };
 
   // Ouvre l'application mail du client (mailto:) avec le récapitulatif ; aucun envoi côté serveur
@@ -118,6 +128,7 @@ export default function CheckoutPage() {
   const recordOrder = () => {
     if (recorded.current === summary) return;
     recorded.current = summary;
+    setOrderRef(null);
     submitOrder({
       kind: type,
       customer_name: name,
@@ -129,11 +140,14 @@ export default function CheckoutPage() {
       notes,
       delivery_fee: fee,
       items: type === 'order' ? cartProducts.map(({ product, quantity }) => ({ product_id: product.id, quantity })) : [],
+    }).then((order) => {
+      if (recorded.current === summary) setOrderRef(order.id);
     }).catch(() => undefined);
   };
 
-  const handleSendClick = () => {
+  const handleSendClick = (via: 'whatsapp' | 'email') => {
     recordOrder();
+    setSentVia(via);
     if (type !== 'quote' && items.length > 0) setShowAfterSend(true);
   };
 
@@ -298,16 +312,31 @@ export default function CheckoutPage() {
               href={whatsappLink(summary)}
               target="_blank"
               rel="noopener"
-              onClick={handleSendClick}
+              onClick={() => handleSendClick('whatsapp')}
             >
               {t('result.whatsapp')}
             </Button>
-            <Button variant="contained" href={mailtoHref} onClick={handleSendClick}>
+            <Button variant="contained" href={mailtoHref} onClick={() => handleSendClick('email')}>
               {t('result.email')}
             </Button>
             <Button variant="outlined" onClick={handleDownload}>{t('result.download')}</Button>
             <Button variant="outlined" onClick={handleCopy}>{t('result.copy')}</Button>
           </Box>
+
+          {sentVia && (
+            <Alert ref={sentRef} tabIndex={-1} role="status" severity="success" sx={{ mt: 3 }}>
+              <Typography component="p" sx={{ fontWeight: 700, mb: 1 }}>
+                {t(type === 'quote' ? 'result.sentTitleQuote' : 'result.sentTitleOrder')}
+              </Typography>
+              <Typography component="p" sx={{ mb: 1 }}>
+                {t(sentVia === 'whatsapp' ? 'result.sentWhatsapp' : 'result.sentEmail')}
+              </Typography>
+              {orderRef !== null && (
+                <Typography component="p" sx={{ mb: 1 }}>{t('result.sentRef', { id: orderRef })}</Typography>
+              )}
+              <Typography component="p">{t('result.sentContact')}</Typography>
+            </Alert>
+          )}
 
           {showAfterSend && (
             <Alert severity="info" sx={{ mt: 3 }}>
