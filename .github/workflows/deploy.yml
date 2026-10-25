@@ -1,9 +1,12 @@
-# Publie le site sur GitHub Pages à chaque push sur main.
+# Publie le site sur GitHub Pages à chaque push sur main, et toutes les 3 heures pour rafraîchir la
+# copie du catalogue (dist/catalogue.json, voir scripts/catalogue-snapshot.mjs).
 # Prérequis (une seule fois) : Settings → Pages → Source : « GitHub Actions ».
 name: Déploiement GitHub Pages
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '30 */3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -28,6 +31,8 @@ jobs:
         env:
           BASE_PATH: /CommandeLivraisonLipaCentre/
       - run: npm test
+      # Après les tests : ils vérifient le site avec une copie vide (public/catalogue.json)
+      - run: node scripts/catalogue-snapshot.mjs dist
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

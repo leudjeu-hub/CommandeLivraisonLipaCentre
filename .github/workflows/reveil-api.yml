@@ -1,0 +1,22 @@
+# Garde l'API Render éveillée aux heures où les clients commandent. L'offre gratuite de Render met le
+# serveur en veille après 15 min sans requête, et le réveil prend ~40 s (catalogue « Chargement… »).
+# Un appel à GET / (statut, quelques octets) toutes les 10 min, de 5 h à 23 h à Yaoundé (UTC+1) :
+# ~570 h par mois, sous les 750 h gratuites de Render. La nuit, le serveur se rendort.
+# GitHub peut retarder ou sauter une exécution planifiée : un réveil reste possible de temps en temps.
+name: Réveil de l'API
+on:
+  schedule:
+    - cron: '*/10 4-21 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Un échec n'est qu'un avertissement : pas de courriel d'erreur toutes les 10 min si Render est en panne
+      - run: |
+          curl -fsS --max-time 120 --retry 2 -o /dev/null -w "HTTP %{http_code} en %{time_total} s\n" https://papeterie-api-kshr.onrender.com/ \
+            || echo "::warning::API Render injoignable"

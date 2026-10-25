@@ -67,3 +67,9 @@ test('build : le site publié appelle l’API Render et rien d’autre', () => {
   assert.match(js, /https:\/\/papeterie-api-kshr\.onrender\.com/);
   assert.doesNotMatch(js, /localhost:8000/, 'adresse de l’API locale dans le build');
 });
+
+test('copie du catalogue : vide dans le dépôt (remplie au déploiement seulement)', () => {
+  assert.deepEqual(JSON.parse(fs.readFileSync('public/catalogue.json', 'utf8')), []);
+  const deploy = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
+  assert.match(deploy, /node scripts\/catalogue-snapshot\.mjs dist/);
+});

@@ -30,11 +30,19 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   ajoute l'API à `connect-src` du build, et `scripts/serve.cjs` reprend la CSP du `index.html` construit.
 - Articles : `useCatalogue()` / `useProducts()` (`src/data/useProducts.ts`). La dernière liste reçue de
   `GET /products/` est gardée dans localStorage (`centre-catalogue`) et affichée tout de suite au retour,
-  puis remplacée par la réponse de l'API (serveur Render en veille : ~40 s). Première visite : statut
+  puis remplacée par la réponse de l'API (serveur Render en veille : ~40 s). Première visite : la copie
+  `catalogue.json` publiée avec le site s'affiche (statut `cache`) en attendant l'API ; sans copie, statut
   `loading` (« Chargement du catalogue… », avec un lien WhatsApp) ; `GET /products/` est abandonné après
-  60 s (`PRODUCTS_TIMEOUT`). API injoignable et rien en mémoire → statut `unavailable` :
+  60 s (`PRODUCTS_TIMEOUT`). API injoignable et ni mémoire ni copie → statut `unavailable` :
   message avec « Commander par WhatsApp » et « Réessayer » (`src/components/CatalogueUnavailable.tsx`),
   jamais d'articles inventés (décision d'Alain, 2026-10-22 ; `catalogue.ts` n'a plus d'articles).
+- Copie du catalogue (décision d'Alain, 2026-10-25) : `public/catalogue.json` vaut `[]` dans le dépôt
+  et dans les tests ; `deploy.yml` la remplit après le build avec `scripts/catalogue-snapshot.mjs`
+  (`GET /products/`, articles disponibles, sans `stock`), à chaque push et toutes les 3 heures. API
+  injoignable au déploiement → copie vide, le déploiement continue. Les prix de la copie peuvent dater
+  de 3 h : l'API les remplace dès qu'elle répond, et `POST /orders/submit` recalcule les prix.
+- Réveil de l'API : `.github/workflows/reveil-api.yml` appelle `GET /` toutes les 10 min de 5 h à 23 h
+  (heure de Yaoundé) pour que Render ne se mette pas en veille (~570 h/mois sur 750 h gratuites).
 - Catalogue (~1 500 articles) : `/catalogue` affiche 24 cartes puis « Afficher plus » ; Gestion > Articles
   50 lignes, avec une recherche (nom, n°, famille). Ne jamais afficher toute la liste d'un coup (téléphones
   d'entrée de gamme en 3G). Zones de livraison, catégories et WhatsApp :
