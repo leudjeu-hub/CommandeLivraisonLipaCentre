@@ -265,8 +265,9 @@ function ProductsAdmin() {
     [products, query]
   );
 
+  // Toujours la liste à jour (pas le cache HTTP de 60 s), sinon une modification semblerait perdue
   const load = useCallback(() => {
-    listProducts()
+    listProducts(true)
       .then((list) => {
         setProducts([...list].sort((a, b) => a.id - b.id));
         setLoadError('');

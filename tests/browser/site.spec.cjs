@@ -104,6 +104,20 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   expect(params.get('body')).toBe(text);
 });
 
+test('lecture du catalogue sans Content-Type ni jeton : pas de requête préalable OPTIONS', async ({ page }) => {
+  const reads = [];
+  await mockApi(page, (path, req) => {
+    if (path === '/products/') reads.push(req.headers());
+    return { body: path === '/products/' ? PRODUCTS : null };
+  });
+  // Même connecté, la liste publique part sans jeton (un en-tête Authorization imposerait un OPTIONS)
+  await page.addInitScript(() => localStorage.setItem('centre-auth-token', 'jeton-test'));
+  await page.goto('/catalogue');
+  await expect.poll(() => reads.length).toBeGreaterThan(0);
+  expect(reads[0]['content-type']).toBeUndefined();
+  expect(reads[0].authorization).toBeUndefined();
+});
+
 test('commande enregistrée dans l’API une seule fois, à l’envoi du récapitulatif', async ({ page }) => {
   const sent = [];
   await mockApi(page, (path, req) => {
