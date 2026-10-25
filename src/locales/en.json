@@ -452,7 +452,10 @@
     "statusLabel": "Status",
     "whatsapp": "Message on WhatsApp",
     "call": "Call",
-    "statusChanged": "Order no. {{id}}: {{status}}.",
+    "statusChanged": "Order {{id}}: {{status}}.",
+    "search": "Search (LC-… reference, name, phone)",
+    "found_one": "{{count}} order found, all statuses",
+    "found_other": "{{count}} orders found, all statuses",
     "purgeInfo": "Cancelled orders are permanently deleted 30 days after they were cancelled.",
     "purgeOn": "Deleted on {{date}}",
     "status": {

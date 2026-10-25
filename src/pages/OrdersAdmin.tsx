@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Alert, Box, Button, Chip, Collapse, FormControl, InputLabel, MenuItem, Paper, Select, Stack,
-  ToggleButton, ToggleButtonGroup, Typography,
+  Alert, Box, Button, Chip, Collapse, FormControl, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack,
+  TextField, ToggleButton, ToggleButtonGroup, Typography,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import SearchIcon from '@mui/icons-material/Search';
 import { money, PAYMENT_LABELS, SLOT_LABELS } from '../data/catalogue';
 import {
   customerWhatsApp, listOrders, ORDER_STATUSES, setOrderStatus, type Order, type OrderStatus,
@@ -19,6 +20,13 @@ const FILTERS: Filter[] = ['open', ...ORDER_STATUSES, 'all'];
 const matches = (o: Order, f: Filter) =>
   f === 'all' || (f === 'open' ? o.status === 'new' || o.status === 'confirmed' : o.status === f);
 
+// Référence client « LC-2510-4821 » : écrite par le formulaire en tête des remarques (CheckoutPage),
+// c'est elle que le client cite sur WhatsApp. Les commandes plus anciennes n'en ont pas.
+const REF = /^\s*[^\n]*?(LC-\d{4}-\d{4})[^\n]*\n?/;
+const clientRef = (o: Order) => o.notes?.match(REF)?.[1] ?? null;
+const notesWithoutRef = (o: Order) => (clientRef(o) ? o.notes!.replace(REF, '').trim() || null : o.notes);
+const label = (o: Order) => clientRef(o) ?? `#${o.id}`;
+
 const STATUS_COLOR = {
   new: 'warning', confirmed: 'info', delivered: 'success', cancelled: 'default',
 } as const;
@@ -30,6 +38,7 @@ export default function OrdersAdmin() {
   const [error, setError] = useState('');
   const [filter, setFilter] = useState<Filter>('open');
   const [open, setOpen] = useState<number | null>(null);
+  const [search, setSearch] = useState('');
 
   const load = useCallback(() => {
     setError('');
@@ -41,14 +50,21 @@ export default function OrdersAdmin() {
     () => Object.fromEntries(FILTERS.map((f) => [f, orders?.filter((o) => matches(o, f)).length ?? 0])),
     [orders],
   );
-  const shown = orders?.filter((o) => matches(o, filter)) ?? [];
+  // Recherche par référence, nom ou téléphone, tous statuts confondus (le client peut citer une
+  // commande déjà livrée). « 2510-4821 », « 4821 » et « LC-2510-4821 » trouvent la même commande.
+  const query = search.trim().toLowerCase();
+  const digits = query.replace(/\D/g, '');
+  const found = (o: Order) =>
+    `${clientRef(o) ?? ''} n° ${o.id} ${o.customer_name}`.toLowerCase().includes(query) ||
+    (digits.length >= 4 && `${clientRef(o) ?? ''} ${o.phone}`.replace(/\D/g, '').includes(digits));
+  const shown = orders?.filter((o) => (query ? found(o) : matches(o, filter))) ?? [];
 
   const changeStatus = async (order: Order, status: OrderStatus) => {
     setError('');
     try {
       const updated = await setOrderStatus(order.id, status);
       setOrders((list) => list?.map((o) => (o.id === updated.id ? updated : o)) ?? null);
-      showToast(t('orders.statusChanged', { id: order.id, status: t(`orders.status.${status}`) }));
+      showToast(t('orders.statusChanged', { id: label(order), status: t(`orders.status.${status}`) }));
     } catch (err) {
       setError((err as Error).message);
     }
@@ -80,7 +96,20 @@ export default function OrdersAdmin() {
           <ToggleButton key={f} value={f}>{t(`orders.filter_${f}`)} ({counts[f]})</ToggleButton>
         ))}
       </ToggleButtonGroup>
-      {filter === 'cancelled' && <Alert severity="info" sx={{ mb: 2 }}>{t('orders.purgeInfo')}</Alert>}
+      {orders && orders.length > 0 && (
+        <TextField
+          type="search"
+          size="small"
+          fullWidth
+          label={t('orders.search')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> } }}
+          helperText={query ? t('orders.found', { count: shown.length }) : undefined}
+          sx={{ mb: 2 }}
+        />
+      )}
+      {filter === 'cancelled' && !query && <Alert severity="info" sx={{ mb: 2 }}>{t('orders.purgeInfo')}</Alert>}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {!orders && !error && <Typography color="text.secondary">{t('admin.loading')}</Typography>}
       {orders && shown.length === 0 && <Typography color="text.secondary">{t('orders.empty')}</Typography>}
@@ -93,10 +122,10 @@ export default function OrdersAdmin() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
                 <Box sx={{ flexGrow: 1, minWidth: 0, overflowWrap: 'anywhere' }}>
                   <Typography sx={{ fontWeight: 700 }}>
-                    {t('orders.number', { id: o.id })} · {o.customer_name}
+                    {clientRef(o) ?? t('orders.number', { id: o.id })} · {o.customer_name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {date(o.created_at)} · {o.phone}{o.area && ` · ${o.area}`}
+                    {clientRef(o) && `${t('orders.number', { id: o.id })} · `}{date(o.created_at)} · {o.phone}{o.area && ` · ${o.area}`}
                   </Typography>
                   <Stack direction="row" spacing={0.5} sx={{ mt: 0.5, flexWrap: 'wrap' }}>
                     <Chip size="small" color={STATUS_COLOR[o.status]} label={t(`orders.status.${o.status}`)} />
@@ -118,7 +147,7 @@ export default function OrdersAdmin() {
                   <Detail label={t('orders.address')} value={o.address} />
                   <Detail label={t('orders.slot')} value={o.slot && SLOT_LABELS[o.slot] ? t(SLOT_LABELS[o.slot]) : o.slot} />
                   <Detail label={t('orders.payment')} value={o.payment && PAYMENT_LABELS[o.payment] ? t(PAYMENT_LABELS[o.payment]) : o.payment} />
-                  <Detail label={t('orders.notes')} value={o.notes} />
+                  <Detail label={t('orders.notes')} value={notesWithoutRef(o)} />
                   {o.items.length > 0 && (
                     <Box component="ul" sx={{ pl: 2.5, my: 1 }}>
                       {o.items.map((i) => (

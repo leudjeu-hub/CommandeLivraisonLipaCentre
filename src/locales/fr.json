@@ -452,7 +452,10 @@
     "statusLabel": "Statut",
     "whatsapp": "Écrire sur WhatsApp",
     "call": "Appeler",
-    "statusChanged": "Commande n° {{id}} : {{status}}.",
+    "statusChanged": "Commande {{id}} : {{status}}.",
+    "search": "Rechercher (référence LC-…, nom, téléphone)",
+    "found_one": "{{count}} commande trouvée, tous statuts confondus",
+    "found_other": "{{count}} commandes trouvées, tous statuts confondus",
     "purgeInfo": "Les commandes annulées sont supprimées définitivement 30 jours après leur annulation.",
     "purgeOn": "Supprimée le {{date}}",
     "status": {
