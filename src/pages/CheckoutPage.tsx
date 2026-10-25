@@ -12,6 +12,13 @@ import { submitOrder } from '../data/ordersApi';
 const OTHER_AREA = '__autre';
 // Numéro camerounais : 9 chiffres commençant par 6 (mobile) ou 2 (fixe), indicatif +237 facultatif
 const validPhone = (phone: string) => /^(\+?237|00237)?[26]\d{8}$/.test(phone.replace(/[\s.()-]/g, ''));
+// Référence du récapitulatif, choisie ici et écrite dans le message : le site ouvre WhatsApp avant la
+// réponse du serveur, le numéro de Gestion ne peut donc pas y figurer. « LC-2510-4821 » : jour, mois, 4 chiffres
+const newReference = () => {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `LC-${pad(d.getDate())}${pad(d.getMonth() + 1)}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
+};
 
 export default function CheckoutPage() {
   const { t, i18n } = useTranslation();
@@ -43,7 +50,7 @@ export default function CheckoutPage() {
   // Canal choisi par le client : le site ouvre seulement WhatsApp ou la messagerie, il ne peut pas
   // savoir si le message est vraiment parti. La confirmation le dit honnêtement.
   const [sentVia, setSentVia] = useState<'whatsapp' | 'email' | null>(null);
-  const [orderRef, setOrderRef] = useState<number | null>(null);
+  const [reference, setReference] = useState('');
   const sentRef = useRef<HTMLDivElement>(null);
   // Focus sur la confirmation : lecteurs d'écran, et visible au retour sur l'onglet
   useEffect(() => {
@@ -68,10 +75,11 @@ export default function CheckoutPage() {
     return text;
   }, [area, zone, fee, subtotal, i18n.language, t, locale, type]);
 
-  const buildSummary = () => {
+  const buildSummary = (ref: string) => {
     const lines = [
       'LIBRAIRIE PAPETERIE DU CENTRE',
       (type === 'quote' ? t('common.sumQuote') : t('common.sumOrder')) + t('common.sumPending'),
+      t('common.sumRef') + ref,
       t('common.sumDate') + new Date().toLocaleDateString(locale),
       '',
       t('common.sumName') + name,
@@ -111,8 +119,9 @@ export default function CheckoutPage() {
       setPhoneError(true);
       return;
     }
-    const text = buildSummary();
-    setSummary(text);
+    const ref = newReference();
+    setReference(ref);
+    setSummary(buildSummary(ref));
     setShowResult(true);
     setSentVia(null);
   };
@@ -128,7 +137,6 @@ export default function CheckoutPage() {
   const recordOrder = () => {
     if (recorded.current === summary) return;
     recorded.current = summary;
-    setOrderRef(null);
     submitOrder({
       kind: type,
       customer_name: name,
@@ -137,13 +145,14 @@ export default function CheckoutPage() {
       address,
       slot,
       payment,
-      notes,
+      // La référence en tête des instructions : Gestion > Commandes la montre dans le détail
+      notes: t('common.sumRef') + reference + (notes ? '\n' + notes : ''),
       delivery_fee: fee,
       items: type === 'order' ? cartProducts.map(({ product, quantity }) => ({ product_id: product.id, quantity })) : [],
-    }).then((order) => {
-      if (recorded.current === summary) setOrderRef(order.id);
     }).catch(() => undefined);
   };
+
+  const refParts = t('result.sentRef', { ref: '\u0001' }).split('\u0001');
 
   const handleSendClick = (via: 'whatsapp' | 'email') => {
     recordOrder();
@@ -323,28 +332,33 @@ export default function CheckoutPage() {
             <Button variant="outlined" onClick={handleCopy}>{t('result.copy')}</Button>
           </Box>
 
+          {/* Pas de « merci » ici : le message n'est parti que si le client appuie sur Envoyer.
+              Pas de role="status" non plus : le focus y est déjà placé, il serait lu deux fois. */}
           {sentVia && (
-            <Alert ref={sentRef} tabIndex={-1} role="status" severity="success" sx={{ mt: 3 }}>
+            <Alert ref={sentRef} tabIndex={-1} severity="info" sx={{ mt: 3, alignItems: 'flex-start' }}>
               <Typography component="p" sx={{ fontWeight: 700, mb: 1 }}>
                 {t(type === 'quote' ? 'result.sentTitleQuote' : 'result.sentTitleOrder')}
               </Typography>
               <Typography component="p" sx={{ mb: 1 }}>
                 {t(sentVia === 'whatsapp' ? 'result.sentWhatsapp' : 'result.sentEmail')}
               </Typography>
-              {orderRef !== null && (
-                <Typography component="p" sx={{ mb: 1 }}>{t('result.sentRef', { id: orderRef })}</Typography>
-              )}
+              {/* Référence en gras et sur une seule ligne (pas « LC-2510- » puis « 1541 » à 360 px) */}
+              <Typography component="p" sx={{ mb: 1 }}>
+                {refParts[0]}
+                <Box component="strong" sx={{ whiteSpace: 'nowrap' }}>{reference}</Box>
+                {refParts[1]}
+              </Typography>
               <Typography component="p">{t('result.sentContact')}</Typography>
-            </Alert>
-          )}
-
-          {showAfterSend && (
-            <Alert severity="info" sx={{ mt: 3 }}>
-              {t('result.afterSend')}
-              <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                <Button variant="contained" onClick={handleClearAfterSend}>{t('result.clearCart')}</Button>
-                <Button variant="outlined" onClick={() => setShowAfterSend(false)}>{t('result.keepCart')}</Button>
-              </Box>
+              {/* Vider le panier : dans le même encadré, pour ne pas renvoyer la même commande */}
+              {showAfterSend && (
+                <>
+                  <Typography component="p" sx={{ mt: 2 }}>{t('result.afterSend')}</Typography>
+                  <Box sx={{ mt: 1.5, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Button variant="contained" onClick={handleClearAfterSend}>{t('result.clearCart')}</Button>
+                    <Button variant="outlined" onClick={() => setShowAfterSend(false)}>{t('result.keepCart')}</Button>
+                  </Box>
+                </>
+              )}
             </Alert>
           )}
         </Paper>
