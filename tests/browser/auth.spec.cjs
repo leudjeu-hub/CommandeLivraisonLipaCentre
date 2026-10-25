@@ -4,10 +4,7 @@ const { test, expect } = require('@playwright/test');
 const ADMIN = { id: 1, email: 'admin@exemple.cm', role: 'admin', created_at: '2026-10-19T08:00:00', is_active: true, last_login_at: null };
 const LOGIN_TIME = '2026-10-25T11:40:00Z';
 
-let resetRequests = [];
-
 test.beforeEach(async ({ page }) => {
-  resetRequests = [];
   const users = new Map([[1, { ...ADMIN, password: 'admin-123' }]]);
   const tokens = new Map(); // jeton → id
   let nextId = 2;
@@ -39,17 +36,6 @@ test.beforeEach(async ({ page }) => {
       const user = [...users.values()].find((u) => u.email === body.email && u.password === body.password);
       if (!user) return json(route, 401, { detail: 'Invalid e-mail or password' });
       return user.is_active ? session(route, user) : json(route, 403, { detail: 'This account is blocked' });
-    }
-    // Mot de passe oublié : un seul jeton valable, « jeton-reset »
-    if (path === '/auth/password-reset/request') {
-      resetRequests.push(body.email);
-      return json(route, 202, { detail: 'If an account exists for this e-mail, a link has been sent' });
-    }
-    if (path === '/auth/password-reset/confirm') {
-      if (body.token !== 'jeton-reset') return json(route, 400, { detail: 'This reset link is invalid or has expired' });
-      users.get(1).password = body.password;
-      tokens.clear();
-      return route.fulfill({ status: 204 });
     }
     const user = current(req);
     if (!user) return json(route, 401, { detail: 'Not authenticated' });
@@ -254,51 +240,4 @@ test('serveur en veille : la connexion abandonne au bout de 15 s, « Réessayer 
   await expect(page.getByText('Le serveur ne répond pas.')).toBeVisible();
   await page.getByRole('button', { name: 'Réessayer' }).click();
   await expect(page.getByText(`Connecté en tant que ${ADMIN.email}`)).toBeVisible();
-});
-
-test('mot de passe oublié : demande du lien, même message que le compte existe ou non', async ({ page }) => {
-  await page.goto('/connexion');
-  await page.getByRole('link', { name: 'Mot de passe oublié ?' }).click();
-  await expect(page).toHaveURL(/\/mot-de-passe-oublie$/);
-  await page.getByRole('button', { name: 'Recevoir le lien' }).click();
-  await expect(page.getByText('Adresse e-mail invalide.')).toBeVisible();
-  await page.getByLabel('E-mail').fill('admin@exemple.cm');
-  await page.getByRole('button', { name: 'Recevoir le lien' }).click();
-  await expect(page.getByText('Si un compte existe pour admin@exemple.cm, un e-mail vient de partir')).toBeVisible();
-  expect(resetRequests).toEqual(['admin@exemple.cm']);
-});
-
-test('nouveau mot de passe depuis le lien de l’e-mail, puis connexion', async ({ page }) => {
-  await page.goto('/nouveau-mot-de-passe#token=jeton-reset');
-  // Le jeton ne reste pas dans la barre d'adresse
-  await expect(page).toHaveURL(/\/nouveau-mot-de-passe$/);
-  await page.getByLabel('Nouveau mot de passe').fill('court');
-  await page.getByLabel('Confirmer le mot de passe').fill('autre');
-  await page.getByRole('button', { name: 'Enregistrer le mot de passe' }).click();
-  await expect(page.getByText('8 caractères minimum.')).toBeVisible();
-  await expect(page.getByText('Les mots de passe ne correspondent pas.')).toBeVisible();
-
-  await page.getByLabel('Nouveau mot de passe').fill('nouveau-123');
-  await page.getByLabel('Confirmer le mot de passe').fill('nouveau-123');
-  await page.getByRole('button', { name: 'Enregistrer le mot de passe' }).click();
-  await expect(page).toHaveURL(/\/connexion$/);
-  await expect(page.getByText('Mot de passe changé. Connectez-vous avec le nouveau.')).toBeVisible();
-
-  await page.getByLabel('E-mail').fill('admin@exemple.cm');
-  await page.getByLabel('Mot de passe').fill('nouveau-123');
-  await page.getByRole('button', { name: 'Se connecter' }).click();
-  await expect(page).toHaveURL(/\/compte$/);
-});
-
-test('lien expiré ou incomplet : explication et nouveau lien', async ({ page }) => {
-  await page.goto('/nouveau-mot-de-passe#token=jeton-perime');
-  await page.getByLabel('Nouveau mot de passe').fill('nouveau-123');
-  await page.getByLabel('Confirmer le mot de passe').fill('nouveau-123');
-  await page.getByRole('button', { name: 'Enregistrer le mot de passe' }).click();
-  await expect(page.getByText(/Ce lien n'est plus valable/)).toBeVisible();
-  await page.getByRole('link', { name: 'Demander un nouveau lien' }).click();
-  await expect(page).toHaveURL(/\/mot-de-passe-oublie$/);
-
-  await page.goto('/nouveau-mot-de-passe');
-  await expect(page.getByText(/Ce lien est incomplet/)).toBeVisible();
 });

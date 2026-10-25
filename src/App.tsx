@@ -15,7 +15,6 @@ const pages = {
   admin: () => import('./pages/AdminPage'),
   auth: () => import('./pages/AuthPage'),
   account: () => import('./pages/AccountPage'),
-  reset: () => import('./pages/PasswordResetPage'),
 };
 const CataloguePage = lazy(pages.catalogue);
 const DeliveryPage = lazy(pages.delivery);
@@ -25,7 +24,6 @@ const CheckoutPage = lazy(pages.checkout);
 const AdminPage = lazy(pages.admin);
 const AuthPage = lazy(pages.auth);
 const AccountPage = lazy(pages.account);
-const PasswordResetPage = lazy(pages.reset);
 
 // Pages du parcours de commande, téléchargées en arrière-plan une fois l'accueil affiché
 function prefetch() {
@@ -54,8 +52,6 @@ export default function App() {
         <Route path="gestion" element={page(<AdminPage />)} />
         <Route path="connexion" element={page(<AuthPage mode="login" />)} />
         <Route path="inscription" element={page(<AuthPage mode="register" />)} />
-        <Route path="mot-de-passe-oublie" element={page(<PasswordResetPage key="request" mode="request" />)} />
-        <Route path="nouveau-mot-de-passe" element={page(<PasswordResetPage key="reset" mode="reset" />)} />
         <Route path="compte" element={page(<AccountPage />)} />
       </Route>
     </Routes>

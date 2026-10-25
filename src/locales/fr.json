@@ -487,23 +487,5 @@
     "order": "Votre commande · Librairie Papeterie du Centre",
     "cart": "Votre panier · Librairie Papeterie du Centre",
     "other": "Librairie Papeterie du Centre · Yaoundé"
-  },
-  "reset": {
-    "requestTitle": "Mot de passe oublié",
-    "requestIntro": "Indiquez l'e-mail de votre compte : nous vous envoyons un lien pour choisir un nouveau mot de passe.",
-    "requestSubmit": "Recevoir le lien",
-    "sent": "Si un compte existe pour {{email}}, un e-mail vient de partir avec un lien valable 30 minutes.",
-    "sentHelp": "Rien reçu après quelques minutes ? Regardez dans les courriers indésirables (spam), vérifiez l'adresse, puis refaites la demande.",
-    "backToLogin": "Retour à la connexion",
-    "resetTitle": "Nouveau mot de passe",
-    "resetIntro": "Choisissez votre nouveau mot de passe. Vous serez déconnecté de tous vos appareils.",
-    "newPassword": "Nouveau mot de passe",
-    "resetSubmit": "Enregistrer le mot de passe",
-    "done": "Mot de passe changé. Connectez-vous avec le nouveau.",
-    "expired": "Ce lien n'est plus valable : il a expiré (30 minutes), a déjà servi, ou un lien plus récent a été demandé.",
-    "noToken": "Ce lien est incomplet. Ouvrez le lien de l'e-mail en entier, ou demandez-en un nouveau.",
-    "askAgain": "Demander un nouveau lien",
-    "errTooMany": "Trop de demandes en ce moment. Réessayez dans une heure.",
-    "forgot": "Mot de passe oublié ?"
   }
 }
