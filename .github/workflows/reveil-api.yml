@@ -28,7 +28,7 @@ jobs:
       API_URL: https://papeterie-api-kshr.onrender.com/
     steps:
       - run: |
-          number=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number')
+          number=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
           if curl -fsS --max-time 120 --retry 2 --retry-delay 30 --retry-all-errors -o /dev/null \
               -w "HTTP %{http_code} en %{time_total} s\n" "$API_URL"; then
             if [ -n "$number" ]; then
