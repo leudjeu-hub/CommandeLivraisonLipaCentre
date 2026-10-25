@@ -74,7 +74,7 @@ test('build : une page HTML par route (code 200 sur GitHub Pages), titres propre
   assert.match(page('livraison'), /<title>Livraison à Yaoundé/);
   assert.match(page('livraison'), /rel="canonical" href="[^"]+\/livraison"/);
   assert.match(page('catalogue'), /<title>Catalogue/);
-  for (const route of ['panier', 'commander', 'connexion', 'inscription', 'compte', 'gestion']) {
+  for (const route of ['panier', 'commander', 'connexion', 'inscription', 'mot-de-passe-oublie', 'nouveau-mot-de-passe', 'compte', 'gestion']) {
     assert.match(page(route), /name="robots" content="noindex"/, route);
     assert.doesNotMatch(page(route), /rel="canonical"/, route);
   }

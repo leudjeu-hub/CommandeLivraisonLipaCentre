@@ -30,6 +30,8 @@ const PAGES: { route: string; title: string; description?: string; noindex?: boo
   { route: 'commander', title: fr.seo.order, noindex: true },
   { route: 'connexion', title: fr.seo.other, noindex: true },
   { route: 'inscription', title: fr.seo.other, noindex: true },
+  { route: 'mot-de-passe-oublie', title: fr.seo.other, noindex: true },
+  { route: 'nouveau-mot-de-passe', title: fr.seo.other, noindex: true },
   { route: 'compte', title: fr.seo.other, noindex: true },
   { route: 'gestion', title: fr.seo.other, noindex: true },
 ];
