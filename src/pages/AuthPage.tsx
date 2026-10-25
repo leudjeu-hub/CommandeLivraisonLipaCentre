@@ -99,11 +99,6 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
             required
             fullWidth
           />
-          {!isRegister && (
-            <Link component={RouterLink} to="/mot-de-passe-oublie" variant="body2" sx={{ alignSelf: 'flex-end', mt: '4px !important' }}>
-              {t('reset.forgot')}
-            </Link>
-          )}
           {isRegister && (
             <TextField
               label={t('auth.passwordConfirm')}
