@@ -81,6 +81,18 @@ test('build : une page HTML par route (code 200 sur GitHub Pages), titres propre
   assert.match(fs.readFileSync('dist/404.html', 'utf8'), /name="robots" content="noindex"/);
 });
 
+test('build : sitemap.xml = accueil + pages indexables, aux adresses de leur balise canonical', () => {
+  const sitemap = fs.readFileSync('dist/sitemap.xml', 'utf8');
+  const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const canonical = (file) => fs.readFileSync(`dist/${file}`, 'utf8').match(/rel="canonical" href="([^"]+)"/)?.[1];
+  assert.deepEqual(locs, [canonical('index.html'), canonical('catalogue.html'), canonical('livraison.html')]);
+  // Fichier de vérification Google Search Console (propriété « Préfixe d'URL ») : à garder en ligne
+  assert.equal(fs.readFileSync('dist/google22b032c38b924131.html', 'utf8').trim(), 'google-site-verification: google22b032c38b924131.html');
+  for (const route of ['panier', 'commander', 'connexion', 'inscription', 'compte', 'gestion']) {
+    assert.ok(!locs.some((loc) => loc.endsWith(`/${route}`)), route);
+  }
+});
+
 test('build : dist/ existe avec index.html', () => {
   assert.ok(fs.existsSync('dist/index.html'), 'dist/index.html manquant — lancez npm run build');
 });

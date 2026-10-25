@@ -21,6 +21,8 @@ const apiCsp: Plugin = {
 // donc les moteurs de recherche indexent la page, avec son propre titre et sa propre description.
 // Les pages sans intérêt pour la recherche (panier, compte, gestion…) sont marquées noindex.
 // 404.html (copie aussi) laisse le routeur répondre pour toute autre adresse.
+// sitemap.xml liste l'accueil et les pages indexables (mêmes adresses que leur balise canonical), à
+// envoyer dans Google Search Console : sur github.io, le robots.txt du site n'est pas lu par Google.
 const SITE_URL = 'https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/';
 const fr = JSON.parse(fs.readFileSync(new URL('./src/locales/fr.json', import.meta.url), 'utf8'));
 const PAGES: { route: string; title: string; description?: string; noindex?: boolean }[] = [
@@ -61,6 +63,13 @@ const spaFallback: Plugin = {
       if (page.noindex) out = out.replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />');
       fs.writeFileSync(path.join(outDir, `${page.route}.html`), out);
     }
+    const urls = ['', ...PAGES.filter((page) => !page.noindex).map((page) => page.route)];
+    fs.writeFileSync(
+      path.join(outDir, 'sitemap.xml'),
+      '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + urls.map((route) => `  <url><loc>${SITE_URL}${route}</loc></url>\n`).join('')
+        + '</urlset>\n',
+    );
   },
 };
 
