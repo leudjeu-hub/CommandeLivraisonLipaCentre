@@ -17,7 +17,7 @@
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
     "title": "Books and supplies delivered to your door in Yaoundé",
-    "intro": "For school and office. Delivery from {{fee}}, same day in {{zones}} zones. You pay on delivery.",
+    "intro": "For school and office. Delivery from {{fee}}, same day in {{zones}} zones. You pay on delivery: cash, Orange Money or MTN MoMo.",
     "cta": "Order my supplies",
     "list": "Send my school list",
     "whatsapp": "Easier? Order on WhatsApp"
@@ -72,7 +72,7 @@
     "zonesTitle": "Delivery fees by neighbourhood"
   },
   "footer": {
-    "services": "Stationery, books and delivery service.",
+    "services": "Stationery, books and delivery service. Pay on delivery: cash, Orange Money or MTN MoMo.",
     "address": "Carrefour Abbia, opposite the Manège, Yaoundé, Cameroon",
     "phone": "Tel.: +237 6 93 24 03 96",
     "whatsapp": "Message us on WhatsApp",
@@ -104,7 +104,7 @@
     "quoteWhatsapp": "Is your list on paper? Take a photo and send it to us on WhatsApp: we will prepare the quote.",
     "quoteWhatsappCta": "Send the photo on WhatsApp",
     "quoteWhatsappText": "Hello, here is my school list for a quote: ",
-    "intro": "Your summary is prepared here. It is only sent to the bookshop if you click \"Send via WhatsApp\".",
+    "intro": "Your summary is prepared here. It is only sent to the bookshop if you click \"Send my order on WhatsApp\".",
     "name": "Recipient's name",
     "phone": "Phone",
     "area": "Neighbourhood",
