@@ -4,9 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { AppBar, Toolbar, IconButton, Button, Drawer, List, ListItemButton, ListItemText, Badge, useMediaQuery, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { canManageHours } from '../data/authApi';
+import { whatsappLink } from '../data/catalogue';
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -37,10 +39,18 @@ export default function Header() {
   const navLinks = [
     { to: '/catalogue', label: t('nav.catalogue') },
     { to: '/livraison', label: t('nav.delivery') },
-    // Gestion pour les administrateurs et les responsables (heures) ; « Mon compte » si connecté, sinon « Connexion »
+    // Gestion pour les administrateurs et les responsables (heures) ; « Mon compte » si connecté.
+    // « Connexion » est dans le pied de page : un compte n'est pas nécessaire pour commander.
     ...(user && canManageHours(user.role) ? [{ to: '/gestion', label: t('nav.admin') }] : []),
-    user ? { to: '/compte', label: t('nav.account') } : { to: '/connexion', label: t('nav.login') },
+    ...(user ? [{ to: '/compte', label: t('nav.account') }] : []),
   ];
+
+  // WhatsApp, le canal préféré de beaucoup de clients : toujours à portée de pouce
+  const whatsappButton = (
+    <IconButton color="inherit" href={whatsappLink()} target="_blank" rel="noopener" aria-label={t('nav.whatsapp')}>
+      <WhatsAppIcon />
+    </IconButton>
+  );
 
   return (
     <AppBar position="sticky" color="primary" elevation={0}>
@@ -60,6 +70,7 @@ export default function Header() {
             <Button color="inherit" onClick={toggleLang}>
               {i18n.language === 'fr' ? 'English' : 'Français'}
             </Button>
+            {whatsappButton}
             <IconButton color="inherit" onClick={() => navigate('/panier')} aria-label={t('nav.cart')} aria-current={current('/panier')} sx={activeSx('/panier')}>
               <Badge badgeContent={totalItems} color="secondary">
                 <ShoppingCartIcon />
@@ -70,6 +81,7 @@ export default function Header() {
 
         {isMobile && (
           <>
+            {whatsappButton}
             <IconButton color="inherit" onClick={() => navigate('/panier')} aria-label={t('nav.cart')} aria-current={current('/panier')} sx={activeSx('/panier')}>
               <Badge badgeContent={totalItems} color="secondary">
                 <ShoppingCartIcon />

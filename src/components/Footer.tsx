@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Link as MuiLink, Typography } from '@mui/material';
 import PlaceIcon from '@mui/icons-material/Place';
 import PhoneIcon from '@mui/icons-material/Phone';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { whatsappLink } from '../data/catalogue';
+import { useAuth } from '../context/AuthContext';
 
 const MAP_URL =
   'https://www.google.com/maps/search/?api=1&query=Librairie+Papeterie+du+Centre+Yaoundé&query_place_id=ChIJi_YsDY3PixARKBsGbQXsDHM';
@@ -13,6 +15,7 @@ const MAP_URL =
 // (remplace l'ancien bouton flottant « Nous trouver », qui masquait le contenu sur mobile).
 export default function Footer() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [termsOpen, setTermsOpen] = useState(false);
   const linkSx = { display: 'inline-flex', alignItems: 'center', gap: 1, minHeight: 44, color: 'inherit', fontWeight: 600 };
 
@@ -50,9 +53,17 @@ export default function Footer() {
         </Box>
         <Box sx={{ mt: 5, pt: 2, borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="body2" sx={{ opacity: 0.75 }}>{t('footer.rights', { year: new Date().getFullYear() })}</Typography>
-          <MuiLink component="button" type="button" onClick={() => setTermsOpen(true)} sx={{ ...linkSx, font: 'inherit', fontSize: '0.9375rem' }}>
-            {t('footer.terms')}
-          </MuiLink>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', columnGap: 3 }}>
+            <MuiLink component="button" type="button" onClick={() => setTermsOpen(true)} sx={{ ...linkSx, font: 'inherit', fontSize: '0.9375rem' }}>
+              {t('footer.terms')}
+            </MuiLink>
+            {/* Connexion (personnel, clients avec compte) : hors du menu principal, inutile pour commander */}
+            {!user && (
+              <MuiLink component={RouterLink} to="/connexion" sx={{ ...linkSx, fontSize: '0.9375rem' }}>
+                {t('nav.login')}
+              </MuiLink>
+            )}
+          </Box>
         </Box>
       </Container>
 

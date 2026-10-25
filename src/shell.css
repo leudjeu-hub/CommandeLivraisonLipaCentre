@@ -6,3 +6,4 @@ body { margin: 0; background: #f7f4ec; color: #1a2e28; font-family: system-ui, -
 .shell-wait { color: #56615a; }
 .shell-main a { color: #153e35; font-weight: 600; }
 .shell-btn { display: inline-block; min-height: 44px; padding: 10px 20px; box-sizing: border-box; border-radius: 10px; background: #0b7a43; color: #fff !important; text-decoration: none; }
+.shell-info { margin-top: 32px; font-size: 0.875rem; color: #56615a; }

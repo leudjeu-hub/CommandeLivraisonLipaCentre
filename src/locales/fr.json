@@ -11,17 +11,16 @@
     "admin": "Gestion",
     "login": "Connexion",
     "account": "Mon compte",
-    "menu": "Menu"
+    "menu": "Menu",
+    "whatsapp": "Écrire sur WhatsApp"
   },
-  "notice": "Version de présentation · Articles et prix illustratifs · Chaque commande est confirmée par la librairie.",
   "hero": {
-    "eyebrow": "Vos essentiels, à votre porte",
-    "title": "Une page s'ouvre.",
-    "titleEm": "Nous vous la livrons.",
-    "intro": "Livres, fournitures scolaires et papeterie de bureau. Préparez votre panier en quelques clics, pour une livraison à domicile à Yaoundé et un paiement à la réception.",
-    "cta": "Découvrir le catalogue",
-    "list": "Ma liste scolaire",
-    "whatsapp": "Vous préférez écrire ? Commandez sur WhatsApp"
+    "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
+    "title": "Livres et fournitures livrés à domicile à Yaoundé",
+    "intro": "Pour l'école et le bureau. Livraison dès {{fee}}, le jour même en zones {{zones}}. Vous payez à la réception.",
+    "cta": "Commander mes fournitures",
+    "list": "Envoyer ma liste scolaire",
+    "whatsapp": "Plus simple ? Commandez sur WhatsApp"
   },
   "strip": {
     "title": "Comment ça marche",
@@ -30,11 +29,11 @@
     "step2Title": "Précisez votre adresse",
     "step2Text": "Quartier, repère et créneau souhaité.",
     "step3Title": "Payez à la réception",
-    "step3Text": "Espèces, Orange Money ou MTN MoMo, après activation."
+    "step3Text": "Espèces, Orange Money ou MTN MoMo, après vérification du colis."
   },
   "catalogue": {
     "eyebrow": "La sélection du Centre",
-    "title": "Tout commence ici.",
+    "title": "Fournitures scolaires, de bureau et livres",
     "searchPlaceholder": "Rechercher un cahier, un stylo…",
     "searchLabel": "Rechercher un produit",
     "count": "{{count}} article(s)",
@@ -58,17 +57,18 @@
     "editionText": "Chaque livre doit être confirmé par son titre, son auteur et son édition. Toute substitution nécessite votre accord.",
     "businessTitle": "Pour les entreprises aussi.",
     "businessText": "Papier, classeurs, stylos et fournitures : indiquez vos besoins récurrents dans votre demande de devis.",
-    "whatsapp": "Envoyez votre liste directement par WhatsApp depuis le formulaire de devis."
+    "whatsapp": "Envoyez votre liste directement par WhatsApp depuis le formulaire de devis.",
+    "photoCta": "Envoyer la photo de ma liste"
   },
   "delivery": {
     "eyebrow": "Un service de proximité",
-    "title": "La livraison, en toute clarté.",
+    "title": "Livraison à Yaoundé : tarifs et délais par quartier",
     "step1Title": "Votre quartier",
     "step1Text": "Indiquez votre quartier et un repère précis. Les zones desservies seront confirmées par la librairie.",
     "step2Title": "Votre créneau",
     "step2Text": "Les frais dépendent de votre quartier (grille ci-dessous). La disponibilité et le délai sont confirmés avant tout départ.",
     "step3Title": "Votre paiement",
-    "step3Text": "Vérifiez votre colis puis payez à la réception. Aucun paiement en ligne n'est demandé sur cette version.",
+    "step3Text": "Vérifiez votre colis, puis payez à la réception. Rien à payer à l’avance.",
     "zonesTitle": "Frais de livraison par quartier"
   },
   "footer": {
@@ -81,7 +81,7 @@
     "saturday": "Samedi",
     "sunday": "Dimanche",
     "closed": "Fermé",
-    "terms": "Informations et confidentialité",
+    "terms": "Conditions et confidentialité",
     "contact": "Contact",
     "info": "Informations",
     "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé"
@@ -119,19 +119,19 @@
     "paymentOrange": "Orange Money",
     "paymentMtn": "MTN MoMo",
     "notes": "Instructions ou liste scolaire",
-    "consent": "Je comprends que les prix, le stock et le délai de livraison doivent être confirmés par la librairie.",
-    "submit": "Créer mon récapitulatif",
+    "submit": "Vérifier ma commande",
     "slotHelp": "À confirmer par la librairie.",
-    "paymentHelp": "Orange Money et MTN MoMo sous réserve d'activation.",
+    "paymentHelp": "Vous payez après avoir vérifié votre colis.",
     "notSpecified": "À convenir",
     "phoneHelp": "Numéro camerounais, par exemple 6 93 24 03 96",
     "errPhone": "Numéro invalide : 9 chiffres commençant par 6 ou 2 (+237 facultatif).",
-    "emptyOrder": "Votre panier est vide : ajoutez des articles avant de préparer la commande."
+    "emptyOrder": "Votre panier est vide : ajoutez des articles avant de préparer la commande.",
+    "confirmNote": "Prix, stock et délai de livraison sont confirmés par la librairie, par message ou par téléphone, avant le départ du colis."
   },
   "result": {
     "title": "Votre récapitulatif est prêt",
     "text": "Envoyez-le à la librairie par WhatsApp ou par e-mail : votre commande sera confirmée par message ou par téléphone.",
-    "whatsapp": "Envoyer par WhatsApp",
+    "whatsapp": "Envoyer ma commande sur WhatsApp",
     "email": "Envoyer par e-mail",
     "emailSubjectOrder": "Bon de commande – {{name}}",
     "emailSubjectQuote": "Demande de devis – {{name}}",
@@ -142,10 +142,10 @@
     "keepCart": "Garder le panier"
   },
   "terms": {
-    "title": "À propos de cette version",
-    "p1": "Ce site est une présentation privée du futur service de la Librairie Papeterie du Centre. Les produits, prix et visuels sont illustratifs.",
-    "p2": "Le panier est mémorisé uniquement dans votre navigateur. Les informations du formulaire servent à produire votre récapitulatif.",
-    "p3": "Avant ouverture commerciale : compléter les mentions légales, intégrer les prix et le stock réels, valider la grille de livraison.",
+    "title": "Conditions et confidentialité",
+    "p1": "Les commandes et demandes de devis sont confirmées par la librairie, par message ou par téléphone, avant la livraison : disponibilité, prix et délai. Les prix sont en FCFA ; le paiement se fait à la réception.",
+    "p2": "Votre panier est gardé dans votre navigateur. Quand vous envoyez votre récapitulatif, la librairie enregistre votre commande (nom, téléphone, adresse, articles) pour la préparer et vous livrer. Ces informations ne servent qu'à cela.",
+    "p3": "Librairie Papeterie du Centre, Carrefour Abbia, face Manège, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
     "clear": "Effacer mon panier local"
   },
   "map": {
@@ -437,5 +437,47 @@
       "delivered": "Livrée",
       "cancelled": "Annulée"
     }
+  },
+  "trust": {
+    "title": "Nos engagements",
+    "sameDayTitle": "Livré le jour même",
+    "sameDayText": "En zones {{zones}} ({{areas}}…), dès {{fee}}.",
+    "freeTitle": "Livraison offerte",
+    "freeText": "Dès {{from}} d'articles en zones {{zones}}.",
+    "payTitle": "Payé à la réception",
+    "payText": "Espèces, Orange Money ou MTN MoMo, après vérification du colis.",
+    "link": "Voir les tarifs de votre quartier"
+  },
+  "business": {
+    "eyebrow": "Écoles et entreprises",
+    "title": "Pour les entreprises et les écoles aussi.",
+    "text": "Papier, classeurs, stylos et fournitures de bureau, y compris pour des besoins récurrents. Indiquez les articles et les quantités : nous vous envoyons un devis.",
+    "cta": "Demander un devis entreprise"
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "q1": "Combien coûte la livraison à Yaoundé ?",
+    "a1": "De {{min}} (zone {{firstZone}} : {{firstAreas}}…) à {{max}} (zone {{lastZone}} : {{lastAreas}}…). Elle est offerte dès {{from}} d'articles en zones {{freeZones}}.",
+    "q2": "En combien de temps suis-je livré ?",
+    "a2": "{{delays}}. Le délai est confirmé avant le départ du colis.",
+    "q3": "Comment payer ?",
+    "a3": "À la réception, après avoir vérifié votre colis : espèces, Orange Money ou MTN MoMo. Rien à payer à l’avance.",
+    "q4": "Puis-je envoyer la liste scolaire de l'école ?",
+    "a4": "Oui. Prenez-la en photo et envoyez-la sur WhatsApp au +237 6 93 24 03 96 : nous vérifions titres et éditions, puis nous vous envoyons un devis. Aucune substitution sans votre accord.",
+    "q5": "Livrez-vous les entreprises et les écoles ?",
+    "a5": "Oui : papier, classeurs, stylos et fournitures de bureau, y compris pour des besoins récurrents. Demandez un devis depuis le formulaire ou sur WhatsApp.",
+    "q6": "Où se trouve la boutique ?",
+    "a6": "Carrefour Abbia, face Manège, Yaoundé. Ouverte du lundi au vendredi de 8 h à 18 h et le samedi de 9 h à 15 h.",
+    "q7": "Y a-t-il un minimum de commande ?",
+    "a7": "Oui : {{min}} d'articles."
+  },
+  "seo": {
+    "home": "Librairie Yaoundé : livres et fournitures livrés chez vous",
+    "catalogue": "Catalogue : fournitures scolaires, bureau et livres · Yaoundé",
+    "delivery": "Livraison à Yaoundé : tarifs par quartier · Papeterie du Centre",
+    "quote": "Listes scolaires livrées à Yaoundé, paiement à la réception",
+    "order": "Votre commande · Librairie Papeterie du Centre",
+    "cart": "Votre panier · Librairie Papeterie du Centre",
+    "other": "Librairie Papeterie du Centre · Yaoundé"
   }
 }

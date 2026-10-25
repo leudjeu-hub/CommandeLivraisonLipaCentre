@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Checkbox, FormControlLabel, Alert } from '@mui/material';
+import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP, SLOT_LABELS, PAYMENT_LABELS, whatsappLink } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
@@ -37,7 +37,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (quoteName) setNotes((prev) => prev || t('common.quoteNote', { name: quoteName }));
   }, [quoteName, t]);
-  const [consent, setConsent] = useState(false);
   const [summary, setSummary] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [showAfterSend, setShowAfterSend] = useState(false);
@@ -277,11 +276,7 @@ export default function CheckoutPage() {
 
           <TextField fullWidth multiline rows={3} label={t('form.notes')} value={notes} onChange={(e) => setNotes(e.target.value)} sx={{ mb: 2 }} />
 
-          <FormControlLabel
-            control={<Checkbox required checked={consent} onChange={(e) => setConsent(e.target.checked)} />}
-            label={t('form.consent')}
-            sx={{ mb: 2 }}
-          />
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t('form.confirmNote')}</Typography>
 
           <Button type="submit" variant="contained" fullWidth size="large">
             {t('form.submit')}
