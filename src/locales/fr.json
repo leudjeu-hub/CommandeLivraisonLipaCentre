@@ -160,6 +160,7 @@
     "thanks": "Panier vidé. Merci pour votre commande !"
   },
   "common": {
+    "ref": "Réf. {{id}}",
     "close": "Fermer",
     "add": "Ajouter",
     "request": "Demander",
@@ -308,7 +309,7 @@
     "fFamily": "Famille",
     "fFamilyHelp": "Regroupe les articles dans le catalogue (ex. Sacs et cartables). Vide = « Autres articles ».",
     "errFamily": "60 caractères maximum.",
-    "search": "Rechercher (article, n°, famille)"
+    "search": "Rechercher (article, réf., famille)"
   },
   "auth": {
     "loginTitle": "Connexion",

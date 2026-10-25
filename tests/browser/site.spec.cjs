@@ -68,6 +68,8 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   await page.click('button:has-text("Ajouter")');
   await page.getByRole('button', { name: 'Panier' }).click();
   await expect(page.locator('h1')).toContainText('Votre panier');
+  // Référence de l'article (n° du catalogue) dans le panier et dans le bon de commande
+  await expect(page.locator('main li').first()).toContainText(/Réf\. \d+ · /);
   await page.click('text=Préparer ma commande');
   await expect(page).toHaveURL(/\/commander/);
 
@@ -88,6 +90,7 @@ test('parcours complet : panier → formulaire → récapitulatif', async ({ pag
   const text = decodeURIComponent(href.split('?text=')[1]);
   expect(text).toContain('Client Test');
   expect(text).toContain('Essos');
+  expect(text).toMatch(/\n\d+ × .+ \(Réf\. \d+\) : /);
   // Créneau et paiement non choisis : « À convenir », jamais une valeur vide
   expect(text).toContain('Créneau souhaité : À convenir');
   expect(text).toContain('Paiement à réception : À convenir');

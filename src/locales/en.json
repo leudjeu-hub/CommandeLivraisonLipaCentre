@@ -160,6 +160,7 @@
     "thanks": "Basket emptied. Thank you for your order!"
   },
   "common": {
+    "ref": "Ref. {{id}}",
     "close": "Close",
     "add": "Add",
     "request": "Request",
@@ -308,7 +309,7 @@
     "fFamily": "Family",
     "fFamilyHelp": "Groups items in the catalogue (e.g. Sacs et cartables). Empty = \"Other items\".",
     "errFamily": "60 characters maximum.",
-    "search": "Search (item, no., family)"
+    "search": "Search (item, ref., family)"
   },
   "auth": {
     "loginTitle": "Log in",
