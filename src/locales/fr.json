@@ -21,7 +21,7 @@
     "title": "Livres et fournitures livrés à domicile à Yaoundé",
     "intro": "Pour l'école et le bureau : choisissez en ligne ou sur WhatsApp, nous préparons et livrons. Rien à payer d'avance.",
     "cta": "Commander mes fournitures",
-    "list": "Envoyer ma liste scolaire",
+    "list": "Liste scolaire ou devis",
     "whatsapp": "Plus simple ? Commandez sur WhatsApp"
   },
   "strip": {
@@ -50,18 +50,6 @@
     "orderWhatsapp": "Commander par WhatsApp",
     "unavailableWhatsapp": "Bonjour, je voudrais commander : "
   },
-  "lists": {
-    "eyebrow": "Parents, simplifiez la rentrée",
-    "title": "Une liste scolaire ? Nous préparons le reste.",
-    "text": "Rassemblez les livres et fournitures demandés par l'école. Préparez votre demande de devis avec la classe, les références et les quantités.",
-    "cta": "Préparer une demande de devis",
-    "editionTitle": "Le bon article, la bonne édition.",
-    "editionText": "Chaque livre doit être confirmé par son titre, son auteur et son édition. Toute substitution nécessite votre accord.",
-    "businessTitle": "Pour les entreprises aussi.",
-    "businessText": "Papier, classeurs, stylos et fournitures : indiquez vos besoins récurrents dans votre demande de devis.",
-    "whatsapp": "Envoyez votre liste directement par WhatsApp depuis le formulaire de devis.",
-    "photoCta": "Envoyer la photo de ma liste"
-  },
   "delivery": {
     "eyebrow": "Un service de proximité",
     "title": "Livraison à Yaoundé : tarifs et délais par quartier",
@@ -85,10 +73,11 @@
     "saturday": "Samedi",
     "sunday": "Dimanche",
     "closed": "Fermé",
-    "terms": "Conditions et confidentialité",
+    "terms": "Conditions de commande",
     "contact": "Contact",
     "info": "Informations",
-    "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé"
+    "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé",
+    "privacy": "Confidentialité"
   },
   "cart": {
     "title": "Votre panier",
@@ -155,7 +144,7 @@
     "sentContact": "Dès réception, la librairie vous recontacte par message ou par téléphone pour confirmer la disponibilité, le prix et la livraison."
   },
   "terms": {
-    "title": "Conditions et confidentialité",
+    "title": "Conditions de commande",
     "p1": "Les commandes et demandes de devis sont confirmées par la librairie, par message ou par téléphone, avant la livraison : disponibilité, prix et délai. Les prix sont en FCFA ; le paiement se fait à la réception.",
     "p2": "Votre panier est gardé dans votre navigateur. Quand vous envoyez votre récapitulatif, la librairie enregistre votre commande (nom, téléphone, adresse, articles) pour la préparer et vous livrer. Ces informations ne servent qu'à cela.",
     "p3": "Librairie Papeterie du Centre, Carrefour Abbia, face Manège, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
@@ -475,12 +464,6 @@
     "payText": "Espèces, Orange Money ou MTN MoMo, après vérification du colis.",
     "link": "Voir les tarifs de votre quartier"
   },
-  "business": {
-    "eyebrow": "Écoles et entreprises",
-    "title": "Pour les entreprises et les écoles aussi.",
-    "text": "Papier, classeurs, stylos et fournitures de bureau, y compris pour des besoins récurrents. Indiquez les articles et les quantités : nous vous envoyons un devis.",
-    "cta": "Demander un devis entreprise"
-  },
   "faq": {
     "title": "Questions fréquentes",
     "q1": "Combien coûte la livraison à Yaoundé ?",
@@ -501,15 +484,45 @@
   "seo": {
     "home": "Librairie Yaoundé : livres et fournitures livrés chez vous",
     "catalogue": "Catalogue : fournitures scolaires, bureau et livres · Yaoundé",
-    "delivery": "Livraison à Yaoundé : tarifs par quartier · Papeterie du Centre",
+    "delivery": "Livraison à Yaoundé : tarifs par quartier · Librairie Papeterie du Centre",
     "quote": "Listes scolaires livrées à Yaoundé, paiement à la réception",
     "order": "Votre commande · Librairie Papeterie du Centre",
     "cart": "Votre panier · Librairie Papeterie du Centre",
-    "other": "Librairie Papeterie du Centre · Yaoundé"
+    "other": "Librairie Papeterie du Centre · Yaoundé",
+    "privacy": "Confidentialité · Librairie Papeterie du Centre"
   },
   "notFound": {
     "title": "Page introuvable",
     "text": "Cette adresse n'existe pas ou plus. Le catalogue, les tarifs de livraison et la commande par WhatsApp restent à un toucher.",
     "home": "Retour à l'accueil"
+  },
+  "quote": {
+    "eyebrow": "Listes scolaires, écoles et entreprises",
+    "title": "Plusieurs articles ? Demandez un devis.",
+    "parentsTitle": "Parents",
+    "parentsText": "Envoyez la liste de l'école : nous vérifions titres et éditions, puis nous vous envoyons le prix total. Aucune substitution sans votre accord.",
+    "proTitle": "Écoles et entreprises",
+    "proText": "Papier, classeurs, stylos, y compris pour des besoins récurrents. Indiquez les articles et les quantités : vous recevez un devis.",
+    "cta": "Demander un devis",
+    "photoCta": "Envoyer ma liste en photo"
+  },
+  "privacy": {
+    "title": "Confidentialité",
+    "updated": "Ce que nous faisons des informations de votre commande. Mise à jour : 26 octobre 2026.",
+    "whoTitle": "Qui est responsable",
+    "whoText": "Librairie Papeterie du Centre, Carrefour Abbia, face Manège, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
+    "whatTitle": "Quelles informations",
+    "whatText": "Pour une commande ou un devis : votre nom, votre téléphone, votre quartier et votre repère, le créneau souhaité, les articles et vos remarques. Pour un compte : votre adresse e-mail et un mot de passe chiffré.",
+    "whyTitle": "Pourquoi",
+    "whyText": "Uniquement pour préparer votre commande, vous livrer et vous contacter à son sujet. Pas de publicité, pas de revente, pas de mesure d'audience.",
+    "recipientsTitle": "Qui les reçoit",
+    "recipientsText": "La librairie seulement. Votre commande est enregistrée chez Render, l'hébergeur de notre serveur, situé hors du Cameroun. Si vous choisissez WhatsApp ou l'e-mail, votre message passe aussi par WhatsApp (Meta) ou par votre messagerie et Gmail (Google), selon leurs propres règles. Nous ne vendons ni ne prêtons vos informations à personne.",
+    "retentionTitle": "Combien de temps",
+    "retentionText": "Les commandes annulées sont effacées après 30 jours, les commandes livrées après 12 mois. Un compte est gardé tant que vous l'utilisez ; vous pouvez demander à tout moment qu'il soit supprimé.",
+    "browserTitle": "Ce qui reste dans votre téléphone",
+    "browserText": "Votre panier, la langue choisie et, si vous êtes connecté, votre session sont gardés dans votre navigateur. Ce site n'utilise ni cookie publicitaire ni outil de statistiques.",
+    "rightsTitle": "Vos droits",
+    "rightsText": "Vous pouvez demander à voir, corriger ou effacer vos informations, ou vous opposer à leur utilisation : écrivez-nous sur WhatsApp ou par e-mail, nous répondons sous 30 jours. Vous pouvez aussi saisir l'autorité camerounaise chargée de la protection des données personnelles.",
+    "back": "Retour au catalogue"
   }
 }

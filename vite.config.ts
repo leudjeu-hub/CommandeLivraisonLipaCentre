@@ -28,6 +28,7 @@ const fr = JSON.parse(fs.readFileSync(new URL('./src/locales/fr.json', import.me
 const PAGES: { route: string; title: string; description?: string; noindex?: boolean }[] = [
   { route: 'catalogue', title: fr.seo.catalogue, description: 'Cahiers, stylos, géométrie, papier, classement, dictionnaires, livres scolaires, sacs et cartables : prix en FCFA. Livraison à Yaoundé, paiement à la réception.' },
   { route: 'livraison', title: fr.seo.delivery, description: deliveryDescription() },
+  { route: 'confidentialite', title: fr.seo.privacy, description: 'Données d’une commande : lesquelles, pourquoi, qui les reçoit, combien de temps, vos droits.' },
   { route: 'panier', title: fr.seo.cart, noindex: true },
   { route: 'commander', title: fr.seo.order, noindex: true },
   { route: 'connexion', title: fr.seo.other, noindex: true },

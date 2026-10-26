@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress } from '@mui/material';
 import Header from './Header';
@@ -12,16 +12,24 @@ const TITLES: Record<string, string> = {
   '/catalogue': 'seo.catalogue',
   '/livraison': 'seo.delivery',
   '/panier': 'seo.cart',
+  '/confidentialite': 'seo.privacy',
 };
 
 export default function Layout() {
   const { t } = useTranslation();
   const { pathname, search } = useLocation();
+  const navigationType = useNavigationType();
 
   useEffect(() => {
     const key = pathname === '/commander' ? (new URLSearchParams(search).get('type') === 'quote' ? 'seo.quote' : 'seo.order') : TITLES[pathname] ?? 'seo.other';
     document.title = t(key);
   }, [pathname, search, t]);
+
+  // Nouvelle page : on repart du haut (sinon le formulaire de devis s'ouvrait sur son pied de page,
+  // à la hauteur où l'on avait cliqué sur l'accueil). Le bouton Retour garde la position du navigateur.
+  useEffect(() => {
+    if (navigationType !== 'POP') window.scrollTo(0, 0);
+  }, [pathname, navigationType]);
 
   return (
     <>

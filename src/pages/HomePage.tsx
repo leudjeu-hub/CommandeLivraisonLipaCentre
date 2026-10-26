@@ -9,6 +9,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { DELIVERY, DELIVERY_RULES, money, whatsappLink } from '../data/catalogue';
 import { useProducts } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
+import QuoteSection from '../components/QuoteSection';
 
 export default function HomePage() {
   const { t, i18n } = useTranslation();
@@ -182,41 +183,8 @@ export default function HomePage() {
         </Container>
       </Box>
 
-      {/* Listes scolaires : encart distinct, appel à l'action secondaire */}
-      <Container component="section" maxWidth="lg" sx={{ pb: { xs: 2, md: 4 } }}>
-        <Box sx={{ bgcolor: '#fff', border: '1px solid', borderColor: 'divider', borderRadius: 3, p: { xs: 3, md: 6 }, display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1.6fr 1fr' }, alignItems: 'center' }}>
-          <Box>
-            <Typography variant="overline" color="secondary">{t('lists.eyebrow')}</Typography>
-            <Typography variant="h3" component="h2" sx={{ mb: 1.5 }}>{t('lists.title')}</Typography>
-            <Typography color="text.secondary">{t('lists.text')}</Typography>
-          </Box>
-          <Box sx={{ justifySelf: { md: 'end' }, display: 'grid', gap: 1.5 }}>
-            <Button variant="contained" size="large" component={Link} to="/commander?type=quote" endIcon={<ArrowForwardIcon />} fullWidth>
-              {t('lists.cta')}
-            </Button>
-            {/* Liste sur papier : la photo par WhatsApp est le plus rapide pour un parent */}
-            <Button variant="outlined" size="large" href={whatsappLink(t('form.quoteWhatsappText'))} target="_blank" rel="noopener" fullWidth>
-              {t('lists.photoCta')}
-            </Button>
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Écoles et entreprises : besoins récurrents, devis */}
-      <Container component="section" maxWidth="lg" aria-labelledby="business-title" sx={{ pt: { xs: 2, md: 3 }, pb: { xs: 2, md: 4 } }}>
-        <Box sx={{ bgcolor: '#fff', border: '1px solid', borderColor: 'divider', borderRadius: 3, p: { xs: 3, md: 6 }, display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1.6fr 1fr' }, alignItems: 'center' }}>
-          <Box>
-            <Typography variant="overline" color="secondary">{t('business.eyebrow')}</Typography>
-            <Typography id="business-title" variant="h3" component="h2" sx={{ mb: 1.5 }}>{t('business.title')}</Typography>
-            <Typography color="text.secondary">{t('business.text')}</Typography>
-          </Box>
-          <Box sx={{ justifySelf: { md: 'end' } }}>
-            <Button variant="contained" size="large" component={Link} to="/commander?type=quote" endIcon={<ArrowForwardIcon />} fullWidth>
-              {t('business.cta')}
-            </Button>
-          </Box>
-        </Box>
-      </Container>
+      {/* Devis : listes scolaires, écoles et entreprises (un seul encart, voir QuoteSection) */}
+      <QuoteSection />
 
       {/* Questions fréquentes : réponses courtes et chiffrées, lisibles par les moteurs de recherche */}
       <Container component="section" maxWidth="md" aria-labelledby="faq-title" sx={{ py: { xs: 5, md: 8 } }}>

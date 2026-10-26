@@ -14,6 +14,7 @@ const pages = {
   admin: () => import('./pages/AdminPage'),
   auth: () => import('./pages/AuthPage'),
   account: () => import('./pages/AccountPage'),
+  privacy: () => import('./pages/PrivacyPage'),
   notFound: () => import('./pages/NotFoundPage'),
 };
 const CataloguePage = lazy(pages.catalogue);
@@ -24,6 +25,7 @@ const CheckoutPage = lazy(pages.checkout);
 const AdminPage = lazy(pages.admin);
 const AuthPage = lazy(pages.auth);
 const AccountPage = lazy(pages.account);
+const PrivacyPage = lazy(pages.privacy);
 const NotFoundPage = lazy(pages.notFound);
 
 // Pages du parcours de commande, téléchargées en arrière-plan une fois l'accueil affiché
@@ -48,6 +50,7 @@ export default function App() {
         <Route path="connexion" element={<AuthPage mode="login" />} />
         <Route path="inscription" element={<AuthPage mode="register" />} />
         <Route path="compte" element={<AccountPage />} />
+        <Route path="confidentialite" element={<PrivacyPage />} />
         {/* Adresse inconnue : jamais de page vide */}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
