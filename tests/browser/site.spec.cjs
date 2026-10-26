@@ -628,12 +628,26 @@ test('accueil : engagements chiffrés, écoles et entreprises, FAQ ; titre propr
   await expect(page).toHaveTitle(/Librairie Yaoundé/);
   await expect(page.getByRole('heading', { name: 'Livré le jour même' })).toBeVisible();
   await expect(page.getByText(/^Dès 25\s000 FCFA d'articles en zones Centre et Proche\.$/)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Demander un devis entreprise' })).toHaveAttribute('href', /\/commander\?type=quote$/);
+  // Un seul encart Devis pour les parents, les écoles et les entreprises
+  const quote = page.getByRole('region', { name: 'Plusieurs articles ? Demandez un devis.' });
+  await expect(quote.getByRole('heading', { name: 'Écoles et entreprises' })).toBeVisible();
+  await expect(quote.getByRole('link', { name: 'Demander un devis' })).toHaveAttribute('href', /\/commander\?type=quote$/);
+  await expect(quote.getByRole('link', { name: 'Envoyer ma liste en photo' })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396\?text=/);
   await expect(page.getByRole('heading', { name: 'Combien coûte la livraison à Yaoundé ?' })).toBeVisible();
   await expect(page.getByText(/^De 1\s000 FCFA \(zone Centre/)).toBeVisible();
   await expect(page.getByRole('banner').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
   await page.goto('/livraison');
   await expect(page).toHaveTitle(/Livraison à Yaoundé/);
+});
+
+test('confidentialité : page à part, liée depuis le pied de page, ouverte en haut', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('contentinfo').getByRole('link', { name: 'Confidentialité' }).click();
+  await expect(page).toHaveURL(/\/confidentialite$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(page).toHaveTitle(/^Confidentialité/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Confidentialité' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Combien de temps' })).toBeVisible();
 });
 
 // WCAG 2.4.7 / 1.4.11 : MUI met `outline: 0` sur ses boutons ; le thème doit redonner un anneau visible,
@@ -650,7 +664,7 @@ test('focus clavier : anneau visible sur les contrôles MUI, couleur adaptée au
     [page.getByRole('link', { name: 'Commander mes fournitures' }), NAVY],
     [page.getByRole('link', { name: 'Voir les tarifs de votre quartier' }), NAVY],
     [page.getByRole('contentinfo').getByRole('link', { name: /^Nous trouver/ }), OCHRE],
-    [page.getByRole('button', { name: 'Conditions et confidentialité' }), OCHRE],
+    [page.getByRole('button', { name: 'Conditions de commande' }), OCHRE],
   ];
   // Tabulation jusqu'à chaque élément : :focus-visible ne s'applique qu'au focus clavier
   for (const [locator, ring] of stops) {

@@ -1,6 +1,6 @@
 {
   "brand": {
-    "name": "Librairie du Centre",
+    "name": "Librairie Papeterie du Centre",
     "tagline": "BOOKSHOP & STATIONERY · YAOUNDÉ"
   },
   "nav": {
@@ -21,7 +21,7 @@
     "title": "Books and supplies delivered to your door in Yaoundé",
     "intro": "For school and the office: choose online or on WhatsApp, we prepare and deliver. Nothing to pay in advance.",
     "cta": "Order my supplies",
-    "list": "Send my school list",
+    "list": "School list or quote",
     "whatsapp": "Easier? Order on WhatsApp"
   },
   "strip": {
@@ -50,18 +50,6 @@
     "orderWhatsapp": "Order by WhatsApp",
     "unavailableWhatsapp": "Hello, I would like to order: "
   },
-  "lists": {
-    "eyebrow": "Parents, make back-to-school easy",
-    "title": "A school list? We'll handle the rest.",
-    "text": "Gather the books and supplies requested by the school. Prepare your quote request with the class, references and quantities.",
-    "cta": "Request a quote",
-    "editionTitle": "The right item, the right edition.",
-    "editionText": "Each book must be confirmed by its title, author and edition. Any substitution requires your approval.",
-    "businessTitle": "For businesses too.",
-    "businessText": "Paper, binders, pens and supplies: list your recurring needs in your quote request.",
-    "whatsapp": "Send your list directly via WhatsApp from the quote form.",
-    "photoCta": "Send a photo of my list"
-  },
   "delivery": {
     "eyebrow": "A local service",
     "title": "Delivery in Yaoundé: fees and lead times by neighbourhood",
@@ -85,10 +73,11 @@
     "saturday": "Saturday",
     "sunday": "Sunday",
     "closed": "Closed",
-    "terms": "Terms and privacy",
+    "terms": "Order terms",
     "contact": "Contact",
     "info": "Information",
-    "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé"
+    "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé",
+    "privacy": "Privacy"
   },
   "cart": {
     "title": "Your basket",
@@ -155,7 +144,7 @@
     "sentContact": "As soon as it is received, the bookshop will contact you by message or phone to confirm availability, price and delivery."
   },
   "terms": {
-    "title": "Terms and privacy",
+    "title": "Order terms",
     "p1": "Orders and quote requests are confirmed by the bookshop, by message or phone, before delivery: availability, price and lead time. Prices are in FCFA; payment is made on delivery.",
     "p2": "Your basket is kept in your browser. When you send your summary, the bookshop records your order (name, phone, address, items) to prepare and deliver it. This information is used for nothing else.",
     "p3": "Librairie Papeterie du Centre, Carrefour Abbia, opposite the Manège, Yaoundé. Phone and WhatsApp: +237 6 93 24 03 96. Email: Lipacentre237@gmail.com.",
@@ -475,12 +464,6 @@
     "payText": "Cash, Orange Money or MTN MoMo, after checking your parcel.",
     "link": "See the fees for your neighbourhood"
   },
-  "business": {
-    "eyebrow": "Schools and businesses",
-    "title": "For businesses and schools too.",
-    "text": "Paper, binders, pens and office supplies, including recurring needs. List the items and quantities: we will send you a quote.",
-    "cta": "Request a business quote"
-  },
   "faq": {
     "title": "Frequently asked questions",
     "q1": "How much does delivery cost in Yaoundé?",
@@ -501,15 +484,45 @@
   "seo": {
     "home": "Yaoundé bookshop: books and supplies delivered to you",
     "catalogue": "Catalogue: school supplies, office and books · Yaoundé",
-    "delivery": "Delivery in Yaoundé: fees by neighbourhood · Papeterie du Centre",
+    "delivery": "Delivery in Yaoundé: fees by neighbourhood · Librairie Papeterie du Centre",
     "quote": "School lists delivered in Yaoundé, pay on delivery",
     "order": "Your order · Librairie Papeterie du Centre",
     "cart": "Your basket · Librairie Papeterie du Centre",
-    "other": "Librairie Papeterie du Centre · Yaoundé"
+    "other": "Librairie Papeterie du Centre · Yaoundé",
+    "privacy": "Privacy · Librairie Papeterie du Centre"
   },
   "notFound": {
     "title": "Page not found",
     "text": "This address does not exist or no longer exists. The catalogue, delivery prices and ordering by WhatsApp are one tap away.",
     "home": "Back to the home page"
+  },
+  "quote": {
+    "eyebrow": "School lists, schools and businesses",
+    "title": "Several items? Ask for a quote.",
+    "parentsTitle": "Parents",
+    "parentsText": "Send the school's list: we check titles and editions, then send you the total price. No substitution without your consent.",
+    "proTitle": "Schools and businesses",
+    "proText": "Paper, binders, pens, including recurring needs. List the items and quantities and we send you a quote.",
+    "cta": "Ask for a quote",
+    "photoCta": "Send a photo of my list"
+  },
+  "privacy": {
+    "title": "Privacy",
+    "updated": "What we do with the information in your order. Updated 26 October 2026.",
+    "whoTitle": "Who is responsible",
+    "whoText": "Librairie Papeterie du Centre, Carrefour Abbia, opposite the Manège, Yaoundé. Phone and WhatsApp: +237 6 93 24 03 96. Email: Lipacentre237@gmail.com.",
+    "whatTitle": "What information",
+    "whatText": "For an order or a quote: your name, phone number, neighbourhood and landmark, preferred time slot, the items and your notes. For an account: your email address and an encrypted password.",
+    "whyTitle": "Why",
+    "whyText": "Only to prepare your order, deliver it and contact you about it. No advertising, no resale, no audience tracking.",
+    "recipientsTitle": "Who receives it",
+    "recipientsText": "Only the bookshop. Your order is stored with Render, our server host, located outside Cameroon. If you choose WhatsApp or email, your message also goes through WhatsApp (Meta) or your mail app and Gmail (Google), under their own rules. We never sell or lend your information to anyone.",
+    "retentionTitle": "How long",
+    "retentionText": "Cancelled orders are deleted after 30 days, delivered orders after 12 months. An account is kept while you use it; you can ask for it to be deleted at any time.",
+    "browserTitle": "What stays on your phone",
+    "browserText": "Your basket, your chosen language and, if you are signed in, your session are kept in your browser. This site uses no advertising cookies and no analytics.",
+    "rightsTitle": "Your rights",
+    "rightsText": "You can ask to see, correct or delete your information, or object to its use: write to us on WhatsApp or by email and we reply within 30 days. You can also contact the Cameroonian authority responsible for personal data protection.",
+    "back": "Back to the catalogue"
   }
 }

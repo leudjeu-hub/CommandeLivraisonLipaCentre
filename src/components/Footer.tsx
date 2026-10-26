@@ -58,6 +58,9 @@ export default function Footer() {
             <MuiLink component="button" type="button" onClick={() => setTermsOpen(true)} sx={{ ...linkSx, font: 'inherit', fontSize: '0.9375rem' }}>
               {t('footer.terms')}
             </MuiLink>
+            <MuiLink component={RouterLink} to="/confidentialite" sx={{ ...linkSx, fontSize: '0.9375rem' }}>
+              {t('footer.privacy')}
+            </MuiLink>
             {/* Connexion (personnel, clients avec compte) : hors du menu principal, inutile pour commander */}
             {!user && (
               <MuiLink component={RouterLink} to="/connexion" sx={{ ...linkSx, fontSize: '0.9375rem' }}>
@@ -71,7 +74,8 @@ export default function Footer() {
       <Dialog open={termsOpen} onClose={() => setTermsOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{t('terms.title')}</DialogTitle>
         <DialogContent>
-          {['p1', 'p2', 'p3'].map((k) => (
+          {/* Les données personnelles ont leur page (/confidentialite) */}
+          {['p1', 'p3'].map((k) => (
             <Typography key={k} variant="body2" sx={{ mb: 1.5 }}>{t(`terms.${k}`)}</Typography>
           ))}
         </DialogContent>

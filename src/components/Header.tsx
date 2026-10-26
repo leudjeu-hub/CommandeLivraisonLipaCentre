@@ -39,6 +39,9 @@ export default function Header() {
     }
   };
 
+  // Nom de l'autre langue, prononcé dans cette langue par les lecteurs d'écran (WCAG 3.1.2)
+  const otherLang = i18n.language === 'fr' ? 'en' : 'fr';
+
   const navLinks = [
     { to: '/catalogue', label: t('nav.catalogue') },
     { to: '/livraison', label: t('nav.delivery') },
@@ -73,7 +76,7 @@ export default function Header() {
                 {l.label}
               </Button>
             ))}
-            <Button color="inherit" onClick={toggleLang}>
+            <Button color="inherit" onClick={toggleLang} lang={otherLang}>
               {i18n.language === 'fr' ? 'English' : 'Français'}
             </Button>
             {whatsappButton}
@@ -122,7 +125,7 @@ export default function Header() {
                     <ListItemText primary={l.label} primaryTypographyProps={{ fontWeight: isActive(l.to) ? 700 : 400 }} />
                   </ListItemButton>
                 ))}
-                <ListItemButton onClick={toggleLang}>
+                <ListItemButton onClick={toggleLang} lang={otherLang}>
                   <ListItemText primary={i18n.language === 'fr' ? 'English' : 'Français'} />
                 </ListItemButton>
               </List>
