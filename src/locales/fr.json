@@ -72,7 +72,7 @@
   },
   "footer": {
     "services": "Vente de fournitures de papeterie, livres et service de livraison. Paiement à la réception : espèces, Orange Money ou MTN MoMo.",
-    "address": "Carrefour Abbia, face Manège, Yaoundé, Cameroun",
+    "address": "Carrefour Abbia, Yaoundé, Cameroun",
     "phone": "Tél. : +237 6 93 24 03 96",
     "whatsapp": "Écrire sur WhatsApp",
     "hours": "Horaires d'ouverture",
@@ -86,7 +86,8 @@
     "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé",
     "privacy": "Confidentialité",
     "catalogue": "Catalogue des fournitures",
-    "delivery": "Tarifs de livraison à Yaoundé"
+    "delivery": "Tarifs de livraison à Yaoundé",
+    "review": "Donner votre avis sur Google"
   },
   "cart": {
     "title": "Votre panier",
@@ -165,7 +166,7 @@
     "title": "Conditions de commande",
     "p1": "Les commandes et demandes de devis sont confirmées par la librairie, par message ou par téléphone, avant la livraison : disponibilité, prix et délai. Les prix sont en FCFA ; le paiement se fait à la réception.",
     "p2": "Votre panier est gardé dans votre navigateur. Quand vous envoyez votre récapitulatif, la librairie enregistre votre commande (nom, téléphone, adresse, articles) pour la préparer et vous livrer. Ces informations ne servent qu'à cela.",
-    "p3": "Librairie Papeterie du Centre, Carrefour Abbia, face Manège, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
+    "p3": "Librairie Papeterie du Centre, Carrefour Abbia, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
     "clear": "Effacer mon panier local"
   },
   "map": {
@@ -508,7 +509,7 @@
     "q5": "Livrez-vous les entreprises et les écoles ?",
     "a5": "Oui : papier, classeurs, stylos et fournitures de bureau, y compris pour des besoins récurrents. Demandez un devis depuis le formulaire ou sur WhatsApp.",
     "q6": "Où se trouve la boutique ?",
-    "a6": "Carrefour Abbia, face Manège, Yaoundé. Ouverte du lundi au vendredi de 8 h à 18 h et le samedi de 9 h à 15 h.",
+    "a6": "Carrefour Abbia, Yaoundé. Ouverte du lundi au vendredi de 8 h à 18 h et le samedi de 9 h à 15 h.",
     "q7": "Y a-t-il un minimum de commande ?",
     "a7": "Oui : {{min}} d'articles."
   },
@@ -545,7 +546,7 @@
     "title": "Confidentialité",
     "updated": "Ce que nous faisons des informations de votre commande. Mise à jour : 27 octobre 2026.",
     "whoTitle": "Qui est responsable",
-    "whoText": "Librairie Papeterie du Centre, Carrefour Abbia, face Manège, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
+    "whoText": "Librairie Papeterie du Centre, Carrefour Abbia, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
     "whatTitle": "Quelles informations",
     "whatText": "Pour une commande ou un devis : votre nom, votre téléphone, votre quartier et votre repère, le créneau souhaité, les articles et vos remarques. Pour un compte : votre adresse e-mail et un mot de passe chiffré.",
     "whyTitle": "Pourquoi",

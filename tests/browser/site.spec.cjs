@@ -566,6 +566,8 @@ test('WhatsApp joignable : accueil, pied de page, devis et attente du catalogue'
   // Placé après la dernière réponse des questions fréquentes (demande d'Alain, 2026-10-25)
   await expect(page.locator('section[aria-labelledby="faq-title"]').getByRole('link', { name: /Commandez sur WhatsApp/ })).toBeVisible();
   await expect(page.locator('footer').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
+  await expect(page.locator('footer').getByRole('link', { name: 'Donner votre avis sur Google' }))
+    .toHaveAttribute('href', 'https://search.google.com/local/writereview?placeid=ChIJi_YsDY3PixARKBsGbQXsDHM');
   await page.goto('/commander?type=quote');
   await expect(page.getByRole('link', { name: 'Envoyer la photo par WhatsApp' })).toBeVisible();
 });

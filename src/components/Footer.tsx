@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Link as MuiLink, Typography } from '@mui/material';
 import PlaceIcon from '@mui/icons-material/Place';
 import PhoneIcon from '@mui/icons-material/Phone';
+import StarIcon from '@mui/icons-material/Star';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { whatsappLink } from '../data/catalogue';
 import { FOCUS_ON_DARK } from '../theme';
@@ -11,6 +12,8 @@ import { useAuth } from '../context/AuthContext';
 
 const MAP_URL =
   'https://www.google.com/maps/search/?api=1&query=Librairie+Papeterie+du+Centre+Yaoundé&query_place_id=ChIJi_YsDY3PixARKBsGbQXsDHM';
+// Fiche Google de la boutique, directement sur le formulaire d'avis (même place_id que MAP_URL)
+const REVIEW_URL = 'https://search.google.com/local/writereview?placeid=ChIJi_YsDY3PixARKBsGbQXsDHM';
 
 // Pied de page : coordonnées, horaires et accès à la carte, toujours faciles à trouver
 // (remplace l'ancien bouton flottant « Nous trouver », qui masquait le contenu sur mobile).
@@ -37,6 +40,10 @@ export default function Footer() {
             <Typography variant="body2" sx={{ mb: 0.5 }}>{t('footer.address')}</Typography>
             <MuiLink href={MAP_URL} target="_blank" rel="noopener" aria-label={t('map.label')} sx={linkSx}>
               <PlaceIcon fontSize="small" aria-hidden /> {t('map.text')}
+            </MuiLink>
+            <br />
+            <MuiLink href={REVIEW_URL} target="_blank" rel="noopener" sx={linkSx}>
+              <StarIcon fontSize="small" aria-hidden /> {t('footer.review')}
             </MuiLink>
             <br />
             <MuiLink href="tel:+237693240396" sx={linkSx}>

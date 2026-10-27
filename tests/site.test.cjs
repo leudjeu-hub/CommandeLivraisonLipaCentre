@@ -22,6 +22,10 @@ test('index.html : site ouvert aux moteurs de recherche, fiche de la boutique va
   assert.equal(store['@type'], 'Store');
   assert.equal(store.telephone, '+237693240396');
   assert.match(store.address.streetAddress, /Carrefour Abbia/);
+  // Même fiche Google que le lien de la carte (place_id ↔ cid) et position exacte de la boutique
+  assert.match(store.hasMap, /query_place_id=ChIJi_YsDY3PixARKBsGbQXsDHM$/);
+  assert.deepEqual(store.sameAs, ['https://maps.google.com/?cid=8290260522130348840']);
+  assert.deepEqual([store.geo.latitude, store.geo.longitude], [3.8684213, 11.5171534]);
 });
 
 test('index.html : pas de code en ligne ni de script externe', () => {
