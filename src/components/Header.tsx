@@ -42,11 +42,12 @@ export default function Header() {
   // Nom de l'autre langue, prononcé dans cette langue par les lecteurs d'écran (WCAG 3.1.2)
   const otherLang = i18n.language === 'fr' ? 'en' : 'fr';
 
-  // Client connecté : ses commandes à la place du catalogue (toujours accessible depuis l'accueil et
-  // le panier) ; « Mes commandes » mène à Mon compte, d'où le lien « Votre compte » en double est retiré
+  // Client connecté : « Mes commandes » (Mon compte) en plus du catalogue ; le lien « Votre compte »,
+  // qui mènerait à la même page, est retiré
   const customer = user?.role === 'user';
   const navLinks = [
-    customer ? { to: '/compte', label: t('nav.myOrders') } : { to: '/catalogue', label: t('nav.catalogue') },
+    { to: '/catalogue', label: t('nav.catalogue') },
+    ...(customer ? [{ to: '/compte', label: t('nav.myOrders') }] : []),
     { to: '/livraison', label: t('nav.delivery') },
     // Gestion pour les administrateurs et les responsables (heures)
     ...(user && canManageHours(user.role) ? [{ to: '/gestion', label: t('nav.admin') }] : []),
