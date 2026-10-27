@@ -567,8 +567,8 @@ test('sans JavaScript : écran de démarrage avec WhatsApp et téléphone', asyn
   const page = await context.newPage();
   await page.goto('/');
   await expect(page.locator('h1')).toContainText('Yaoundé');
-  await expect(page.getByRole('link', { name: 'Commander par WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
-  await expect(page.locator('a[href="tel:+237693240396"]')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Commander par WhatsApp' })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396/);
+  await expect(page.locator('a[href="tel:+237693240396"]').first()).toBeVisible();
   await context.close();
 });
 
@@ -576,6 +576,23 @@ test('écran de démarrage remplacé par le site une fois React lancé', async (
   await page.goto('/');
   await expect(page.locator('h1')).toContainText('Fournitures scolaires, de bureau et livres livrés');
   await expect(page.locator('.shell')).toHaveCount(0);
+});
+
+test('accueil sans JavaScript : mêmes titres et mêmes réponses que la page React', async ({ browser, page }) => {
+  const noJs = await browser.newContext({ javaScriptEnabled: false });
+  const plain = await noJs.newPage();
+  await plain.goto('/');
+  const headings = await plain.locator('h1, h2, h3').allInnerTexts();
+  const paragraphs = await plain.locator('main section p').allInnerTexts();
+  await noJs.close();
+  expect(headings.length).toBeGreaterThan(20);
+
+  await page.goto('/');
+  await expect(page.locator('.shell')).toHaveCount(0);
+  const reactHeadings = (await page.locator('main').locator('h1, h2, h3').allInnerTexts()).map((h) => h.trim().toLowerCase());
+  for (const h of headings) expect(reactHeadings, h).toContain(h.trim().toLowerCase());
+  const reactText = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
+  for (const p of paragraphs) expect(reactText, p).toContain(p.replace(/\s+/g, ' ').replace(/ · .*/, ''));
 });
 
 // Copie du catalogue publiée avec le site (dist/catalogue.json, vide dans les tests sauf ici)

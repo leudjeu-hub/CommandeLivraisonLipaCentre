@@ -95,6 +95,19 @@ test('build : sitemap.xml = accueil + pages indexables, aux adresses de leur bal
   }
 });
 
+test('build : accueil lisible sans JavaScript (texte complet dans dist/index.html), pas sur les autres pages', () => {
+  const home = fs.readFileSync('dist/index.html', 'utf8');
+  assert.equal((home.match(/<h1>/g) || []).length, 1);
+  assert.ok((home.match(/<h2>/g) || []).length >= 5, 'sections de l’accueil');
+  assert.match(home, /<h3>Combien coûte la livraison à Yaoundé \?<\/h3>/);
+  assert.match(home, /Oui : 2\s000 FCFA d'articles\./);
+  assert.doesNotMatch(home, /\{\{|\$1/, 'variable non remplacée');
+  assert.match(home, /<\/div>\s*<\/body>/);
+  for (const route of ['catalogue', 'livraison', '404']) {
+    assert.doesNotMatch(fs.readFileSync(`dist/${route}.html`, 'utf8'), /Combien coûte la livraison/, route);
+  }
+});
+
 test('build : dist/ existe avec index.html', () => {
   assert.ok(fs.existsSync('dist/index.html'), 'dist/index.html manquant — lancez npm run build');
 });

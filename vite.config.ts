@@ -3,6 +3,7 @@ import path from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { DELIVERY, DELIVERY_RULES } from './src/data/catalogue';
+import { homeShell } from './scripts/accueil-statique';
 
 // API (articles, connexion, comptes).
 // - Développement : l'API locale, relayée par le proxy Vite (CATALOGUE_API=http://… npm run dev).
@@ -45,11 +46,13 @@ function deliveryDescription() {
 }
 const escapeAttr = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 let outDir = 'dist';
+let base = '/';
 const spaFallback: Plugin = {
   name: 'spa-fallback',
   apply: 'build',
   configResolved: (config) => {
     outDir = path.resolve(config.root, config.build.outDir);
+    base = config.base;
   },
   closeBundle: () => {
     const html = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8');
@@ -71,6 +74,9 @@ const spaFallback: Plugin = {
         + urls.map((route) => `  <url><loc>${SITE_URL}${route}</loc></url>\n`).join('')
         + '</urlset>\n',
     );
+    // Accueil seulement : le texte complet de la page à la place de l'écran de démarrage (lisible sans
+    // JavaScript). Les autres pages gardent l'écran de démarrage court (copies faites ci-dessus).
+    fs.writeFileSync(path.join(outDir, 'index.html'), html.replace(/<div id="root">[\s\S]*<\/div>(\s*<\/body>)/, (_, end) => `<div id="root">\n      ${homeShell(fr, base)}\n    </div>${end}`));
   },
 };
 

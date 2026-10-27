@@ -7,3 +7,15 @@ body { margin: 0; background: #f7f4ec; color: #1b2433; font-family: system-ui, -
 .shell-main a { color: #16325c; font-weight: 600; }
 .shell-btn { display: inline-block; min-height: 44px; padding: 10px 20px; box-sizing: border-box; border-radius: 10px; background: #0b7a43; color: #fff !important; text-decoration: none; }
 .shell-info { margin-top: 32px; font-size: 0.875rem; color: #545e6e; }
+
+/* Accueil (dist/index.html, voir scripts/accueil-statique.ts) : le texte complet de la page, lisible
+   sans JavaScript, dans le même esprit que l'écran de démarrage */
+.shell-home { max-width: 680px; text-align: left; padding-top: 32px; }
+.shell-home h1 { font-size: 1.75rem; }
+.shell-home h2 { margin: 32px 0 8px; font: 400 1.35rem/1.25 Georgia, "Times New Roman", serif; }
+.shell-home h3 { margin: 12px 0 2px; font-size: 1rem; }
+.shell-home ul, .shell-home ol { margin: 0; padding-left: 1.2em; }
+.shell-home p { margin: 0 0 8px; }
+.shell-eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8a6a2b; }
+.shell-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 !important; }
+.shell-btn-alt { background: #16325c; }

@@ -11,7 +11,9 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   à part (`lazy` dans `src/App.tsx`) et celles du parcours de commande préchargées après l'affichage.
   React et react-router sont dans un fichier `react-*.js` séparé (gardé en cache d'une mise en ligne à
   l'autre). Avant React, `#root` contient un écran statique (`index.html` + `src/shell.css` : titre,
-  WhatsApp, téléphone), remplacé au premier rendu ; c'est aussi la page vue sans JavaScript. Ne pas regrouper MUI dans un fichier à part : cela ramènerait tous ses composants dans la
+  WhatsApp, téléphone), remplacé au premier rendu ; c'est aussi la page vue sans JavaScript. Pour l'accueil,
+  le build écrit à la place tout le texte de la page dans `dist/index.html` (`scripts/accueil-statique.ts`,
+  mêmes textes que `HomePage.tsx` : modifier les deux ensemble, un test compare). Ne pas regrouper MUI dans un fichier à part : cela ramènerait tous ses composants dans la
   première visite.
 - Images (photos, logo, favicon) : `public/img/`, copiées telles quelles dans `dist/img/`. Dans le code,
   les préfixer par `import.meta.env.BASE_URL` (le site publié vit sous `/CommandeLivraisonLipaCentre/`).
