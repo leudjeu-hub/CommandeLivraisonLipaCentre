@@ -148,6 +148,7 @@ test('un administrateur change le rôle d’un client', async ({ page }) => {
   await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
   await page.getByRole('button', { name: 'Créer mon compte' }).click();
   await page.getByRole('button', { name: 'Se déconnecter' }).click();
+  await expect(page).toHaveURL(/\/$/); // jeton effacé (voir « invitation à se connecter »)
   // …l'administrateur le promeut
   await page.goto('/connexion?suite=/gestion');
   await page.getByLabel('E-mail').fill('admin@exemple.cm');
@@ -203,6 +204,7 @@ test('un administrateur bloque puis supprime un compte', async ({ page }) => {
   await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
   await page.getByRole('button', { name: 'Créer mon compte' }).click();
   await page.getByRole('button', { name: 'Se déconnecter' }).click();
+  await expect(page).toHaveURL(/\/$/); // jeton effacé (voir « invitation à se connecter »)
 
   await page.goto('/connexion?suite=/gestion');
   await page.getByLabel('E-mail').fill('admin@exemple.cm');
@@ -367,6 +369,7 @@ test('client connecté : « Mes commandes » à côté du catalogue dans le menu
   await expect(page.getByRole('heading', { name: 'Mes commandes' })).toBeVisible();
   // Le personnel garde le catalogue et « Votre compte »
   await page.getByRole('button', { name: 'Se déconnecter' }).click();
+  await expect(page).toHaveURL(/\/$/); // jeton effacé (voir « invitation à se connecter »)
   await page.goto('/connexion');
   await page.getByLabel('E-mail').fill('admin@exemple.cm');
   await page.getByLabel('Mot de passe').fill('admin-123');
@@ -384,6 +387,9 @@ test('formulaire : invitation à se connecter, retour au formulaire après conne
   await page.getByRole('button', { name: 'Créer mon compte' }).click();
   await expect(page).toHaveURL(/\/compte$/);
   await page.getByRole('button', { name: 'Se déconnecter' }).click();
+  // La déconnexion attend l'API avant d'effacer le jeton : sans cette attente, page.goto pouvait
+  // partir avant et la page s'ouvrait encore connectée (échec aléatoire en CI)
+  await expect(page).toHaveURL(/\/$/);
 
   await page.goto('/commander?type=quote');
   const hint = page.getByTestId('login-hint');

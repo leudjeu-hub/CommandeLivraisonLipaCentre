@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Button, Chip, Container, Paper, Typography } from '@mui/material';
@@ -13,11 +14,15 @@ export default function AccountPage() {
   const { t, i18n } = useTranslation();
   const { user, ready, offline, logout } = useAuth();
   const navigate = useNavigate();
+  // Déconnexion en cours : la session disparaît avant le retour à l'accueil, sans ce drapeau la page
+  // redirigeait parfois vers /connexion au lieu de l'accueil
+  const leaving = useRef(false);
 
   if (!ready || (offline && !user)) return <SessionWait />;
-  if (!user) return <Navigate to="/connexion?suite=/compte" replace />;
+  if (!user) return leaving.current ? null : <Navigate to="/connexion?suite=/compte" replace />;
 
   const handleLogout = async () => {
+    leaving.current = true;
     await logout();
     showToast(t('auth.loggedOut'));
     navigate('/', { replace: true });
