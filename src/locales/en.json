@@ -524,5 +524,20 @@
     "rightsTitle": "Your rights",
     "rightsText": "You can ask to see, correct or delete your information, or object to its use: write to us on WhatsApp or by email and we reply within 30 days. You can also contact the Cameroonian authority responsible for personal data protection.",
     "back": "Back to the catalogue"
+  },
+  "myOrders": {
+    "title": "My orders",
+    "intro": "Orders and quote requests sent from this site while logged in to this account. The shop updates the status.",
+    "empty": "No orders yet. Only those sent while logged in appear here.",
+    "browse": "Browse the catalogue",
+    "order": "Order",
+    "quote": "Quote",
+    "sentOn": "Sent on {{date}}",
+    "status": {
+      "new": "Awaiting confirmation",
+      "confirmed": "Confirmed",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    }
   }
 }

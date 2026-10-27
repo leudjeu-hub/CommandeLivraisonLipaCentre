@@ -524,5 +524,20 @@
     "rightsTitle": "Vos droits",
     "rightsText": "Vous pouvez demander à voir, corriger ou effacer vos informations, ou vous opposer à leur utilisation : écrivez-nous sur WhatsApp ou par e-mail, nous répondons sous 30 jours. Vous pouvez aussi saisir l'autorité camerounaise chargée de la protection des données personnelles.",
     "back": "Retour au catalogue"
+  },
+  "myOrders": {
+    "title": "Mes commandes",
+    "intro": "Les commandes et devis envoyés depuis ce site en étant connecté à ce compte. Le statut est mis à jour par la librairie.",
+    "empty": "Aucune commande pour l'instant. Seules celles envoyées en étant connecté apparaissent ici.",
+    "browse": "Voir le catalogue",
+    "order": "Commande",
+    "quote": "Devis",
+    "sentOn": "Envoyée le {{date}}",
+    "status": {
+      "new": "En attente de confirmation",
+      "confirmed": "Confirmée",
+      "delivered": "Livrée",
+      "cancelled": "Annulée"
+    }
   }
 }

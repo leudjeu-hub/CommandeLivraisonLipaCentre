@@ -8,7 +8,8 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import { money, PAYMENT_LABELS, SLOT_LABELS } from '../data/catalogue';
 import {
-  customerWhatsApp, listOrders, ORDER_STATUSES, setOrderStatus, type Order, type OrderStatus,
+  clientRef, customerWhatsApp, listOrders, notesWithoutRef, ORDER_STATUSES, setOrderStatus, type Order,
+  type OrderStatus,
 } from '../data/ordersApi';
 import { showToast } from '../components/Toast';
 
@@ -20,11 +21,6 @@ const FILTERS: Filter[] = ['open', ...ORDER_STATUSES, 'all'];
 const matches = (o: Order, f: Filter) =>
   f === 'all' || (f === 'open' ? o.status === 'new' || o.status === 'confirmed' : o.status === f);
 
-// Référence client « LC-2510-4821 » : écrite par le formulaire en tête des remarques (CheckoutPage),
-// c'est elle que le client cite sur WhatsApp. Les commandes plus anciennes n'en ont pas.
-const REF = /^\s*[^\n]*?(LC-\d{4}-\d{4})[^\n]*\n?/;
-const clientRef = (o: Order) => o.notes?.match(REF)?.[1] ?? null;
-const notesWithoutRef = (o: Order) => (clientRef(o) ? o.notes!.replace(REF, '').trim() || null : o.notes);
 const label = (o: Order) => clientRef(o) ?? `#${o.id}`;
 
 const STATUS_COLOR = {

@@ -2,7 +2,8 @@ import { request } from './productsApi';
 
 // Commandes (API : /orders/…). Le formulaire enregistre chaque commande ou demande de devis
 // (POST /orders/submit, public) ; le client l'envoie toujours par WhatsApp ou e-mail.
-// Liste et statuts : administrateurs (Gestion > Commandes).
+// Liste et statuts : administrateurs (Gestion > Commandes). Envoyée en étant connecté (le jeton part
+// avec request()), la commande est liée au compte : le client la retrouve dans Mon compte (/orders/mine).
 
 export type OrderStatus = 'new' | 'confirmed' | 'delivered' | 'cancelled';
 export const ORDER_STATUSES: OrderStatus[] = ['new', 'confirmed', 'delivered', 'cancelled'];
@@ -56,6 +57,15 @@ export const submitOrder = (order: OrderSubmit) =>
   request<Order>('/orders/submit', { method: 'POST', body: JSON.stringify(order), keepalive: true, timeout: 0 });
 
 export const listOrders = () => request<Order[]>('/orders/');
+
+// Les commandes du compte connecté, et seulement les siennes (filtrées par l'API sur le jeton)
+export const listMyOrders = () => request<Order[]>('/orders/mine');
+
+// Référence client « LC-2510-4821 » : écrite par le formulaire en tête des remarques (CheckoutPage),
+// c'est elle que le client cite sur WhatsApp. Les commandes plus anciennes n'en ont pas.
+const REF = /^\s*[^\n]*?(LC-\d{4}-\d{4})[^\n]*\n?/;
+export const clientRef = (o: Order) => o.notes?.match(REF)?.[1] ?? null;
+export const notesWithoutRef = (o: Order) => (clientRef(o) ? o.notes!.replace(REF, '').trim() || null : o.notes);
 
 export const setOrderStatus = (id: number, status: OrderStatus) =>
   request<Order>(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) });

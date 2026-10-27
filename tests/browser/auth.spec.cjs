@@ -54,7 +54,27 @@ test.beforeEach(async ({ page }) => {
     return json(route, 200, adminUser(users.get(id)));
   });
   await page.route(/\/products\/$/, (route) => json(route, 200, []));
+  // Mes commandes : l'API filtre sur le jeton ; ici, celles de l'utilisateur 2 (premier compte créé)
+  await page.route(/\/orders\/mine$/, (route) => {
+    const user = current(route.request());
+    if (!user) return json(route, 401, { detail: 'Not authenticated' });
+    return json(route, 200, user.id === 2 ? MY_ORDERS : []);
+  });
 });
+
+const MY_ORDERS = [
+  {
+    id: 41, kind: 'order', customer_name: 'Awa', phone: '+237 690 00 00 00', status: 'confirmed', total: 3500,
+    delivery_fee: 1000, area: 'Bastos', address: 'Près de l\'ambassade', slot: 'morning', payment: 'cash',
+    notes: 'Référence : LC-2610-4821\nSonner deux fois', created_at: '2026-10-26T09:00:00Z', status_changed_at: null,
+    items: [{ id: 1, product_id: 7, product_name: 'Cahier 200 pages', quantity: 5, unit_price: 700, line_total: 3500 }],
+  },
+  {
+    id: 12, kind: 'quote', customer_name: 'Awa', phone: '+237 690 00 00 00', status: 'new', total: 0,
+    delivery_fee: null, area: null, address: null, slot: null, payment: null, notes: null,
+    created_at: '2026-10-20T09:00:00Z', status_changed_at: null, items: [],
+  },
+];
 
 test('créer un compte client, se déconnecter, se reconnecter', async ({ page }) => {
   await page.goto('/');
@@ -292,4 +312,40 @@ test('bouton « Votre compte » en haut : connexion si déconnecté, page du com
   await page.goto('/');
   await banner.getByRole('link', { name: 'Votre compte' }).click();
   await expect(page).toHaveURL(/\/compte$/);
+});
+
+test('le client retrouve ses commandes dans Mon compte', async ({ page }) => {
+  await page.goto('/inscription');
+  await page.getByLabel('E-mail').fill('awa@exemple.cm');
+  await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
+  await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+
+  await expect(page.getByRole('heading', { name: 'Mes commandes' })).toBeVisible();
+  const rows = page.getByTestId('my-order');
+  await expect(rows).toHaveCount(2);
+  await expect(rows.first()).toContainText('Commande LC-2610-4821');
+  await expect(rows.first()).toContainText('Envoyée le 26/10/2026');
+  await expect(rows.first()).toContainText('4 500 FCFA');
+  await expect(rows.first()).toContainText('Confirmée');
+  await expect(rows.nth(1)).toContainText('Devis N° 12');
+  await expect(rows.nth(1)).toContainText('En attente de confirmation');
+
+  await rows.first().getByRole('button', { name: 'Détails' }).click();
+  await expect(rows.first()).toContainText('5 × Cahier 200 pages');
+  await expect(rows.first()).toContainText('Bastos, Près de l\'ambassade');
+  // La référence n'est pas répétée dans les remarques
+  await expect(rows.first().getByText('Sonner deux fois')).toBeVisible();
+  await expect(rows.first().getByText(/Référence :/)).toHaveCount(0);
+});
+
+test('un compte sans commande voit comment en passer une', async ({ page }) => {
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+  await expect(page.getByText('Aucune commande pour l\'instant.', { exact: false })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Voir le catalogue' })).toBeVisible();
 });
