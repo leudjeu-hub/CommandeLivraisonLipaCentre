@@ -137,7 +137,7 @@ export default function HomePage() {
                 />
                 <Box sx={{ p: { xs: 0, sm: 2 }, pr: { xs: 2, sm: 2 }, flexGrow: 1 }}>
                   <Typography variant="h6" component="h3" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
-                    {t(`cat.${c.cat}`)}
+                    {t(`home.cat${c.cat}Title`)}
                     <ArrowForwardIcon fontSize="small" aria-hidden sx={{ color: 'secondary.main' }} />
                   </Typography>
                   <Typography variant="body2" color="text.secondary">{c.text}</Typography>

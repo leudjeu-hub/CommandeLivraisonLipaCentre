@@ -19,14 +19,14 @@
   },
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
-    "title": "Books and supplies delivered to your door in Yaoundé",
-    "intro": "For school and the office: choose online or on WhatsApp, we prepare and deliver. Nothing to pay in advance.",
+    "title": "School supplies, office supplies and books delivered in Yaoundé",
+    "intro": "Stationery and bookshop at Carrefour Abbia: exercise books, school textbooks, paper and binders. Choose online or on WhatsApp, we deliver to your door. Nothing to pay in advance.",
     "cta": "Order my supplies",
     "list": "School list or quote",
     "whatsapp": "Easier? Order on WhatsApp"
   },
   "strip": {
-    "title": "How it works",
+    "title": "Order in 3 steps",
     "step1Title": "Choose your items",
     "step1Text": "A simple catalogue for school and office.",
     "step2Title": "Give your address",
@@ -366,10 +366,13 @@
   "home": {
     "selectionTitle": "Essentials",
     "selectionCta": "See the whole catalogue",
-    "catsTitle": "What are you looking for?",
+    "catsTitle": "Stationery, school supplies and books",
     "catScolaire": "Exercise books, pens, geometry sets, school bags: everything for class.",
     "catBureau": "Paper, binders, accessories: for the office and home.",
-    "catLivres": "School books, dictionaries and reading, in the right edition."
+    "catLivres": "School books, dictionaries and reading, in the right edition.",
+    "catScolaireTitle": "School supplies",
+    "catBureauTitle": "Office supplies",
+    "catLivresTitle": "Books and dictionaries"
   },
   "clock": {
     "title": "Time clock",
@@ -462,7 +465,7 @@
     }
   },
   "trust": {
-    "title": "Our commitments",
+    "title": "Delivery in Yaoundé: timing, fees, payment",
     "sameDayTitle": "Delivered the same day",
     "sameDayText": "In {{zones}} zones ({{areas}}…), from {{fee}}.",
     "freeTitle": "Free delivery",
@@ -472,7 +475,7 @@
     "link": "See the fees for your neighbourhood"
   },
   "faq": {
-    "title": "Frequently asked questions",
+    "title": "Frequently asked questions about delivery in Yaoundé",
     "q1": "How much does delivery cost in Yaoundé?",
     "a1": "From {{min}} ({{firstZone}} zone: {{firstAreas}}…) to {{max}} ({{lastZone}} zone: {{lastAreas}}…). It is free from {{from}} of items in {{freeZones}} zones.",
     "q2": "How fast is delivery?",
@@ -489,7 +492,7 @@
     "a7": "Yes: {{min}} of items."
   },
   "seo": {
-    "home": "Yaoundé bookshop: books and supplies delivered to you",
+    "home": "Librairie Papeterie du Centre, Yaoundé: school supplies",
     "catalogue": "Catalogue: school supplies, office and books · Yaoundé",
     "delivery": "Delivery in Yaoundé: fees by neighbourhood · Librairie Papeterie du Centre",
     "quote": "School lists delivered in Yaoundé, pay on delivery",
