@@ -5,9 +5,10 @@ import { useAuth } from '../context/AuthContext';
 import SessionWait from '../components/SessionWait';
 import { showToast } from '../components/Toast';
 import TimeClock from '../components/TimeClock';
+import MyOrders from '../components/MyOrders';
 import { ROLE_LABEL } from '../data/authApi';
 
-// Mon compte (/compte).
+// Mon compte (/compte) : session, pointage du personnel et commandes envoyées avec ce compte.
 export default function AccountPage() {
   const { t, i18n } = useTranslation();
   const { user, ready, offline, logout } = useAuth();
@@ -45,6 +46,7 @@ export default function AccountPage() {
         </Typography>
         <Button variant="outlined" onClick={handleLogout}>{t('auth.logout')}</Button>
       </Paper>
+      <MyOrders />
     </Container>
   );
 }
