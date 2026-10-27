@@ -19,14 +19,14 @@
   },
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
-    "title": "Livres et fournitures livrés à domicile à Yaoundé",
-    "intro": "Pour l'école et le bureau : choisissez en ligne ou sur WhatsApp, nous préparons et livrons. Rien à payer d'avance.",
+    "title": "Fournitures scolaires, de bureau et livres livrés à Yaoundé",
+    "intro": "Papeterie et librairie au Carrefour Abbia : cahiers, manuels scolaires, papier et classeurs. Choisissez en ligne ou sur WhatsApp, nous livrons chez vous. Rien à payer d'avance.",
     "cta": "Commander mes fournitures",
     "list": "Liste scolaire ou devis",
     "whatsapp": "Plus simple ? Commandez sur WhatsApp"
   },
   "strip": {
-    "title": "Comment ça marche",
+    "title": "Commander en 3 étapes",
     "step1Title": "Choisissez vos articles",
     "step1Text": "Un catalogue simple, pour l'école et le bureau.",
     "step2Title": "Précisez votre adresse",
@@ -366,10 +366,13 @@
   "home": {
     "selectionTitle": "Les incontournables",
     "selectionCta": "Voir tout le catalogue",
-    "catsTitle": "Que cherchez-vous ?",
+    "catsTitle": "Papeterie, fournitures scolaires et livres",
     "catScolaire": "Cahiers, stylos, géométrie, cartables : tout pour la classe.",
     "catBureau": "Papier, classeurs, accessoires : pour l’entreprise et la maison.",
-    "catLivres": "Livres scolaires, dictionnaires et lectures, à la bonne édition."
+    "catLivres": "Livres scolaires, dictionnaires et lectures, à la bonne édition.",
+    "catScolaireTitle": "Fournitures scolaires",
+    "catBureauTitle": "Fournitures de bureau",
+    "catLivresTitle": "Livres et dictionnaires"
   },
   "clock": {
     "title": "Pointage",
@@ -462,7 +465,7 @@
     }
   },
   "trust": {
-    "title": "Nos engagements",
+    "title": "Livraison à Yaoundé : délais, frais, paiement",
     "sameDayTitle": "Livré le jour même",
     "sameDayText": "En zones {{zones}} ({{areas}}…), dès {{fee}}.",
     "freeTitle": "Livraison offerte",
@@ -472,7 +475,7 @@
     "link": "Voir les tarifs de votre quartier"
   },
   "faq": {
-    "title": "Questions fréquentes",
+    "title": "Questions fréquentes sur la livraison à Yaoundé",
     "q1": "Combien coûte la livraison à Yaoundé ?",
     "a1": "De {{min}} (zone {{firstZone}} : {{firstAreas}}…) à {{max}} (zone {{lastZone}} : {{lastAreas}}…). Elle est offerte dès {{from}} d'articles en zones {{freeZones}}.",
     "q2": "En combien de temps suis-je livré ?",
@@ -489,7 +492,7 @@
     "a7": "Oui : {{min}} d'articles."
   },
   "seo": {
-    "home": "Librairie Yaoundé : livres et fournitures livrés chez vous",
+    "home": "Librairie Papeterie du Centre, Yaoundé : fournitures scolaires",
     "catalogue": "Catalogue : fournitures scolaires, bureau et livres · Yaoundé",
     "delivery": "Livraison à Yaoundé : tarifs par quartier · Librairie Papeterie du Centre",
     "quote": "Listes scolaires livrées à Yaoundé, paiement à la réception",

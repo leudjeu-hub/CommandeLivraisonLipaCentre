@@ -38,7 +38,7 @@ test('la page se charge sans erreur et affiche le catalogue', async ({ page }) =
   // Aucune requête en 503 (le navigateur la journaliserait comme une erreur)
   await mockApi(page, (path) => ({ body: path === '/products/' ? PRODUCTS : null }));
   await page.goto('/');
-  await expect(page.locator('h1')).toContainText('Livres et fournitures livrés');
+  await expect(page.locator('h1')).toContainText('Fournitures scolaires, de bureau et livres livrés');
   await expect(page.locator('text=Commander mes fournitures')).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -263,7 +263,7 @@ test('langue : passage en anglais', async ({ page, isMobile }) => {
   if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
   await page.getByRole('button', { name: 'English' }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('h1')).toContainText('Books and supplies');
+  await expect(page.locator('h1')).toContainText('School supplies, office supplies and books');
   await page.goto('/catalogue');
   await expect(page.locator('h1')).toContainText('School supplies');
 });
@@ -574,7 +574,7 @@ test('sans JavaScript : écran de démarrage avec WhatsApp et téléphone', asyn
 
 test('écran de démarrage remplacé par le site une fois React lancé', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('h1')).toContainText('Livres et fournitures livrés');
+  await expect(page.locator('h1')).toContainText('Fournitures scolaires, de bureau et livres livrés');
   await expect(page.locator('.shell')).toHaveCount(0);
 });
 
@@ -622,7 +622,7 @@ test('copie publiée : les articles indisponibles n’apparaissent pas', async (
 test('accueil : un raccourci de catégorie ouvre le catalogue filtré', async ({ page }) => {
   await snapshot(page, PRODUCTS);
   await page.goto('/');
-  await page.getByRole('link', { name: /^Bureau/ }).click();
+  await page.getByRole('link', { name: /^Fournitures de bureau/ }).click();
   await expect(page).toHaveURL(/\/catalogue\?cat=Bureau$/);
   await expect(page.getByRole('button', { name: 'Bureau', pressed: true })).toBeVisible();
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(PRODUCTS.filter((p) => p.category === 'Bureau').length);
@@ -630,7 +630,7 @@ test('accueil : un raccourci de catégorie ouvre le catalogue filtré', async ({
 
 test('accueil : engagements chiffrés, écoles et entreprises, FAQ ; titre propre à chaque page', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/Librairie Yaoundé/);
+  await expect(page).toHaveTitle(/^Librairie Papeterie du Centre, Yaoundé : fournitures scolaires$/);
   await expect(page.getByRole('heading', { name: 'Livré le jour même' })).toBeVisible();
   await expect(page.getByText(/^Dès 25\s000 FCFA d'articles en zones Centre et Proche\.$/)).toBeVisible();
   // Un seul encart Devis pour les parents, les écoles et les entreprises
