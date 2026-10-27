@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Box, Button, Chip, Collapse, Paper, Stack, Typography } from '@mui/material';
 import { money } from '../data/catalogue';
-import { clientRef, listMyOrders, notesWithoutRef, type Order } from '../data/ordersApi';
+import { claimPendingOrders, clientRef, listMyOrders, notesWithoutRef, type Order } from '../data/ordersApi';
 
-// Mon compte > Mes commandes : les commandes et devis envoyés en étant connecté. L'API ne renvoie
-// que celles du compte (GET /orders/mine) ; celles envoyées sans connexion n'y figurent pas.
+// Mon compte > Mes commandes : les commandes et devis envoyés en étant connecté, ou sans compte depuis
+// ce navigateur (rattachés à l'ouverture). L'API ne renvoie que celles du compte (GET /orders/mine).
 
 const STATUS_COLOR = {
   new: 'warning', confirmed: 'info', delivered: 'success', cancelled: 'default',
@@ -21,7 +21,12 @@ export default function MyOrders({ first = false }: { first?: boolean }) {
   // Délai par défaut (15 s) : si le serveur se réveille, « Réessayer » aboutit ensuite
   const load = useCallback(() => {
     setError('');
-    listMyOrders().then(setOrders).catch((err) => setError(err.message));
+    // D'abord les commandes envoyées sans compte depuis ce navigateur, pour qu'elles apparaissent
+    claimPendingOrders()
+      .catch(() => undefined)
+      .then(listMyOrders)
+      .then(setOrders)
+      .catch((err) => setError(err.message));
   }, []);
   useEffect(load, [load]);
 

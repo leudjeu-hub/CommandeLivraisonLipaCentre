@@ -1,13 +1,14 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Alert } from '@mui/material';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP, SLOT_LABELS, PAYMENT_LABELS, whatsappLink } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
 import { showToast } from '../components/Toast';
 import CatalogueUnavailable from '../components/CatalogueUnavailable';
-import { submitOrder } from '../data/ordersApi';
+import { savePendingClaim, submitOrder } from '../data/ordersApi';
+import { useAuth } from '../context/AuthContext';
 
 const OTHER_AREA = '__autre';
 // Numéro camerounais : 9 chiffres commençant par 6 (mobile) ou 2 (fixe), indicatif +237 facultatif
@@ -23,6 +24,8 @@ const newReference = () => {
 export default function CheckoutPage() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
+  const { user, ready: authReady } = useAuth();
+  const { pathname, search } = useLocation();
   const { items, clearCart } = useCart();
   const { products, status, retry } = useCatalogue();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
@@ -157,7 +160,10 @@ export default function CheckoutPage() {
       notes: t('common.sumRef') + reference + (notes ? '\n' + notes : ''),
       delivery_fee: fee,
       items: type === 'order' ? cartProducts.map(({ product, quantity }) => ({ product_id: product.id, quantity })) : [],
-    }).catch(() => undefined);
+    })
+      // Envoyée sans compte : code gardé pour la rattacher au compte après connexion (Mes commandes)
+      .then((order) => order.claim_code && savePendingClaim(order.claim_code))
+      .catch(() => undefined);
   };
 
   const refParts = t('result.sentRef', { ref: '\u0001' }).split('\u0001');
@@ -204,6 +210,24 @@ export default function CheckoutPage() {
       </Typography>
 
       <Alert severity="info" sx={{ mb: 3 }}>{t(type === 'quote' ? 'form.introQuote' : 'form.intro')}</Alert>
+
+      {/* Connecté, la commande est liée au compte (Mon compte > Mes commandes) ; sinon, on l'y invite
+          avant qu'il remplisse le formulaire (le panier est gardé, les champs saisis seraient perdus) */}
+      {authReady && !showResult && (user ? (
+        <Typography variant="body2" color="text.secondary" sx={{ mt: -1.5, mb: 3 }}>{t('form.linkedToAccount')}</Typography>
+      ) : (
+        <Paper variant="outlined" data-testid="login-hint" sx={{ p: 2, mb: 3 }}>
+          <Typography variant="body2" sx={{ mb: 1.5 }}>{t('form.loginHint')}</Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Button variant="contained" size="small" component={Link} to={`/connexion?suite=${encodeURIComponent(pathname + search)}`}>
+              {t('form.loginHintLogin')}
+            </Button>
+            <Button variant="outlined" size="small" component={Link} to={`/inscription?suite=${encodeURIComponent(pathname + search)}`}>
+              {t('form.loginHintRegister')}
+            </Button>
+          </Box>
+        </Paper>
+      ))}
 
       {/* Liste scolaire sur papier : la photo par WhatsApp évite de tout retaper */}
       {type === 'quote' && !showResult && (
@@ -368,6 +392,16 @@ export default function CheckoutPage() {
                 {refParts[1]}
               </Typography>
               <Typography component="p">{t('result.sentContact')}</Typography>
+              {/* Sans compte : se connecter (ou en créer un) pour suivre cette commande dans Mes commandes */}
+              {authReady && !user && (
+                <Box data-testid="follow-hint" sx={{ mt: 2 }}>
+                  <Typography component="p">{t(type === 'quote' ? 'result.followQuote' : 'result.followOrder')}</Typography>
+                  <Box sx={{ mt: 1.5, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    <Button variant="contained" size="small" component={Link} to="/connexion?suite=/compte">{t('form.loginHintLogin')}</Button>
+                    <Button variant="outlined" size="small" component={Link} to="/inscription?suite=/compte">{t('form.loginHintRegister')}</Button>
+                  </Box>
+                </Box>
+              )}
               {/* Vider le panier : dans le même encadré, pour ne pas renvoyer la même commande */}
               {showAfterSend && (
                 <>
