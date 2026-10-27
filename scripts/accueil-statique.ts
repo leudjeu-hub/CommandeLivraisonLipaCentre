@@ -43,7 +43,7 @@ export function homeShell(fr: Strings, base: string): string {
   const link = (href: string, text: string, cls = '') => `<a${cls ? ` class="${cls}"` : ''} href="${esc(href)}">${text}</a>`;
 
   return `<div class="shell">
-        <div class="shell-bar"><img src="${base}img/logo-clair.svg" alt="Librairie Papeterie du Centre" width="138" height="38" /></div>
+        <div class="shell-bar"><img src="${base}img/logo-clair.svg" alt="Librairie Papeterie du Centre" width="138" height="38" /><a class="shell-account" href="${base}connexion">${t('nav.account')}</a></div>
         <main class="shell-main shell-home">
           <p class="shell-eyebrow">${t('hero.eyebrow')}</p>
           <h1>${t('hero.title')}</h1>

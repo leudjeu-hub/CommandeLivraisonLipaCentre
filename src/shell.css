@@ -1,6 +1,9 @@
 /* Écran de démarrage (index.html, avant React) : mêmes couleurs que le thème MUI (src/theme.ts) */
 body { margin: 0; background: #f7f4ec; color: #1b2433; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
-.shell-bar { display: flex; align-items: center; min-height: 56px; padding: 0 16px; background: #16325c; }
+.shell-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; padding: 0 16px; background: #16325c; }
+/* Le compte reste visible pendant le chargement (et sans JavaScript) */
+.shell-account { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-weight: 600; text-decoration: none; }
+.shell-account:focus-visible { outline: 3px solid #e5ab55; outline-offset: 2px; }
 .shell-main { max-width: 560px; margin: 0 auto; padding: 48px 16px; text-align: center; line-height: 1.6; }
 .shell-main h1 { margin: 0 0 16px; font: 400 2rem/1.15 Georgia, "Times New Roman", serif; }
 .shell-wait { color: #545e6e; }

@@ -15,7 +15,8 @@
     "skip": "Skip to content",
     "close": "Close menu",
     "whatsapp": "Message us on WhatsApp",
-    "myOrders": "My orders"
+    "myOrders": "My orders",
+    "myAccount": "My account"
   },
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
@@ -39,17 +40,19 @@
     "title": "School supplies, office supplies and books",
     "searchPlaceholder": "Search for a notebook, a pen…",
     "searchLabel": "Search for a product",
-    "count": "{{count}} item(s)",
     "families": "Families",
     "allFamilies": "All",
     "otherFamily": "Other items",
     "noteLive": "Prices in FCFA, confirmed by the bookshop before delivery",
     "loading": "Loading the catalogue… (up to a minute if the server was asleep)",
     "loadingWhatsapp": "In a hurry? Send us your list on WhatsApp while you wait.",
-    "more": "Show more ({{count}} left)",
     "unavailable": "The catalogue is temporarily unavailable (server unreachable). Try again in a moment, or send us your list directly by WhatsApp.",
     "orderWhatsapp": "Order by WhatsApp",
-    "unavailableWhatsapp": "Hello, I would like to order: "
+    "unavailableWhatsapp": "Hello, I would like to order: ",
+    "count_one": "{{count}} item",
+    "count_other": "{{count}} items",
+    "more_one": "Show more ({{count}} left)",
+    "more_other": "Show more ({{count}} left)"
   },
   "delivery": {
     "eyebrow": "A local service",
@@ -100,8 +103,8 @@
     "quoteWhatsapp": "Is your list on paper? Take a photo and send it to us on WhatsApp: we will prepare the quote.",
     "quoteWhatsappCta": "Send the photo on WhatsApp",
     "quoteWhatsappText": "Hello, here is my school list for a quote: ",
-    "intro": "Your summary is prepared here: nothing is sent to the bookshop at this stage. You then send it by clicking \"Send my order on WhatsApp\" or \"Send by e-mail\".",
-    "introQuote": "Your request is prepared here: nothing is sent to the bookshop at this stage. You then send it by WhatsApp or e-mail.",
+    "intro": "Nothing is sent at this stage: you then send your order by WhatsApp or e-mail.",
+    "introQuote": "Nothing is sent at this stage: you then send your request by WhatsApp or e-mail.",
     "name": "Recipient's name",
     "phone": "Phone",
     "area": "Neighbourhood",
@@ -127,9 +130,12 @@
     "emptyOrder": "Your basket is empty: add items before preparing your order.",
     "confirmNote": "Prices, stock and delivery time are confirmed by the bookshop, by message or phone, before your parcel leaves.",
     "linkedToAccount": "Logged in: you will find this order in My orders.",
-    "loginHint": "Log in before ordering to find your orders and their status in My orders. It is optional, and your cart is kept.",
+    "loginHint": "Optional: log in to track your orders.",
     "loginHintLogin": "Log in",
-    "loginHintRegister": "Create an account"
+    "loginHintRegister": "Create an account",
+    "cartLine_one": "{{count}} item",
+    "cartLine_other": "{{count}} items",
+    "cartEdit": "Edit cart"
   },
   "result": {
     "title": "Your summary is ready",
@@ -149,8 +155,8 @@
     "sentEmail": "Your mail app has opened with your message. Tap Send to pass it on to the Librairie Papeterie du Centre: your request is only taken into account once this message is received.",
     "sentRef": "Your reference: {{ref}}. It is included in the message; please mention it if you contact us.",
     "sentContact": "As soon as it is received, the bookshop will contact you by message or phone to confirm availability, price and delivery.",
-    "followOrder": "Track this order and its status in My orders: log in or create an account on this phone and it will be added.",
-    "followQuote": "Track this quote request and its status in My orders: log in or create an account on this phone and it will be added."
+    "followOrder": "To track this order in My orders, log in or create an account on this phone:",
+    "followQuote": "To track this request in My orders, log in or create an account on this phone:"
   },
   "terms": {
     "title": "Order terms",
@@ -324,7 +330,13 @@
     "fFamily": "Family",
     "fFamilyHelp": "Groups items in the catalogue (e.g. Sacs et cartables). Empty = \"Other items\".",
     "errFamily": "60 characters maximum.",
-    "search": "Search (item, ref., family)"
+    "search": "Search (item, ref., family)",
+    "resetPassword": "Temporary password",
+    "resetTitle": "Temporary password for {{email}}",
+    "resetText": "A new password is created and shown only once. The old one stops working and the account is logged out everywhere. First make sure you are talking to the account holder.",
+    "resetDone": "Give this password to the customer (by WhatsApp or phone). It will not be shown again.",
+    "resetConfirm": "Create the password",
+    "resetClose": "I have noted the password"
   },
   "auth": {
     "loginTitle": "Log in",
@@ -363,7 +375,10 @@
     "errTooMany": "Too many password attempts. Please try again in a few minutes.",
     "offline": "The server is not responding. Check your connection. You are still signed in.",
     "retry": "Try again",
-    "errTooManyRegister": "Too many accounts were created recently. Please try again in an hour, or order without an account."
+    "errTooManyRegister": "Too many accounts were created recently. Please try again in an hour, or order without an account.",
+    "forgot": "Forgot your password?",
+    "forgotLink": "Message us on WhatsApp",
+    "forgotWhatsapp": "Hello, I forgot the password of my account {{email}} on the website."
   },
   "home": {
     "selectionTitle": "Essentials",
@@ -521,7 +536,7 @@
   },
   "privacy": {
     "title": "Privacy",
-    "updated": "What we do with the information in your order. Updated 26 October 2026.",
+    "updated": "What we do with the information in your order. Updated 27 October 2026.",
     "whoTitle": "Who is responsible",
     "whoText": "Librairie Papeterie du Centre, Carrefour Abbia, opposite the Manège, Yaoundé. Phone and WhatsApp: +237 6 93 24 03 96. Email: Lipacentre237@gmail.com.",
     "whatTitle": "What information",
@@ -529,7 +544,7 @@
     "whyTitle": "Why",
     "whyText": "Only to prepare your order, deliver it and contact you about it. No advertising, no resale, no audience tracking.",
     "recipientsTitle": "Who receives it",
-    "recipientsText": "Only the bookshop. Your order is stored with Render, our server host, located outside Cameroon. If you choose WhatsApp or email, your message also goes through WhatsApp (Meta) or your mail app and Gmail (Google), under their own rules. We never sell or lend your information to anyone.",
+    "recipientsText": "Only the bookshop. Your order is stored with Neon (database) through Render (server), two hosts located outside Cameroon. If you choose WhatsApp or email, your message also goes through WhatsApp (Meta) or your mail app and Gmail (Google), under their own rules. We never sell or lend your information to anyone.",
     "retentionTitle": "How long",
     "retentionText": "Cancelled orders are deleted after 30 days, delivered orders after 12 months. An account is kept while you use it; you can ask for it to be deleted at any time.",
     "browserTitle": "What stays on your phone",

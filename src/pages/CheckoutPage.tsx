@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Alert } from '@mui/material';
+import { Container, Typography, TextField, Select, MenuItem, ListSubheader, FormControl, FormHelperText, InputLabel, Button, Box, Paper, Alert, Link as MuiLink } from '@mui/material';
 import { useCart } from '../context/CartContext';
 import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP, SLOT_LABELS, PAYMENT_LABELS, whatsappLink } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
@@ -209,24 +209,26 @@ export default function CheckoutPage() {
         {type === 'quote' ? t('form.quoteTitle') : t('form.orderTitle')}
       </Typography>
 
-      <Alert severity="info" sx={{ mb: 3 }}>{t(type === 'quote' ? 'form.introQuote' : 'form.intro')}</Alert>
+      {/* Une ligne, pas un encadré : sur un téléphone, le premier champ doit rester dans le premier écran */}
+      <Typography variant="body2" color="text.secondary" sx={{ mt: -1, mb: 2 }}>
+        {t(type === 'quote' ? 'form.introQuote' : 'form.intro')}
+      </Typography>
 
-      {/* Connecté, la commande est liée au compte (Mon compte > Mes commandes) ; sinon, on l'y invite
-          avant qu'il remplisse le formulaire (le panier est gardé, les champs saisis seraient perdus) */}
+      {/* Connecté, la commande est liée au compte (Mes commandes) ; sinon, un simple lien : la connexion est
+          facultative et ne doit pas passer pour l'action principale de la page (le panier est gardé) */}
       {authReady && !showResult && (user ? (
-        <Typography variant="body2" color="text.secondary" sx={{ mt: -1.5, mb: 3 }}>{t('form.linkedToAccount')}</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>{t('form.linkedToAccount')}</Typography>
       ) : (
-        <Paper variant="outlined" data-testid="login-hint" sx={{ p: 2, mb: 3 }}>
-          <Typography variant="body2" sx={{ mb: 1.5 }}>{t('form.loginHint')}</Typography>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            <Button variant="contained" size="small" component={Link} to={`/connexion?suite=${encodeURIComponent(pathname + search)}`}>
-              {t('form.loginHintLogin')}
-            </Button>
-            <Button variant="outlined" size="small" component={Link} to={`/inscription?suite=${encodeURIComponent(pathname + search)}`}>
-              {t('form.loginHintRegister')}
-            </Button>
-          </Box>
-        </Paper>
+        <Typography variant="body2" data-testid="login-hint" sx={{ mb: 3 }}>
+          {t('form.loginHint')}{' '}
+          <MuiLink component={Link} to={`/connexion?suite=${encodeURIComponent(pathname + search)}`} sx={{ fontWeight: 600 }}>
+            {t('form.loginHintLogin')}
+          </MuiLink>
+          {' · '}
+          <MuiLink component={Link} to={`/inscription?suite=${encodeURIComponent(pathname + search)}`} sx={{ fontWeight: 600 }}>
+            {t('form.loginHintRegister')}
+          </MuiLink>
+        </Typography>
       ))}
 
       {/* Liste scolaire sur papier : la photo par WhatsApp évite de tout retaper */}
@@ -239,21 +241,14 @@ export default function CheckoutPage() {
         </Alert>
       )}
 
-      {/* Rappel du panier : le client voit ce qu'il commande sans revenir en arrière */}
+      {/* Rappel du panier en une ligne (le détail est dans le récapitulatif, après « Vérifier ») */}
       {type === 'order' && cartProducts.length > 0 && !showResult && (
-        <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-          <Typography variant="overline" color="text.secondary">{t('cart.summary')}</Typography>
-          {cartProducts.map(({ product, quantity }) => (
-            <Box key={product.id} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, fontSize: '0.9375rem' }}>
-              <span>{quantity} × {i18n.language === 'fr' ? product.name : product.en?.name || product.name} ({t('common.ref', { id: product.id })})</span>
-              {product.price !== null && <Box component="span" sx={{ whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{money(product.price * quantity, locale)}</Box>}
-            </Box>
-          ))}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider', fontWeight: 700 }}>
-            <span>{t('cart.subtotal')}</span>
-            <Box component="span" sx={{ fontVariantNumeric: 'tabular-nums' }}>{money(subtotal, locale)}</Box>
-          </Box>
-        </Paper>
+        <Box data-testid="cart-reminder" sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 1.5, rowGap: 0.5, mb: 2.5, px: 2, py: 1.25, bgcolor: '#fff', border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+          <Typography component="span" sx={{ fontWeight: 700 }}>
+            {t('form.cartLine', { count: cartProducts.reduce((n, { quantity }) => n + quantity, 0) })} · <Box component="span" sx={{ fontVariantNumeric: 'tabular-nums' }}>{money(subtotal, locale)}</Box>
+          </Typography>
+          <MuiLink component={Link} to="/panier" variant="body2">{t('form.cartEdit')}</MuiLink>
+        </Box>
       )}
 
       {type === 'order' && status === 'unavailable' && items.length > 0 && !showResult ? (
@@ -392,17 +387,7 @@ export default function CheckoutPage() {
                 {refParts[1]}
               </Typography>
               <Typography component="p">{t('result.sentContact')}</Typography>
-              {/* Sans compte : se connecter (ou en créer un) pour suivre cette commande dans Mes commandes */}
-              {authReady && !user && (
-                <Box data-testid="follow-hint" sx={{ mt: 2 }}>
-                  <Typography component="p">{t(type === 'quote' ? 'result.followQuote' : 'result.followOrder')}</Typography>
-                  <Box sx={{ mt: 1.5, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                    <Button variant="contained" size="small" component={Link} to="/connexion?suite=/compte">{t('form.loginHintLogin')}</Button>
-                    <Button variant="outlined" size="small" component={Link} to="/inscription?suite=/compte">{t('form.loginHintRegister')}</Button>
-                  </Box>
-                </Box>
-              )}
-              {/* Vider le panier : dans le même encadré, pour ne pas renvoyer la même commande */}
+              {/* Vider le panier d'abord, seul bouton plein : c'est ce qui évite de renvoyer la même commande */}
               {showAfterSend && (
                 <>
                   <Typography component="p" sx={{ mt: 2 }}>{t('result.afterSend')}</Typography>
@@ -411,6 +396,15 @@ export default function CheckoutPage() {
                     <Button variant="outlined" onClick={() => setShowAfterSend(false)}>{t('result.keepCart')}</Button>
                   </Box>
                 </>
+              )}
+              {/* Sans compte : suivre cette commande dans Mes commandes, en simple lien */}
+              {authReady && !user && (
+                <Typography component="p" data-testid="follow-hint" sx={{ mt: 2 }}>
+                  {t(type === 'quote' ? 'result.followQuote' : 'result.followOrder')}{' '}
+                  <MuiLink component={Link} to="/connexion?suite=/compte" sx={{ fontWeight: 600 }}>{t('form.loginHintLogin')}</MuiLink>
+                  {' · '}
+                  <MuiLink component={Link} to="/inscription?suite=/compte" sx={{ fontWeight: 600 }}>{t('form.loginHintRegister')}</MuiLink>
+                </Typography>
               )}
             </Alert>
           )}

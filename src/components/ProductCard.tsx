@@ -10,7 +10,8 @@ import { showToast } from './Toast';
 // Carte article (catalogue et accueil). Compacte pour tenir à 2 par ligne sur un écran de 360 px :
 // photo carrée, nom sur 2 lignes max, prix bien visible, bouton pleine largeur ≥ 44 px.
 // memo : taper dans la recherche ne redessine pas les cartes déjà affichées.
-export default memo(function ProductCard({ product: p }: { product: Product }) {
+// eager : cartes du premier écran (la plus grande image est l'élément LCP, à ne pas différer)
+export default memo(function ProductCard({ product: p, eager = false }: { product: Product; eager?: boolean }) {
   const { t, i18n } = useTranslation();
   const { addItem } = useCart();
   const navigate = useNavigate();
@@ -36,7 +37,8 @@ export default memo(function ProductCard({ product: p }: { product: Product }) {
             component="img"
             src={import.meta.env.BASE_URL + p.image}
             alt={name}
-            loading="lazy"
+            loading={eager ? 'eager' : 'lazy'}
+            fetchPriority={eager ? 'high' : undefined}
             width={480}
             height={480}
             sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}

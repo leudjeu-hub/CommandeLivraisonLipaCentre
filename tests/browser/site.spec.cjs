@@ -194,7 +194,7 @@ test('confirmation à l’écran après « Envoyer par e-mail », avec la réfé
   await expect(page.locator('.MuiAlert-root').filter({ hasText: 'Message envoyé ?' })).toHaveCount(1);
   // Sans compte : invitation à se connecter pour suivre la commande, code gardé pour la rattacher
   const follow = sent.getByTestId('follow-hint');
-  await expect(follow).toContainText('Suivez cette commande et son statut dans Mes commandes');
+  await expect(follow).toContainText('Pour suivre cette commande dans Mes commandes');
   await expect(follow.getByRole('link', { name: 'Créer un compte' })).toHaveAttribute('href', /\/inscription\?suite=\/compte$/);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('centre-commandes-a-rattacher'))).toBe('["code-invite"]');
 });
@@ -204,6 +204,21 @@ test('article sur devis : ouvre la demande de devis', async ({ page }) => {
   await page.click('button:has-text("Demander")');
   await expect(page).toHaveURL(/\/commander\?type=quote/);
   await expect(page.locator('h1')).toContainText('Votre demande de devis');
+});
+
+test('formulaire de commande : premier champ dans le premier écran, panier en une ligne', async ({ page }) => {
+  await page.goto('/catalogue');
+  await page.click('button:has-text("Ajouter")');
+  await page.locator('button:has-text("Ajouter")').nth(1).click();
+  await page.goto('/commander');
+  await expect(page.getByTestId('cart-reminder')).toContainText('2 articles');
+  await page.getByTestId('cart-reminder').getByRole('link', { name: 'Modifier le panier' }).waitFor();
+  // Connexion facultative : un lien, pas un bouton plein
+  await expect(page.getByTestId('login-hint').getByRole('link', { name: 'Se connecter' })).toBeVisible();
+  await expect(page.locator('main a.MuiButton-contained, main button.MuiButton-contained')).toHaveText(['Vérifier ma commande']);
+  const name = page.getByLabel('Nom du destinataire');
+  const box = await name.boundingBox();
+  expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize().height);
 });
 
 test('quartier manquant : message sous le champ visible, focus sur la liste, astérisque', async ({ page }) => {
@@ -230,7 +245,7 @@ test('quartier manquant : message sous le champ visible, focus sur la liste, ast
 
 test('demande de devis : adresse facultative, textes « demande »', async ({ page }) => {
   await page.goto('/commander?type=quote');
-  await expect(page.getByText('Votre demande est préparée ici')).toBeVisible();
+  await expect(page.getByText('vous enverrez ensuite votre demande par WhatsApp')).toBeVisible();
   await page.getByLabel('Nom du destinataire').fill('Parent Test');
   await page.getByLabel('Téléphone').fill('6 93 24 03 96');
   await page.getByRole('combobox', { name: 'Quartier' }).click();
@@ -433,7 +448,7 @@ test('site publié : grand catalogue affiché par pages, la recherche porte sur 
   const list = Array.from({ length: 100 }, (_, i) => apiItem(i + 1, `Article ${i + 1}`));
   await mockApi(page, (path) => ({ body: path === '/products/' ? list : null }));
   await page.goto('/catalogue');
-  await expect(page.getByText('100 article(s)')).toBeVisible();
+  await expect(page.getByText('100 articles', { exact: true })).toBeVisible();
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(24);
   await page.getByRole('button', { name: /Afficher plus \(76/ }).click();
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(72);
@@ -565,7 +580,11 @@ test('première visite, serveur en veille : WhatsApp proposé pendant le chargem
 test('sans JavaScript : écran de démarrage avec WhatsApp et téléphone', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
+  // Le compte reste accessible pendant le chargement, sur l'accueil comme sur les autres pages
+  await page.goto('/catalogue');
+  await expect(page.locator('.shell-bar').getByRole('link', { name: 'Votre compte' })).toHaveAttribute('href', '/connexion');
   await page.goto('/');
+  await expect(page.locator('.shell-bar').getByRole('link', { name: 'Votre compte' })).toHaveAttribute('href', '/connexion');
   await expect(page.locator('h1')).toContainText('Yaoundé');
   await expect(page.getByRole('link', { name: 'Commander par WhatsApp' })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396/);
   await expect(page.locator('a[href="tel:+237693240396"]').first()).toBeVisible();

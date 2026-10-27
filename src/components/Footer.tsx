@@ -65,12 +65,10 @@ export default function Footer() {
             <MuiLink component={RouterLink} to="/confidentialite" sx={{ ...linkSx, fontSize: '0.9375rem' }}>
               {t('footer.privacy')}
             </MuiLink>
-            {/* Connexion (personnel, clients avec compte) : hors du menu principal, inutile pour commander */}
-            {!user && (
-              <MuiLink component={RouterLink} to="/connexion" sx={{ ...linkSx, fontSize: '0.9375rem' }}>
-                {t('nav.login')}
-              </MuiLink>
-            )}
+            {/* Connexion (personnel, clients avec compte), ou le compte une fois connecté : toujours une entrée */}
+            <MuiLink component={RouterLink} to={user ? '/compte' : '/connexion'} sx={{ ...linkSx, fontSize: '0.9375rem' }}>
+              {t(user ? 'nav.myAccount' : 'nav.login')}
+            </MuiLink>
           </Box>
         </Box>
       </Container>

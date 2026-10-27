@@ -15,7 +15,8 @@
     "skip": "Aller au contenu",
     "close": "Fermer le menu",
     "whatsapp": "Écrire sur WhatsApp",
-    "myOrders": "Mes commandes"
+    "myOrders": "Mes commandes",
+    "myAccount": "Mon compte"
   },
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
@@ -39,17 +40,19 @@
     "title": "Fournitures scolaires, de bureau et livres",
     "searchPlaceholder": "Rechercher un cahier, un stylo…",
     "searchLabel": "Rechercher un produit",
-    "count": "{{count}} article(s)",
     "families": "Familles",
     "allFamilies": "Toutes",
     "otherFamily": "Autres articles",
     "noteLive": "Prix en FCFA, confirmés par la librairie avant la livraison",
     "loading": "Chargement du catalogue… (jusqu’à une minute si le serveur était en veille)",
     "loadingWhatsapp": "Pressé ? Envoyez-nous votre liste par WhatsApp en attendant.",
-    "more": "Afficher plus ({{count}} restant(s))",
     "unavailable": "Le catalogue est momentanément indisponible (serveur injoignable). Réessayez dans un instant, ou envoyez-nous directement votre liste par WhatsApp.",
     "orderWhatsapp": "Commander par WhatsApp",
-    "unavailableWhatsapp": "Bonjour, je voudrais commander : "
+    "unavailableWhatsapp": "Bonjour, je voudrais commander : ",
+    "count_one": "{{count}} article",
+    "count_other": "{{count}} articles",
+    "more_one": "Afficher plus ({{count}} restant)",
+    "more_other": "Afficher plus ({{count}} restants)"
   },
   "delivery": {
     "eyebrow": "Un service de proximité",
@@ -100,8 +103,8 @@
     "quoteWhatsapp": "Votre liste est sur papier ? Prenez-la en photo et envoyez-la-nous par WhatsApp : nous préparons le devis.",
     "quoteWhatsappCta": "Envoyer la photo par WhatsApp",
     "quoteWhatsappText": "Bonjour, voici ma liste scolaire pour un devis : ",
-    "intro": "Votre récapitulatif est préparé ici : rien n'est transmis à la librairie à cette étape. Vous l'enverrez ensuite en cliquant sur « Envoyer ma commande sur WhatsApp » ou « Envoyer par e-mail ».",
-    "introQuote": "Votre demande est préparée ici : rien n'est transmis à la librairie à cette étape. Vous l'enverrez ensuite par WhatsApp ou par e-mail.",
+    "intro": "Rien n'est transmis à cette étape : vous enverrez ensuite votre commande par WhatsApp ou par e-mail.",
+    "introQuote": "Rien n'est transmis à cette étape : vous enverrez ensuite votre demande par WhatsApp ou par e-mail.",
     "name": "Nom du destinataire",
     "phone": "Téléphone",
     "area": "Quartier",
@@ -127,9 +130,12 @@
     "emptyOrder": "Votre panier est vide : ajoutez des articles avant de préparer la commande.",
     "confirmNote": "Prix, stock et délai de livraison sont confirmés par la librairie, par message ou par téléphone, avant le départ du colis.",
     "linkedToAccount": "Connecté : vous retrouverez cette commande dans Mes commandes.",
-    "loginHint": "Connectez-vous avant de commander pour retrouver vos commandes et leur statut dans Mes commandes. Ce n'est pas obligatoire, votre panier est gardé.",
+    "loginHint": "Facultatif : connectez-vous pour suivre vos commandes.",
     "loginHintLogin": "Se connecter",
-    "loginHintRegister": "Créer un compte"
+    "loginHintRegister": "Créer un compte",
+    "cartLine_one": "{{count}} article",
+    "cartLine_other": "{{count}} articles",
+    "cartEdit": "Modifier le panier"
   },
   "result": {
     "title": "Votre récapitulatif est prêt",
@@ -149,8 +155,8 @@
     "sentEmail": "Votre messagerie s'est ouverte avec votre message. Appuyez sur Envoyer pour le transmettre à la Librairie Papeterie du Centre : votre demande n'est prise en compte qu'à réception de ce message.",
     "sentRef": "Votre référence : {{ref}}. Elle figure dans le message ; rappelez-la si vous nous contactez.",
     "sentContact": "Dès réception, la librairie vous recontacte par message ou par téléphone pour confirmer la disponibilité, le prix et la livraison.",
-    "followOrder": "Suivez cette commande et son statut dans Mes commandes : connectez-vous ou créez un compte depuis ce téléphone, elle y sera ajoutée.",
-    "followQuote": "Suivez cette demande de devis et son statut dans Mes commandes : connectez-vous ou créez un compte depuis ce téléphone, elle y sera ajoutée."
+    "followOrder": "Pour suivre cette commande dans Mes commandes, connectez-vous ou créez un compte depuis ce téléphone :",
+    "followQuote": "Pour suivre cette demande dans Mes commandes, connectez-vous ou créez un compte depuis ce téléphone :"
   },
   "terms": {
     "title": "Conditions de commande",
@@ -324,7 +330,13 @@
     "fFamily": "Famille",
     "fFamilyHelp": "Regroupe les articles dans le catalogue (ex. Sacs et cartables). Vide = « Autres articles ».",
     "errFamily": "60 caractères maximum.",
-    "search": "Rechercher (article, réf., famille)"
+    "search": "Rechercher (article, réf., famille)",
+    "resetPassword": "Mot de passe provisoire",
+    "resetTitle": "Mot de passe provisoire pour {{email}}",
+    "resetText": "Un nouveau mot de passe est créé et affiché une seule fois. L'ancien ne fonctionne plus et le compte est déconnecté partout. Vérifiez d'abord que vous parlez bien au titulaire du compte.",
+    "resetDone": "Donnez ce mot de passe au client (par WhatsApp ou par téléphone). Il ne sera plus affiché.",
+    "resetConfirm": "Créer le mot de passe",
+    "resetClose": "J'ai noté le mot de passe"
   },
   "auth": {
     "loginTitle": "Connexion",
@@ -363,7 +375,10 @@
     "errTooMany": "Trop d’essais de mot de passe. Réessayez dans quelques minutes.",
     "offline": "Le serveur ne répond pas. Vérifiez votre connexion. Votre session est conservée.",
     "retry": "Réessayer",
-    "errTooManyRegister": "Trop de comptes ont été créés récemment. Réessayez dans une heure, ou commandez sans compte."
+    "errTooManyRegister": "Trop de comptes ont été créés récemment. Réessayez dans une heure, ou commandez sans compte.",
+    "forgot": "Mot de passe oublié ?",
+    "forgotLink": "Écrivez-nous sur WhatsApp",
+    "forgotWhatsapp": "Bonjour, j'ai oublié le mot de passe de mon compte {{email}} sur le site."
   },
   "home": {
     "selectionTitle": "Les incontournables",
@@ -521,7 +536,7 @@
   },
   "privacy": {
     "title": "Confidentialité",
-    "updated": "Ce que nous faisons des informations de votre commande. Mise à jour : 26 octobre 2026.",
+    "updated": "Ce que nous faisons des informations de votre commande. Mise à jour : 27 octobre 2026.",
     "whoTitle": "Qui est responsable",
     "whoText": "Librairie Papeterie du Centre, Carrefour Abbia, face Manège, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
     "whatTitle": "Quelles informations",
@@ -529,7 +544,7 @@
     "whyTitle": "Pourquoi",
     "whyText": "Uniquement pour préparer votre commande, vous livrer et vous contacter à son sujet. Pas de publicité, pas de revente, pas de mesure d'audience.",
     "recipientsTitle": "Qui les reçoit",
-    "recipientsText": "La librairie seulement. Votre commande est enregistrée chez Render, l'hébergeur de notre serveur, situé hors du Cameroun. Si vous choisissez WhatsApp ou l'e-mail, votre message passe aussi par WhatsApp (Meta) ou par votre messagerie et Gmail (Google), selon leurs propres règles. Nous ne vendons ni ne prêtons vos informations à personne.",
+    "recipientsText": "La librairie seulement. Votre commande est enregistrée chez Neon (base de données) via Render (serveur), deux hébergeurs situés hors du Cameroun. Si vous choisissez WhatsApp ou l'e-mail, votre message passe aussi par WhatsApp (Meta) ou par votre messagerie et Gmail (Google), selon leurs propres règles. Nous ne vendons ni ne prêtons vos informations à personne.",
     "retentionTitle": "Combien de temps",
     "retentionText": "Les commandes annulées sont effacées après 30 jours, les commandes livrées après 12 mois. Un compte est gardé tant que vous l'utilisez ; vous pouvez demander à tout moment qu'il soit supprimé.",
     "browserTitle": "Ce qui reste dans votre téléphone",
