@@ -146,7 +146,9 @@
     "sentWhatsapp": "WhatsApp has opened with your message. Tap Send to pass it on to the Librairie Papeterie du Centre: your request is only taken into account once this message is received.",
     "sentEmail": "Your mail app has opened with your message. Tap Send to pass it on to the Librairie Papeterie du Centre: your request is only taken into account once this message is received.",
     "sentRef": "Your reference: {{ref}}. It is included in the message; please mention it if you contact us.",
-    "sentContact": "As soon as it is received, the bookshop will contact you by message or phone to confirm availability, price and delivery."
+    "sentContact": "As soon as it is received, the bookshop will contact you by message or phone to confirm availability, price and delivery.",
+    "followOrder": "Track this order and its status in My orders: log in or create an account on this phone and it will be added.",
+    "followQuote": "Track this quote request and its status in My orders: log in or create an account on this phone and it will be added."
   },
   "terms": {
     "title": "Order terms",
@@ -533,7 +535,7 @@
   "myOrders": {
     "title": "My orders",
     "intro": "Orders and quote requests sent from this site while logged in to this account. The shop updates the status.",
-    "empty": "No orders recorded on this account yet. Only orders sent while logged in to this account since 27/10/2026 appear here; earlier ones are still known to the shop.",
+    "empty": "No orders recorded on this account yet. Orders sent since 27/10/2026 while logged in to this account, or without an account on this phone, appear here; earlier ones are still known to the shop.",
     "order": "Order",
     "quote": "Quote",
     "sentOn": "Sent on {{date}}",

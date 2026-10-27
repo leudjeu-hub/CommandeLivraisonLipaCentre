@@ -35,6 +35,8 @@ export interface Order {
   // Dernier changement de statut : une commande annulée est supprimée 30 jours après
   status_changed_at: string | null;
   items: OrderItem[];
+  // Réponse à un envoi sans compte seulement : code pour rattacher la commande au compte plus tard
+  claim_code?: string | null;
 }
 
 export interface OrderSubmit {
@@ -60,6 +62,43 @@ export const listOrders = () => request<Order[]>('/orders/');
 
 // Les commandes du compte connecté, et seulement les siennes (filtrées par l'API sur le jeton)
 export const listMyOrders = () => request<Order[]>('/orders/mine');
+
+// Commandes envoyées sans compte : l'API donne un code à usage unique, gardé dans ce navigateur.
+// Une fois connecté, Mes commandes les rattache au compte (POST /orders/claim) puis les oublie.
+const CLAIMS_KEY = 'centre-commandes-a-rattacher';
+
+export function pendingClaims(): string[] {
+  try {
+    const codes = JSON.parse(localStorage.getItem(CLAIMS_KEY) || '[]');
+    return Array.isArray(codes) ? codes.filter((c) => typeof c === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function setPendingClaims(codes: string[]) {
+  try {
+    if (codes.length) localStorage.setItem(CLAIMS_KEY, JSON.stringify(codes.slice(-20)));
+    else localStorage.removeItem(CLAIMS_KEY);
+  } catch {
+    // stockage indisponible : la commande ne pourra pas être rattachée au compte
+  }
+}
+
+export const savePendingClaim = (code: string) => setPendingClaims([...pendingClaims(), code]);
+
+// Rattache les commandes en attente ; les codes sont oubliés dès que l'API a répondu (un code déjà
+// utilisé ou inconnu ne sert plus à rien), gardés si elle est injoignable
+// (un seul envoi à la fois : Mes commandes peut se recharger pendant la requête)
+let claiming: Promise<void> | null = null;
+export function claimPendingOrders(): Promise<void> {
+  const codes = pendingClaims();
+  if (!codes.length) return Promise.resolve();
+  claiming ??= request<{ claimed: number }>('/orders/claim', { method: 'POST', body: JSON.stringify({ codes }) })
+    .then(() => setPendingClaims(pendingClaims().filter((c) => !codes.includes(c))))
+    .finally(() => (claiming = null));
+  return claiming;
+}
 
 // Référence client « LC-2510-4821 » : écrite par le formulaire en tête des remarques (CheckoutPage),
 // c'est elle que le client cite sur WhatsApp. Les commandes plus anciennes n'en ont pas.

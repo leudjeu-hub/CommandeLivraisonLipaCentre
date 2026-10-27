@@ -160,7 +160,7 @@ test('commande enregistrée dans l’API une seule fois, à l’envoi du récapi
 test('confirmation à l’écran après « Envoyer par e-mail », avec la référence', async ({ page }) => {
   await mockApi(page, (path) => {
     if (path === '/products/') return { body: PRODUCTS };
-    if (path === '/orders/submit') return { status: 201, body: { id: 42 } };
+    if (path === '/orders/submit') return { status: 201, body: { id: 42, claim_code: 'code-invite' } };
     return { status: 404 };
   });
   await page.goto('/catalogue');
@@ -192,6 +192,11 @@ test('confirmation à l’écran après « Envoyer par e-mail », avec la réfé
   // Plus de « merci » ni de deuxième encadré qui contredirait « À CONFIRMER »
   await expect(page.getByText('Merci pour votre commande')).toHaveCount(0);
   await expect(page.locator('.MuiAlert-root').filter({ hasText: 'Message envoyé ?' })).toHaveCount(1);
+  // Sans compte : invitation à se connecter pour suivre la commande, code gardé pour la rattacher
+  const follow = sent.getByTestId('follow-hint');
+  await expect(follow).toContainText('Suivez cette commande et son statut dans Mes commandes');
+  await expect(follow.getByRole('link', { name: 'Créer un compte' })).toHaveAttribute('href', /\/inscription\?suite=\/compte$/);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('centre-commandes-a-rattacher'))).toBe('["code-invite"]');
 });
 
 test('article sur devis : ouvre la demande de devis', async ({ page }) => {

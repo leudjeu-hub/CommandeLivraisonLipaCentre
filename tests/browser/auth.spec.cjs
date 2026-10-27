@@ -397,3 +397,27 @@ test('formulaire : invitation à se connecter, retour au formulaire après conne
   await expect(page.getByTestId('login-hint')).toHaveCount(0);
   await expect(page.getByText('vous retrouverez cette commande dans Mes commandes')).toBeVisible();
 });
+
+test('commande envoyée sans compte : rattachée au compte créé ensuite sur ce téléphone', async ({ page }) => {
+  const claimed = [];
+  await page.route(/\/orders\/claim$/, (route) => {
+    claimed.push(route.request().postDataJSON());
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ claimed: 1 }) });
+  });
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem('init')) {
+      sessionStorage.setItem('init', '1');
+      localStorage.setItem('centre-commandes-a-rattacher', JSON.stringify(['code-invite']));
+    }
+  });
+  await page.goto('/inscription?suite=/compte');
+  await page.getByLabel('E-mail').fill('awa@exemple.cm');
+  await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
+  await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+  await expect(page.getByTestId('my-order')).toHaveCount(2);
+  expect(claimed).toEqual([{ codes: ['code-invite'] }]);
+  // Code utilisé : oublié, pas renvoyé à la visite suivante
+  expect(await page.evaluate(() => localStorage.getItem('centre-commandes-a-rattacher'))).toBeNull();
+});

@@ -146,7 +146,9 @@
     "sentWhatsapp": "WhatsApp s'est ouvert avec votre message. Appuyez sur Envoyer pour le transmettre à la Librairie Papeterie du Centre : votre demande n'est prise en compte qu'à réception de ce message.",
     "sentEmail": "Votre messagerie s'est ouverte avec votre message. Appuyez sur Envoyer pour le transmettre à la Librairie Papeterie du Centre : votre demande n'est prise en compte qu'à réception de ce message.",
     "sentRef": "Votre référence : {{ref}}. Elle figure dans le message ; rappelez-la si vous nous contactez.",
-    "sentContact": "Dès réception, la librairie vous recontacte par message ou par téléphone pour confirmer la disponibilité, le prix et la livraison."
+    "sentContact": "Dès réception, la librairie vous recontacte par message ou par téléphone pour confirmer la disponibilité, le prix et la livraison.",
+    "followOrder": "Suivez cette commande et son statut dans Mes commandes : connectez-vous ou créez un compte depuis ce téléphone, elle y sera ajoutée.",
+    "followQuote": "Suivez cette demande de devis et son statut dans Mes commandes : connectez-vous ou créez un compte depuis ce téléphone, elle y sera ajoutée."
   },
   "terms": {
     "title": "Conditions de commande",
@@ -533,7 +535,7 @@
   "myOrders": {
     "title": "Mes commandes",
     "intro": "Les commandes et devis envoyés depuis ce site en étant connecté à ce compte. Le statut est mis à jour par la librairie.",
-    "empty": "Aucune commande enregistrée sur ce compte pour l'instant. Seules les commandes envoyées en étant connecté à ce compte depuis le 27/10/2026 apparaissent ici ; les précédentes restent connues de la librairie.",
+    "empty": "Aucune commande enregistrée sur ce compte pour l'instant. Apparaissent ici les commandes envoyées depuis le 27/10/2026 en étant connecté à ce compte, ou sans compte depuis ce téléphone ; les précédentes restent connues de la librairie.",
     "order": "Commande",
     "quote": "Devis",
     "sentOn": "Envoyée le {{date}}",

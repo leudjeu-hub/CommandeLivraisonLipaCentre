@@ -7,7 +7,7 @@ import { DELIVERY, DELIVERY_RULES, zoneOfArea, feeFor, money, SHOP, SLOT_LABELS,
 import { useCatalogue } from '../data/useProducts';
 import { showToast } from '../components/Toast';
 import CatalogueUnavailable from '../components/CatalogueUnavailable';
-import { submitOrder } from '../data/ordersApi';
+import { savePendingClaim, submitOrder } from '../data/ordersApi';
 import { useAuth } from '../context/AuthContext';
 
 const OTHER_AREA = '__autre';
@@ -160,7 +160,10 @@ export default function CheckoutPage() {
       notes: t('common.sumRef') + reference + (notes ? '\n' + notes : ''),
       delivery_fee: fee,
       items: type === 'order' ? cartProducts.map(({ product, quantity }) => ({ product_id: product.id, quantity })) : [],
-    }).catch(() => undefined);
+    })
+      // Envoyée sans compte : code gardé pour la rattacher au compte après connexion (Mes commandes)
+      .then((order) => order.claim_code && savePendingClaim(order.claim_code))
+      .catch(() => undefined);
   };
 
   const refParts = t('result.sentRef', { ref: '\u0001' }).split('\u0001');
@@ -389,6 +392,16 @@ export default function CheckoutPage() {
                 {refParts[1]}
               </Typography>
               <Typography component="p">{t('result.sentContact')}</Typography>
+              {/* Sans compte : se connecter (ou en créer un) pour suivre cette commande dans Mes commandes */}
+              {authReady && !user && (
+                <Box data-testid="follow-hint" sx={{ mt: 2 }}>
+                  <Typography component="p">{t(type === 'quote' ? 'result.followQuote' : 'result.followOrder')}</Typography>
+                  <Box sx={{ mt: 1.5, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    <Button variant="contained" size="small" component={Link} to="/connexion?suite=/compte">{t('form.loginHintLogin')}</Button>
+                    <Button variant="outlined" size="small" component={Link} to="/inscription?suite=/compte">{t('form.loginHintRegister')}</Button>
+                  </Box>
+                </Box>
+              )}
               {/* Vider le panier : dans le même encadré, pour ne pas renvoyer la même commande */}
               {showAfterSend && (
                 <>
