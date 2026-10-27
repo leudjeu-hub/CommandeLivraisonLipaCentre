@@ -52,7 +52,10 @@
     "count_one": "{{count}} article",
     "count_other": "{{count}} articles",
     "more_one": "Afficher plus ({{count}} restant)",
-    "more_other": "Afficher plus ({{count}} restants)"
+    "more_other": "Afficher plus ({{count}} restants)",
+    "titleScolaire": "Fournitures scolaires à Yaoundé",
+    "titleBureau": "Fournitures de bureau à Yaoundé",
+    "titleLivres": "Livres scolaires et dictionnaires à Yaoundé"
   },
   "delivery": {
     "eyebrow": "Un service de proximité",
@@ -517,7 +520,11 @@
     "order": "Votre commande · Librairie Papeterie du Centre",
     "cart": "Votre panier · Librairie Papeterie du Centre",
     "other": "Librairie Papeterie du Centre · Yaoundé",
-    "privacy": "Confidentialité · Librairie Papeterie du Centre"
+    "privacy": "Confidentialité · Librairie Papeterie du Centre",
+    "catScolaire": "Fournitures scolaires à Yaoundé : cahiers, stylos, géométrie · Librairie Papeterie du Centre",
+    "catBureau": "Fournitures de bureau à Yaoundé : papier, classeurs · Librairie Papeterie du Centre",
+    "catLivres": "Livres scolaires et dictionnaires à Yaoundé · Librairie Papeterie du Centre",
+    "notFound": "Page introuvable · Librairie Papeterie du Centre"
   },
   "notFound": {
     "title": "Page introuvable",

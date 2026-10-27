@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
+import { CATEGORY_PAGES } from './data/catalogue';
 
 // Seul l'accueil est dans le fichier principal : les autres pages (et leurs composants MUI :
 // champs, listes déroulantes, cases à cocher…) sont chargées à part, ce qui allège la première
@@ -43,6 +44,9 @@ export default function App() {
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="catalogue" element={<CataloguePage />} />
+        {CATEGORY_PAGES.map(({ cat, route }) => (
+          <Route key={route} path={route} element={<CataloguePage key={route} fixedCategory={cat} />} />
+        ))}
         <Route path="livraison" element={<DeliveryPage />} />
         <Route path="panier" element={<CartPage />} />
         <Route path="commander" element={<CheckoutPage />} />

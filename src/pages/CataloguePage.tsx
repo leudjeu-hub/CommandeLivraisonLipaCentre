@@ -1,19 +1,20 @@
 import { useDeferredValue, useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Chip, Container, InputAdornment, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { CATEGORIES, whatsappLink, type Product } from '../data/catalogue';
+import { CATEGORIES, categoryPath, whatsappLink, type Product } from '../data/catalogue';
 import { useCatalogue } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
 import CatalogueUnavailable from '../components/CatalogueUnavailable';
+import { byFamilyOrder, familyImage } from '../data/photosFamilles';
 
-const byName = (a: string, b: string) => a.localeCompare(b, 'fr');
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('fr');
 // Cartes affichées d'un coup : 1 500 cartes (~18 000 éléments) figent un téléphone d'entrée de gamme
 const PAGE = 24;
 
-export default function CataloguePage() {
+// fixedCategory : page de catégorie (/fournitures-scolaires…), même catalogue avec son propre titre
+export default function CataloguePage({ fixedCategory }: { fixedCategory?: string }) {
   const { t, i18n } = useTranslation();
   const { products, status, retry } = useCatalogue();
   const [search, setSearch] = useState('');
@@ -21,7 +22,8 @@ export default function CataloguePage() {
   const query = useDeferredValue(search);
   // Catégorie de départ : lien de l'accueil (/catalogue?cat=Scolaire), sinon « Tout »
   const [params] = useSearchParams();
-  const [category, setCategory] = useState(() => (CATEGORIES.includes(params.get('cat') ?? '') ? params.get('cat')! : 'Tout'));
+  const navigate = useNavigate();
+  const [category, setCategory] = useState(() => fixedCategory ?? (CATEGORIES.includes(params.get('cat') ?? '') ? params.get('cat')! : 'Tout'));
   // Famille choisie dans la catégorie ('' = toutes) ; les familles viennent de l'API (Gestion, import CSV)
   const [family, setFamily] = useState('');
 
@@ -30,7 +32,7 @@ export default function CataloguePage() {
     [products, category]
   );
   const families = useMemo(
-    () => [...new Set(inCategory.map((p) => p.family).filter((f): f is string => !!f))].sort(byName),
+    () => [...new Set(inCategory.map((p) => p.family).filter((f): f is string => !!f))].sort(byFamilyOrder),
     [inCategory]
   );
 
@@ -53,10 +55,10 @@ export default function CataloguePage() {
   const [shown, setShown] = useState({ key: filterKey, count: PAGE });
   const limit = shown.key === filterKey ? shown.count : PAGE;
 
-  // Articles regroupés par famille (ordre alphabétique, articles sans famille à la fin)
+  // Articles regroupés par famille (ordre de FAMILY_ORDER, articles sans famille à la fin)
   // (les sections au-delà de la limite sont coupées ; le titre garde le nombre total de la famille)
   const sections = useMemo(() => {
-    if (!families.length) return [{ title: '', total: filtered.length, items: filtered.slice(0, limit) }];
+    if (!families.length) return [{ title: '', image: undefined, total: filtered.length, items: filtered.slice(0, limit) }];
     const groups = new Map<string, Product[]>();
     filtered.forEach((p) => {
       const key = p.family ?? '';
@@ -66,17 +68,19 @@ export default function CataloguePage() {
     });
     let left = limit;
     return [...groups.keys()]
-      .sort((a, b) => (!a ? 1 : !b ? -1 : byName(a, b)))
+      .sort((a, b) => (!a ? 1 : !b ? -1 : byFamilyOrder(a, b)))
       .map((title) => {
         const all = groups.get(title)!;
         const items = all.slice(0, Math.max(0, left));
         left -= items.length;
-        return { title: title || t('catalogue.otherFamily'), total: all.length, items };
+        return { title: title || t('catalogue.otherFamily'), image: familyImage(title), total: all.length, items };
       })
       .filter((s) => s.items.length > 0);
   }, [filtered, families, limit, t]);
 
+  // Sur une page de catégorie, une autre catégorie ouvre sa propre page (titre et adresse restent justes)
   const chooseCategory = (c: string) => {
+    if (fixedCategory && c !== fixedCategory) return navigate(categoryPath(c));
     setCategory(c);
     setFamily('');
   };
@@ -84,7 +88,7 @@ export default function CataloguePage() {
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
       <Typography variant="overline" color="secondary">{t('catalogue.eyebrow')}</Typography>
-      <Typography variant="h2" component="h1" sx={{ mb: 1 }}>{t('catalogue.title')}</Typography>
+      <Typography variant="h2" component="h1" sx={{ mb: 1 }}>{t(fixedCategory ? `catalogue.title${fixedCategory}` : 'catalogue.title')}</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
         {t('catalogue.noteLive')}
       </Typography>
@@ -157,10 +161,16 @@ export default function CataloguePage() {
       ) : (
         sections.map((s, sectionIndex) => (
           <Box component="section" key={s.title} aria-label={s.title || undefined} sx={{ mb: 4 }}>
+            {/* La photo de famille, une fois en tête de section (et non répétée sur chaque carte) */}
             {s.title && (
-              <Typography variant="h5" component="h2" sx={{ fontFamily: 'Georgia, serif', mb: 1.5 }}>
-                {s.title} <Typography component="span" variant="body2" color="text.secondary">({s.total})</Typography>
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                {s.image && (
+                  <Box component="img" src={import.meta.env.BASE_URL + s.image} alt="" width={48} height={48} loading={sectionIndex === 0 ? 'eager' : 'lazy'} sx={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                )}
+                <Typography variant="h5" component="h2" sx={{ fontFamily: 'Georgia, serif' }}>
+                  {s.title} <Typography component="span" variant="body2" color="text.secondary">({s.total})</Typography>
+                </Typography>
+              </Box>
             )}
             <Box sx={{ display: 'grid', gap: { xs: 1.5, sm: 2.5 }, gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' } }}>
               {s.items.map((p, i) => <ProductCard key={p.id} product={p} eager={sectionIndex === 0 && i < 4} />)}

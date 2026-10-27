@@ -3,7 +3,7 @@
 // aperçus WhatsApp/Facebook) et les téléphones en 3G voient ainsi le vrai texte de la page tout de
 // suite ; React le remplace au premier rendu. Mêmes textes (fr.json) et mêmes calculs que
 // src/pages/HomePage.tsx : un test vérifie que les deux versions disent la même chose.
-import { DELIVERY, DELIVERY_RULES, money, whatsappLink } from '../src/data/catalogue';
+import { DELIVERY, DELIVERY_RULES, categoryPath, money, whatsappLink } from '../src/data/catalogue';
 
 type Strings = Record<string, Record<string, string>>;
 
@@ -51,7 +51,7 @@ export function homeShell(fr: Strings, base: string): string {
           <p class="shell-actions">${link(whatsappLink(fr.catalogue.unavailableWhatsapp), 'Commander par WhatsApp', 'shell-btn')} ${link(`${base}catalogue`, t('hero.cta'), 'shell-btn shell-btn-alt')}</p>
           <p class="shell-wait">Chargement du site… Si rien ne s’affiche, commandez directement par WhatsApp ou au <a href="tel:+237693240396">+237 6 93 24 03 96</a>.</p>
           <section><h2>${t('trust.title')}</h2><ul>${trust.map(([a, b]) => item(a, b)).join('')}</ul><p>${link(`${base}livraison`, t('trust.link'))}</p></section>
-          <section><h2>${t('home.catsTitle')}</h2><ul>${['Scolaire', 'Bureau', 'Livres'].map((c) => `<li><h3>${link(`${base}catalogue?cat=${c}`, t(`home.cat${c}Title`))}</h3><p>${t(`home.cat${c}`)}</p></li>`).join('')}</ul></section>
+          <section><h2>${t('home.catsTitle')}</h2><ul>${['Scolaire', 'Bureau', 'Livres'].map((c) => `<li><h3>${link(`${base}${categoryPath(c).slice(1)}`, t(`home.cat${c}Title`))}</h3><p>${t(`home.cat${c}`)}</p></li>`).join('')}</ul></section>
           <section><h2>${t('strip.title')}</h2><ol>${[1, 2, 3].map((n) => item(t(`strip.step${n}Title`), t(`strip.step${n}Text`))).join('')}</ol></section>
           <section><h2>${t('quote.title')}</h2><ul>${item(t('quote.parentsTitle'), t('quote.parentsText'))}${item(t('quote.proTitle'), t('quote.proText'))}</ul><p>${link(`${base}commander?type=quote`, t('quote.cta'))} · ${link(whatsappLink(fr.form.quoteWhatsappText), t('quote.photoCta'))}</p></section>
           <section><h2>${t('faq.title')}</h2>${[1, 2, 3, 4, 5, 6, 7].map((n) => `<h3>${t(`faq.q${n}`)}</h3><p>${t(`faq.a${n}`, faqValues(n))}</p>${n === 1 ? `<p>${link(`${base}livraison`, t('faq.a1Link'))}</p>` : ''}`).join('')}</section>

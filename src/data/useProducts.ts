@@ -155,3 +155,35 @@ export function useCatalogue(): Catalogue & { retry: () => void } {
 export function useProducts(): Product[] {
   return useCatalogue().products;
 }
+
+// Accueil : quelques articles avec un prix (les 4 premiers). La liste déjà reçue (cette visite ou la
+// précédente) s'il y en a une ; sinon la petite sélection publiée avec le site (selection.json,
+// écrite au déploiement par scripts/catalogue-statique.mjs) au lieu de tout le catalogue ; sans
+// sélection publiée (tests, API injoignable au déploiement), le catalogue comme avant.
+const SELECTION = 4;
+const pick = (list: Product[]) => list.filter((p) => p.price !== null).slice(0, SELECTION);
+
+export function useSelection(): Product[] {
+  const [selection, setSelection] = useState<Product[]>(() => {
+    const list = loaded?.products ?? readCache();
+    return list ? pick(list) : [];
+  });
+  useEffect(() => {
+    if (selection.length > 0) return;
+    let active = true;
+    const fromCatalogue = () => loadFromApi().then((result) => active && setSelection(pick(result.products)));
+    fetch(`${import.meta.env.BASE_URL}selection.json`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((list: ApiProduct[] | null) => {
+        if (!active) return;
+        if (Array.isArray(list) && list.length > 0) setSelection(pick(list.filter((p) => p.available !== false).map(fromApi)));
+        else fromCatalogue();
+      })
+      .catch(fromCatalogue);
+    return () => {
+      active = false;
+    };
+    // Une seule fois, au premier affichage de l'accueil
+  }, []);
+  return selection;
+}

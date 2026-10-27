@@ -6,9 +6,13 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { money, type Product } from '../data/catalogue';
 import { useCart } from '../context/CartContext';
 import { showToast } from './Toast';
+import { isFamilyPhoto } from '../data/photosFamilles';
 
 // Carte article (catalogue et accueil). Compacte pour tenir à 2 par ligne sur un écran de 360 px :
 // photo carrée, nom sur 2 lignes max, prix bien visible, bouton pleine largeur ≥ 44 px.
+// Article illustré seulement par la photo de sa famille : carte texte, sans image (la même photo
+// répétée sur chaque carte n'apprend rien, coûte des données et peut passer pour l'article vendu ;
+// le catalogue la montre une fois en tête de famille).
 // memo : taper dans la recherche ne redessine pas les cartes déjà affichées.
 // eager : cartes du premier écran (la plus grande image est l'élément LCP, à ne pas différer)
 export default memo(function ProductCard({ product: p, eager = false }: { product: Product; eager?: boolean }) {
@@ -19,6 +23,7 @@ export default memo(function ProductCard({ product: p, eager = false }: { produc
   const name = fr ? p.name : p.en?.name || p.name;
   const desc = fr ? p.desc : p.en?.desc || p.desc;
   const quote = p.price === null;
+  const textOnly = isFamilyPhoto(p.image);
 
   const handleClick = () => {
     if (quote) {
@@ -31,6 +36,11 @@ export default memo(function ProductCard({ product: p, eager = false }: { produc
 
   return (
     <Card data-testid="product-card" sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {textOnly ? (
+        <Box component="span" sx={{ alignSelf: 'flex-start', mt: { xs: 1.5, sm: 2 }, mx: { xs: 1.5, sm: 2 }, px: 1, py: 0.25, borderRadius: 999, bgcolor: 'action.hover', color: 'primary.main', fontSize: '0.75rem', fontWeight: 700 }}>
+          {t(`cat.${p.cat}`)}
+        </Box>
+      ) : (
       <Box sx={{ position: 'relative', aspectRatio: '1 / 1', bgcolor: p.color }}>
         {p.image ? (
           <Box
@@ -53,17 +63,18 @@ export default memo(function ProductCard({ product: p, eager = false }: { produc
           {t(`cat.${p.cat}`)}
         </Box>
       </Box>
+      )}
       <Box sx={{ p: { xs: 1.5, sm: 2 }, display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 0.5 }}>
         <Typography
           component="h3"
-          sx={{ fontFamily: 'Georgia, serif', fontSize: { xs: '1rem', sm: '1.125rem' }, lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+          sx={{ fontFamily: 'Georgia, serif', fontSize: { xs: '1rem', sm: '1.125rem' }, lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: textOnly ? 3 : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
         >
           {name}
         </Typography>
         <Typography
           variant="body2"
           color="text.secondary"
-          sx={{ display: { xs: 'none', sm: '-webkit-box' }, WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+          sx={{ display: { xs: textOnly ? '-webkit-box' : 'none', sm: '-webkit-box' }, WebkitLineClamp: textOnly ? 3 : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
         >
           {desc}
         </Typography>

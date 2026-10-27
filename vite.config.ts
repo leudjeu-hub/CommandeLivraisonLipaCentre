@@ -28,6 +28,9 @@ const SITE_URL = 'https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/';
 const fr = JSON.parse(fs.readFileSync(new URL('./src/locales/fr.json', import.meta.url), 'utf8'));
 const PAGES: { route: string; title: string; description?: string; noindex?: boolean }[] = [
   { route: 'catalogue', title: fr.seo.catalogue, description: 'Cahiers, stylos, géométrie, papier, classement, dictionnaires, livres scolaires, sacs et cartables : prix en FCFA. Livraison à Yaoundé, paiement à la réception.' },
+  { route: 'fournitures-scolaires', title: fr.seo.catScolaire, description: 'Cahiers, blocs, stylos, crayons, géométrie, cartables et matériel d’arts pour la classe : prix en FCFA. Livraison à Yaoundé, paiement à la réception.' },
+  { route: 'fournitures-de-bureau', title: fr.seo.catBureau, description: 'Ramettes de papier, classeurs, chemises, agrafeuses et accessoires de bureau : prix en FCFA. Livraison à Yaoundé, paiement à la réception, devis pour les entreprises.' },
+  { route: 'livres-scolaires', title: fr.seo.catLivres, description: 'Livres scolaires et dictionnaires, à la bonne édition : prix en FCFA. Livraison à Yaoundé, paiement à la réception.' },
   { route: 'livraison', title: fr.seo.delivery, description: deliveryDescription() },
   { route: 'confidentialite', title: fr.seo.privacy, description: 'Données d’une commande : lesquelles, pourquoi, qui les reçoit, combien de temps, vos droits.' },
   { route: 'panier', title: fr.seo.cart, noindex: true },
@@ -57,14 +60,19 @@ const spaFallback: Plugin = {
   closeBundle: () => {
     // Lien « Votre compte » de l'écran de démarrage : écrit /connexion dans index.html, préfixé ici par le chemin du site
     const html = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8').replace('href="/connexion"', `href="${base}connexion"`);
-    fs.writeFileSync(path.join(outDir, '404.html'), html.replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />'));
+    fs.writeFileSync(path.join(outDir, '404.html'), html
+      .replace(/<title>[^<]*<\/title>/, `<title>${escapeAttr(fr.seo.notFound)}</title>`)
+      .replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />'));
     for (const page of PAGES) {
       let out = html
         .replace(/<title>[^<]*<\/title>/, `<title>${escapeAttr(page.title)}</title>`)
         .replace(/(<meta property="og:title" content=")[^"]*/, `$1${escapeAttr(page.title)}`)
         .replace(/(<link rel="canonical" href=")[^"]*/, `$1${SITE_URL}${page.route}`)
         .replace(/(<meta property="og:url" content=")[^"]*/, `$1${SITE_URL}${page.route}`);
-      if (page.description) out = out.replace(/(<meta name="description" content=")[^"]*/, `$1${escapeAttr(page.description)}`);
+      // Description aussi pour l'aperçu d'un lien partagé (WhatsApp, Facebook), pas celle de l'accueil
+      if (page.description) out = out
+        .replace(/(<meta name="description" content=")[^"]*/, `$1${escapeAttr(page.description)}`)
+        .replace(/(<meta property="og:description" content=")[^"]*/, `$1${escapeAttr(page.description)}`);
       if (page.noindex) out = out.replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />');
       fs.writeFileSync(path.join(outDir, `${page.route}.html`), out);
     }

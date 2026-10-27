@@ -28,3 +28,30 @@ export const FAMILY_PHOTOS: FamilyPhoto[] = [
 export function familyImage(family: string | undefined): string | undefined {
   return FAMILY_PHOTOS.find((p) => p.family === family)?.image;
 }
+
+/** La photo de famille sert d'illustration : pas une photo de l'article lui-même. */
+export function isFamilyPhoto(image: string | undefined): boolean {
+  return !!image && FAMILY_PHOTOS.some((p) => p.image === image);
+}
+
+// Ordre des familles dans le catalogue : ce que les parents cherchent d'abord à la rentrée, le bureau
+// ensuite. Une famille absente de cette liste vient après, par ordre alphabétique.
+export const FAMILY_ORDER = [
+  'Cahiers, blocs et registres',
+  'Stylos, crayons et feutres',
+  'Géométrie et petit matériel',
+  'Livres scolaires',
+  'Livres et dictionnaires',
+  'Sacs et cartables',
+  'Arts et loisirs',
+  'Papier',
+  'Classement et protection',
+  'Accessoires de bureau',
+  'Informatique et piles',
+];
+
+/** Comparaison de deux familles selon FAMILY_ORDER, puis par nom. */
+export function byFamilyOrder(a: string, b: string): number {
+  const rank = (f: string) => (FAMILY_ORDER.includes(f) ? FAMILY_ORDER.indexOf(f) : FAMILY_ORDER.length);
+  return rank(a) - rank(b) || a.localeCompare(b, 'fr');
+}
