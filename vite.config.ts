@@ -55,7 +55,8 @@ const spaFallback: Plugin = {
     base = config.base;
   },
   closeBundle: () => {
-    const html = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8');
+    // Lien « Votre compte » de l'écran de démarrage : écrit /connexion dans index.html, préfixé ici par le chemin du site
+    const html = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8').replace('href="/connexion"', `href="${base}connexion"`);
     fs.writeFileSync(path.join(outDir, '404.html'), html.replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />'));
     for (const page of PAGES) {
       let out = html

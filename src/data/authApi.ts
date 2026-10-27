@@ -53,5 +53,9 @@ export const setActive = (id: number, active: boolean) =>
 
 export const deleteUser = (id: number) => request<void>(`/users/${id}`, { method: 'DELETE' });
 
+// Mot de passe oublié : nouveau mot de passe aléatoire, renvoyé une seule fois (le site n'envoie pas d'e-mail)
+export const resetPassword = (id: number) =>
+  request<{ password: string }>(`/users/${id}/password`, { method: 'POST' }).then((r) => r.password);
+
 // Employés, responsables et administrateurs (pour le tableau des heures ; responsable ou admin)
 export const listStaff = () => request<User[]>('/time/staff');

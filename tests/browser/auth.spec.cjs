@@ -49,6 +49,10 @@ test.beforeEach(async ({ page }) => {
       users.delete(id);
       return route.fulfill({ status: 204 });
     }
+    if (path.endsWith('/password')) {
+      users.get(id).password = 'provisoire7';
+      return json(route, 200, { password: 'provisoire7' });
+    }
     if (path.endsWith('/active')) users.get(id).is_active = body.active;
     else users.get(id).role = body.role;
     return json(route, 200, adminUser(users.get(id)));
@@ -235,6 +239,46 @@ test('un administrateur bloque puis supprime un compte', async ({ page }) => {
   await expect(page.getByTestId('user-row')).toHaveCount(1);
 });
 
+test('mot de passe oublié : WhatsApp pour le client, mot de passe provisoire donné par l’administrateur', async ({ page }) => {
+  await page.goto('/inscription');
+  await page.getByLabel('E-mail').fill('bob@exemple.cm');
+  await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
+  await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await page.getByRole('button', { name: 'Se déconnecter' }).click();
+  await expect(page).toHaveURL(/\/$/);
+
+  // Le client : un message WhatsApp prêt, avec son e-mail
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill('bob@exemple.cm');
+  const forgot = page.getByRole('link', { name: 'Écrivez-nous sur WhatsApp' });
+  await expect(forgot).toHaveAttribute('href', new RegExp(`^https://wa\\.me/237693240396\\?text=.*${encodeURIComponent('bob@exemple.cm')}`));
+
+  // L'administrateur crée un mot de passe provisoire, affiché une fois
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await page.goto('/gestion');
+  await page.getByRole('tab', { name: 'Utilisateurs' }).click();
+  await page.getByTestId('user-row').filter({ hasText: 'bob@exemple.cm' }).getByRole('button', { name: 'Mot de passe provisoire' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toContainText('affiché une seule fois');
+  await dialog.getByRole('button', { name: 'Créer le mot de passe' }).click();
+  await expect(dialog.getByTestId('temporary-password')).toHaveText('provisoire7');
+  await dialog.getByRole('button', { name: "J'ai noté le mot de passe" }).click();
+  await expect(dialog).toHaveCount(0);
+  // Pas de bouton pour son propre compte
+  await expect(page.getByTestId('user-row').filter({ hasText: 'admin@exemple.cm' }).getByRole('button', { name: 'Mot de passe provisoire' })).toHaveCount(0);
+
+  // Le client se connecte avec le mot de passe provisoire
+  await page.evaluate(() => localStorage.clear());
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill('bob@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('provisoire7');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+});
+
 test('inscription refusée par la limite de l’API : message clair', async ({ page }) => {
   await page.route(/\/auth\/register$/, (route) => route.fulfill({ status: 429, contentType: 'application/json', body: '{"detail":"Too many failed attempts; try again in a few minutes"}' }));
   await page.goto('/inscription');
@@ -302,7 +346,7 @@ test('serveur en veille à l’inscription : compte créé par l’essai perdu (
   await expect(page.getByText('déjà utilisée')).toHaveCount(0);
 });
 
-test('bouton « Votre compte » en haut : connexion si déconnecté, page du compte si connecté', async ({ page }) => {
+test('bouton « Votre compte » en haut : connexion si déconnecté, « Mon compte » une fois connecté', async ({ page }) => {
   await page.goto('/');
   const banner = page.getByRole('banner');
   await banner.getByRole('link', { name: 'Votre compte' }).click();
@@ -312,8 +356,12 @@ test('bouton « Votre compte » en haut : connexion si déconnecté, page du com
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(page).toHaveURL(/\/compte$/);
   await page.goto('/');
-  await banner.getByRole('link', { name: 'Votre compte' }).click();
+  await expect(banner.getByRole('link', { name: 'Votre compte' })).toHaveCount(0);
+  await banner.getByRole('link', { name: 'Mon compte' }).click();
   await expect(page).toHaveURL(/\/compte$/);
+  // Pied de page : « Mon compte » à la place de « Connexion »
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Mon compte' })).toBeVisible();
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Connexion', exact: true })).toHaveCount(0);
 });
 
 test('le client retrouve ses commandes dans Mon compte', async ({ page }) => {
@@ -353,7 +401,7 @@ test('un compte sans commande voit pourquoi la liste est vide, sans renvoi au ca
   await expect(page.getByRole('main').getByRole('link', { name: /catalogue/i })).toHaveCount(0);
 });
 
-test('client connecté : « Mes commandes » à côté du catalogue dans le menu', async ({ page }) => {
+test('client connecté : « Mes commandes » et « Mon compte » dans le menu', async ({ page }) => {
   await page.goto('/inscription');
   await page.getByLabel('E-mail').fill('awa@exemple.cm');
   await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
@@ -363,11 +411,11 @@ test('client connecté : « Mes commandes » à côté du catalogue dans le menu
   await page.goto('/');
   const banner = page.getByRole('banner');
   await expect(banner.getByRole('link', { name: 'Le catalogue', exact: true })).toBeVisible();
-  await expect(banner.getByRole('link', { name: 'Votre compte' })).toHaveCount(0);
+  await expect(banner.getByRole('link', { name: 'Mon compte' })).toHaveAttribute('href', /\/compte$/);
   await banner.getByRole('link', { name: 'Mes commandes' }).click();
   await expect(page).toHaveURL(/\/compte$/);
   await expect(page.getByRole('heading', { name: 'Mes commandes' })).toBeVisible();
-  // Le personnel garde le catalogue et « Votre compte »
+  // Le personnel garde le catalogue et le compte
   await page.getByRole('button', { name: 'Se déconnecter' }).click();
   await expect(page).toHaveURL(/\/$/); // jeton effacé (voir « invitation à se connecter »)
   await page.goto('/connexion');
@@ -376,7 +424,7 @@ test('client connecté : « Mes commandes » à côté du catalogue dans le menu
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(page).toHaveURL(/\/compte$/);
   await expect(banner.getByRole('link', { name: 'Le catalogue', exact: true })).toBeVisible();
-  await expect(banner.getByRole('link', { name: 'Votre compte' })).toBeVisible();
+  await expect(banner.getByRole('link', { name: 'Mon compte' })).toBeVisible();
 });
 
 test('formulaire : invitation à se connecter, retour au formulaire après connexion', async ({ page }) => {
@@ -393,7 +441,7 @@ test('formulaire : invitation à se connecter, retour au formulaire après conne
 
   await page.goto('/commander?type=quote');
   const hint = page.getByTestId('login-hint');
-  await expect(hint).toContainText('Connectez-vous avant de commander');
+  await expect(hint).toContainText('Facultatif : connectez-vous pour suivre vos commandes.');
   await hint.getByRole('link', { name: 'Se connecter' }).click();
   await expect(page).toHaveURL(/\/connexion\?suite=/);
   await page.getByLabel('E-mail').fill('awa@exemple.cm');

@@ -42,8 +42,8 @@ export default function Header() {
   // Nom de l'autre langue, prononcé dans cette langue par les lecteurs d'écran (WCAG 3.1.2)
   const otherLang = i18n.language === 'fr' ? 'en' : 'fr';
 
-  // Client connecté : « Mes commandes » (Mon compte) en plus du catalogue ; le lien « Votre compte »,
-  // qui mènerait à la même page, est retiré
+  // Client connecté : « Mes commandes » en plus du catalogue, et « Mon compte » à la place de « Votre compte »
+  // (même page : les commandes y sont en tête), pour que le compte reste visible au même endroit
   const customer = user?.role === 'user';
   const navLinks = [
     { to: '/catalogue', label: t('nav.catalogue') },
@@ -52,7 +52,7 @@ export default function Header() {
     // Gestion pour les administrateurs et les responsables (heures)
     ...(user && canManageHours(user.role) ? [{ to: '/gestion', label: t('nav.admin') }] : []),
     // « Votre compte » : la connexion si personne n'est connecté, sinon la page du compte
-    ...(customer ? [] : [{ to: user ? '/compte' : '/connexion', label: t('nav.account') }]),
+    { to: user ? '/compte' : '/connexion', label: t(user ? 'nav.myAccount' : 'nav.account') },
   ];
 
   // WhatsApp, le canal préféré de beaucoup de clients : toujours à portée de pouce

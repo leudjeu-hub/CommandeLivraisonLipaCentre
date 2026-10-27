@@ -22,7 +22,7 @@ import { showToast } from '../components/Toast';
 import { useAuth } from '../context/AuthContext';
 import SessionWait from '../components/SessionWait';
 import {
-  canManageHours, deleteUser, listUsers, ROLE_LABEL, ROLES, setActive, setRole, type Role, type User,
+  canManageHours, deleteUser, listUsers, resetPassword, ROLE_LABEL, ROLES, setActive, setRole, type Role, type User,
 } from '../data/authApi';
 import HoursAdmin from './HoursAdmin';
 import OrdersAdmin from './OrdersAdmin';
@@ -148,6 +148,10 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
   const [error, setError] = useState('');
   const [toDelete, setToDelete] = useState<User | null>(null);
   const [deleteError, setDeleteError] = useState('');
+  // Mot de passe provisoire : compte choisi, puis le mot de passe reçu (affiché une seule fois)
+  const [toReset, setToReset] = useState<User | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [resetError, setResetError] = useState('');
 
   const load = useCallback(() => {
     listUsers().then(setUsers).catch((err) => setError(err.message));
@@ -177,6 +181,20 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
       // 409 : le compte a des heures enregistrées, on le bloque plutôt
       setDeleteError(err instanceof ApiError && err.status === 409 && /hours/.test(err.message) ? t('admin.errHasHours') : (err as Error).message);
     }
+  };
+
+  const handleReset = async () => {
+    if (!toReset) return;
+    setResetError('');
+    try {
+      setNewPassword(await resetPassword(toReset.id));
+    } catch (err) {
+      setResetError((err as Error).message);
+    }
+  };
+  const closeReset = () => {
+    setToReset(null);
+    setNewPassword('');
   };
 
   return (
@@ -219,6 +237,9 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
                 >
                   {u.is_active ? t('admin.block') : t('admin.unblock')}
                 </Button>
+                <Button size="small" variant="outlined" onClick={() => { setResetError(''); setToReset(u); }}>
+                  {t('admin.resetPassword')}
+                </Button>
                 <IconButton onClick={() => { setDeleteError(''); setToDelete(u); }} aria-label={`${t('admin.delete')} ${u.email}`} color="error">
                   <DeleteIcon />
                 </IconButton>
@@ -237,6 +258,33 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
         <DialogActions>
           <Button onClick={() => setToDelete(null)}>{t('admin.cancel')}</Button>
           <Button onClick={handleDelete} color="error" variant="contained">{t('admin.delete')}</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={toReset !== null} onClose={closeReset}>
+        <DialogTitle>{t('admin.resetTitle', { email: toReset?.email })}</DialogTitle>
+        <DialogContent>
+          {newPassword ? (
+            <>
+              <DialogContentText>{t('admin.resetDone')}</DialogContentText>
+              <Typography data-testid="temporary-password" sx={{ mt: 2, fontFamily: 'monospace', fontSize: '1.5rem', letterSpacing: '0.1em', userSelect: 'all' }}>
+                {newPassword}
+              </Typography>
+            </>
+          ) : (
+            <DialogContentText>{t('admin.resetText')}</DialogContentText>
+          )}
+          {resetError && <Alert severity="error" sx={{ mt: 2 }}>{resetError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          {newPassword ? (
+            <Button onClick={closeReset} variant="contained">{t('admin.resetClose')}</Button>
+          ) : (
+            <>
+              <Button onClick={closeReset}>{t('admin.cancel')}</Button>
+              <Button onClick={handleReset} variant="contained">{t('admin.resetConfirm')}</Button>
+            </>
+          )}
         </DialogActions>
       </Dialog>
     </>

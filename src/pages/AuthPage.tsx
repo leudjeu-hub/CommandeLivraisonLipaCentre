@@ -5,6 +5,7 @@ import { Alert, Button, Container, Link, Paper, Stack, TextField, Typography } f
 import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../data/productsApi';
 import { showToast } from '../components/Toast';
+import { whatsappLink } from '../data/catalogue';
 
 // Connexion (/connexion) et création de compte (/inscription).
 
@@ -166,6 +167,13 @@ export default function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           <Link component={RouterLink} to={`${other}${params.get('suite') ? `?suite=${encodeURIComponent(next)}` : ''}`} sx={{ textAlign: 'center' }}>
             {isRegister ? t('auth.toLogin') : t('auth.toRegister')}
           </Link>
+          {/* Aucun e-mail envoyé par le site : la librairie donne un mot de passe provisoire (Gestion › Utilisateurs) */}
+          {!isRegister && (
+            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+              {t('auth.forgot')}{' '}
+              <Link href={whatsappLink(t('auth.forgotWhatsapp', { email: email.trim() }))} target="_blank" rel="noopener">{t('auth.forgotLink')}</Link>
+            </Typography>
+          )}
         </Stack>
       </Paper>
     </Container>

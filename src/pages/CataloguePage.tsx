@@ -155,15 +155,15 @@ export default function CataloguePage() {
           {t('common.noResults')}
         </Typography>
       ) : (
-        sections.map((s) => (
+        sections.map((s, sectionIndex) => (
           <Box component="section" key={s.title} aria-label={s.title || undefined} sx={{ mb: 4 }}>
             {s.title && (
               <Typography variant="h5" component="h2" sx={{ fontFamily: 'Georgia, serif', mb: 1.5 }}>
                 {s.title} <Typography component="span" variant="body2" color="text.secondary">({s.total})</Typography>
               </Typography>
             )}
-            <Box sx={{ display: 'grid', gap: { xs: 1.5, sm: 2.5 }, gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', md: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' } }}>
-              {s.items.map((p) => <ProductCard key={p.id} product={p} />)}
+            <Box sx={{ display: 'grid', gap: { xs: 1.5, sm: 2.5 }, gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' } }}>
+              {s.items.map((p, i) => <ProductCard key={p.id} product={p} eager={sectionIndex === 0 && i < 4} />)}
             </Box>
           </Box>
         ))
