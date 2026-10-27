@@ -330,6 +330,7 @@ test('le client retrouve ses commandes dans Mon compte', async ({ page }) => {
   await expect(rows.first()).toContainText('4 500 FCFA');
   await expect(rows.first()).toContainText('Confirmée');
   await expect(rows.nth(1)).toContainText('Devis N° 12');
+  await expect(rows.nth(1)).toContainText('Envoyé le 20/10/2026');
   await expect(rows.nth(1)).toContainText('En attente de confirmation');
 
   await rows.first().getByRole('button', { name: 'Détails' }).click();
@@ -340,12 +341,12 @@ test('le client retrouve ses commandes dans Mon compte', async ({ page }) => {
   await expect(rows.first().getByText(/Référence :/)).toHaveCount(0);
 });
 
-test('un compte sans commande voit comment en passer une', async ({ page }) => {
+test('un compte sans commande voit pourquoi la liste est vide, sans renvoi au catalogue', async ({ page }) => {
   await page.goto('/connexion');
   await page.getByLabel('E-mail').fill('admin@exemple.cm');
   await page.getByLabel('Mot de passe').fill('admin-123');
   await page.getByRole('button', { name: 'Se connecter' }).click();
   await expect(page).toHaveURL(/\/compte$/);
-  await expect(page.getByText('Aucune commande pour l\'instant.', { exact: false })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Voir le catalogue' })).toBeVisible();
+  await expect(page.getByText('Aucune commande enregistrée sur ce compte', { exact: false })).toBeVisible();
+  await expect(page.getByRole('main').getByRole('link', { name: /catalogue/i })).toHaveCount(0);
 });

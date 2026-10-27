@@ -31,7 +31,9 @@ export default function AccountPage() {
       </Typography>
       {/* Pointage : employés, responsables et administrateurs */}
       {user.role !== 'user' && <TimeClock />}
-      <Paper sx={{ p: 3 }}>
+      {/* Client : ses commandes d'abord, c'est ce qu'il vient chercher */}
+      {user.role === 'user' && <MyOrders first />}
+      <Paper sx={{ p: 3, mt: user.role === 'user' ? 4 : 0 }}>
         <Typography sx={{ fontWeight: 700, mb: 1 }}>{t('auth.loggedAs', { email: user.email })}</Typography>
         <Chip
           label={t(ROLE_LABEL[user.role])}
@@ -46,7 +48,7 @@ export default function AccountPage() {
         </Typography>
         <Button variant="outlined" onClick={handleLogout}>{t('auth.logout')}</Button>
       </Paper>
-      <MyOrders />
+      {user.role !== 'user' && <MyOrders />}
     </Container>
   );
 }
