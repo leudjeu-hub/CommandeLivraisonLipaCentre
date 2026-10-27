@@ -27,6 +27,10 @@ export default function Footer() {
           <Box>
             <img src={`${import.meta.env.BASE_URL}img/logo-clair.svg`} alt={t('brand.name')} width={150} height={41} />
             <Typography variant="body2" sx={{ mt: 1.5, maxWidth: 340, opacity: 0.85 }}>{t('footer.services')}</Typography>
+            {/* Les deux pages utiles avant de commander, aussi sur mobile où le menu est replié */}
+            <MuiLink component={RouterLink} to="/catalogue" sx={{ ...linkSx, mt: 1 }}>{t('footer.catalogue')}</MuiLink>
+            <br />
+            <MuiLink component={RouterLink} to="/livraison" sx={linkSx}>{t('footer.delivery')}</MuiLink>
           </Box>
           <Box>
             <Typography variant="overline" component="h2" sx={{ color: 'secondary.light' }}>{t('footer.contact')}</Typography>
