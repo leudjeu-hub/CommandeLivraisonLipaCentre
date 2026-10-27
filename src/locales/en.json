@@ -78,7 +78,9 @@
     "contact": "Contact",
     "info": "Information",
     "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "catalogue": "Supplies catalogue",
+    "delivery": "Delivery fees in Yaoundé"
   },
   "cart": {
     "title": "Your basket",
@@ -477,6 +479,7 @@
   "faq": {
     "title": "Frequently asked questions about delivery in Yaoundé",
     "q1": "How much does delivery cost in Yaoundé?",
+    "a1Link": "All delivery areas and their fees",
     "a1": "From {{min}} ({{firstZone}} zone: {{firstAreas}}…) to {{max}} ({{lastZone}} zone: {{lastAreas}}…). It is free from {{from}} of items in {{freeZones}} zones.",
     "q2": "How fast is delivery?",
     "a2": "{{delays}}. The lead time is confirmed before your parcel leaves.",
@@ -510,7 +513,7 @@
     "eyebrow": "School lists, schools and businesses",
     "title": "Several items? Ask for a quote.",
     "parentsTitle": "Parents",
-    "parentsText": "Send the school's list: we check titles and editions, then send you the total price. No substitution without your consent.",
+    "parentsText": "From nursery to upper sixth, French- and English-speaking sections. Send the school's list: we check titles and editions, then send you the total price. No substitution without your consent.",
     "proTitle": "Schools and businesses",
     "proText": "Paper, binders, pens, including recurring needs. List the items and quantities and we send you a quote.",
     "cta": "Ask for a quote",

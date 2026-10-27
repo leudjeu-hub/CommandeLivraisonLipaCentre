@@ -194,6 +194,12 @@ export default function HomePage() {
             <Box key={f.n}>
               <Typography variant="h6" component="h3" sx={{ mb: 0.5 }}>{f.q}</Typography>
               <Typography color="text.secondary">{f.a}</Typography>
+              {/* Les frais de chaque quartier sont sur /livraison : lien direct depuis la question sur le prix */}
+              {f.n === 1 && (
+                <MuiLink component={Link} to="/livraison" sx={{ display: 'inline-flex', alignItems: 'center', minHeight: 44, fontWeight: 600 }}>
+                  {t('faq.a1Link')}
+                </MuiLink>
+              )}
             </Box>
           ))}
         </Box>

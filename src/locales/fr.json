@@ -78,7 +78,9 @@
     "contact": "Contact",
     "info": "Informations",
     "rights": "© {{year}} Librairie Papeterie du Centre · Yaoundé",
-    "privacy": "Confidentialité"
+    "privacy": "Confidentialité",
+    "catalogue": "Catalogue des fournitures",
+    "delivery": "Tarifs de livraison à Yaoundé"
   },
   "cart": {
     "title": "Votre panier",
@@ -477,6 +479,7 @@
   "faq": {
     "title": "Questions fréquentes sur la livraison à Yaoundé",
     "q1": "Combien coûte la livraison à Yaoundé ?",
+    "a1Link": "Tous les quartiers livrés et leurs tarifs",
     "a1": "De {{min}} (zone {{firstZone}} : {{firstAreas}}…) à {{max}} (zone {{lastZone}} : {{lastAreas}}…). Elle est offerte dès {{from}} d'articles en zones {{freeZones}}.",
     "q2": "En combien de temps suis-je livré ?",
     "a2": "{{delays}}. Le délai est confirmé avant le départ du colis.",
@@ -510,7 +513,7 @@
     "eyebrow": "Listes scolaires, écoles et entreprises",
     "title": "Plusieurs articles ? Demandez un devis.",
     "parentsTitle": "Parents",
-    "parentsText": "Envoyez la liste de l'école : nous vérifions titres et éditions, puis nous vous envoyons le prix total. Aucune substitution sans votre accord.",
+    "parentsText": "De la maternelle à la terminale, sections francophone et anglophone. Envoyez la liste de l'école : nous vérifions titres et éditions, puis nous vous envoyons le prix total. Aucune substitution sans votre accord.",
     "proTitle": "Écoles et entreprises",
     "proText": "Papier, classeurs, stylos, y compris pour des besoins récurrents. Indiquez les articles et les quantités : vous recevez un devis.",
     "cta": "Demander un devis",

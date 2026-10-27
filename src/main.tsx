@@ -12,7 +12,9 @@ import { theme } from './theme';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+    {/* Base avec la barre finale : le lien vers l'accueil (logo) pointe vers …/CommandeLivraisonLipaCentre/,
+        l'adresse canonique, et non vers la variante sans barre que GitHub Pages redirige (301) */}
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>

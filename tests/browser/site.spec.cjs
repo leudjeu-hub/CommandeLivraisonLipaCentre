@@ -639,6 +639,11 @@ test('accueil : engagements chiffrés, écoles et entreprises, FAQ ; titre propr
   await expect(quote.getByRole('link', { name: 'Demander un devis' })).toHaveAttribute('href', /\/commander\?type=quote$/);
   await expect(quote.getByRole('link', { name: 'Envoyer ma liste en photo' })).toHaveAttribute('href', /^https:\/\/wa\.me\/237693240396\?text=/);
   await expect(page.getByRole('heading', { name: 'Combien coûte la livraison à Yaoundé ?' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Tous les quartiers livrés et leurs tarifs' })).toHaveAttribute('href', '/livraison');
+  // Pied de page : catalogue et tarifs de livraison, aussi sur mobile (menu replié)
+  const footer = page.locator('footer');
+  await expect(footer.getByRole('link', { name: 'Catalogue des fournitures' })).toHaveAttribute('href', '/catalogue');
+  await expect(footer.getByRole('link', { name: 'Tarifs de livraison à Yaoundé' })).toHaveAttribute('href', '/livraison');
   await expect(page.getByText(/^De 1\s000 FCFA \(zone Centre/)).toBeVisible();
   await expect(page.getByRole('banner').getByRole('link', { name: 'Écrire sur WhatsApp' })).toHaveAttribute('href', 'https://wa.me/237693240396');
   await page.goto('/livraison');
