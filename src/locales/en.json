@@ -14,7 +14,8 @@
     "menu": "Menu",
     "skip": "Skip to content",
     "close": "Close menu",
-    "whatsapp": "Message us on WhatsApp"
+    "whatsapp": "Message us on WhatsApp",
+    "myOrders": "My orders"
   },
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
@@ -122,7 +123,11 @@
     "errPhone": "Invalid number: 9 digits starting with 6 or 2 (+237 optional).",
     "errArea": "Choose your neighbourhood (or \"Other neighbourhood\") to see the delivery fee.",
     "emptyOrder": "Your basket is empty: add items before preparing your order.",
-    "confirmNote": "Prices, stock and delivery time are confirmed by the bookshop, by message or phone, before your parcel leaves."
+    "confirmNote": "Prices, stock and delivery time are confirmed by the bookshop, by message or phone, before your parcel leaves.",
+    "linkedToAccount": "Logged in: you will find this order in My orders.",
+    "loginHint": "Log in before ordering to find your orders and their status in My orders. It is optional, and your cart is kept.",
+    "loginHintLogin": "Log in",
+    "loginHintRegister": "Create an account"
   },
   "result": {
     "title": "Your summary is ready",

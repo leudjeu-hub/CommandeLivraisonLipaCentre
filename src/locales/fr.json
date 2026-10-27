@@ -14,7 +14,8 @@
     "menu": "Menu",
     "skip": "Aller au contenu",
     "close": "Fermer le menu",
-    "whatsapp": "Écrire sur WhatsApp"
+    "whatsapp": "Écrire sur WhatsApp",
+    "myOrders": "Mes commandes"
   },
   "hero": {
     "eyebrow": "Librairie Papeterie du Centre · Carrefour Abbia",
@@ -122,7 +123,11 @@
     "errPhone": "Numéro invalide : 9 chiffres commençant par 6 ou 2 (+237 facultatif).",
     "errArea": "Choisissez votre quartier (ou « Autre quartier ») pour connaître les frais de livraison.",
     "emptyOrder": "Votre panier est vide : ajoutez des articles avant de préparer la commande.",
-    "confirmNote": "Prix, stock et délai de livraison sont confirmés par la librairie, par message ou par téléphone, avant le départ du colis."
+    "confirmNote": "Prix, stock et délai de livraison sont confirmés par la librairie, par message ou par téléphone, avant le départ du colis.",
+    "linkedToAccount": "Connecté : vous retrouverez cette commande dans Mes commandes.",
+    "loginHint": "Connectez-vous avant de commander pour retrouver vos commandes et leur statut dans Mes commandes. Ce n'est pas obligatoire, votre panier est gardé.",
+    "loginHintLogin": "Se connecter",
+    "loginHintRegister": "Créer un compte"
   },
   "result": {
     "title": "Votre récapitulatif est prêt",

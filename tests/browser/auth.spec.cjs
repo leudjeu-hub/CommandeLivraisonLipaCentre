@@ -350,3 +350,50 @@ test('un compte sans commande voit pourquoi la liste est vide, sans renvoi au ca
   await expect(page.getByText('Aucune commande enregistrée sur ce compte', { exact: false })).toBeVisible();
   await expect(page.getByRole('main').getByRole('link', { name: /catalogue/i })).toHaveCount(0);
 });
+
+test('client connecté : « Mes commandes » remplace le catalogue dans le menu', async ({ page }) => {
+  await page.goto('/inscription');
+  await page.getByLabel('E-mail').fill('awa@exemple.cm');
+  await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
+  await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+  await page.goto('/');
+  const banner = page.getByRole('banner');
+  await expect(banner.getByRole('link', { name: 'Le catalogue', exact: true })).toHaveCount(0);
+  await expect(banner.getByRole('link', { name: 'Votre compte' })).toHaveCount(0);
+  await banner.getByRole('link', { name: 'Mes commandes' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+  await expect(page.getByRole('heading', { name: 'Mes commandes' })).toBeVisible();
+  // Le personnel garde le catalogue et « Votre compte »
+  await page.getByRole('button', { name: 'Se déconnecter' }).click();
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+  await expect(banner.getByRole('link', { name: 'Le catalogue', exact: true })).toBeVisible();
+  await expect(banner.getByRole('link', { name: 'Votre compte' })).toBeVisible();
+});
+
+test('formulaire : invitation à se connecter, retour au formulaire après connexion', async ({ page }) => {
+  await page.goto('/inscription');
+  await page.getByLabel('E-mail').fill('awa@exemple.cm');
+  await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
+  await page.getByLabel('Confirmer le mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await expect(page).toHaveURL(/\/compte$/);
+  await page.getByRole('button', { name: 'Se déconnecter' }).click();
+
+  await page.goto('/commander?type=quote');
+  const hint = page.getByTestId('login-hint');
+  await expect(hint).toContainText('Connectez-vous avant de commander');
+  await hint.getByRole('link', { name: 'Se connecter' }).click();
+  await expect(page).toHaveURL(/\/connexion\?suite=/);
+  await page.getByLabel('E-mail').fill('awa@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('motdepasse');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await expect(page).toHaveURL(/\/commander\?type=quote$/);
+  await expect(page.getByTestId('login-hint')).toHaveCount(0);
+  await expect(page.getByText('vous retrouverez cette commande dans Mes commandes')).toBeVisible();
+});
