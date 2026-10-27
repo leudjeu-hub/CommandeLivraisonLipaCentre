@@ -351,7 +351,7 @@ test('un compte sans commande voit pourquoi la liste est vide, sans renvoi au ca
   await expect(page.getByRole('main').getByRole('link', { name: /catalogue/i })).toHaveCount(0);
 });
 
-test('client connecté : « Mes commandes » remplace le catalogue dans le menu', async ({ page }) => {
+test('client connecté : « Mes commandes » à côté du catalogue dans le menu', async ({ page }) => {
   await page.goto('/inscription');
   await page.getByLabel('E-mail').fill('awa@exemple.cm');
   await page.getByLabel('Mot de passe', { exact: false }).first().fill('motdepasse');
@@ -360,7 +360,7 @@ test('client connecté : « Mes commandes » remplace le catalogue dans le menu'
   await expect(page).toHaveURL(/\/compte$/);
   await page.goto('/');
   const banner = page.getByRole('banner');
-  await expect(banner.getByRole('link', { name: 'Le catalogue', exact: true })).toHaveCount(0);
+  await expect(banner.getByRole('link', { name: 'Le catalogue', exact: true })).toBeVisible();
   await expect(banner.getByRole('link', { name: 'Votre compte' })).toHaveCount(0);
   await banner.getByRole('link', { name: 'Mes commandes' }).click();
   await expect(page).toHaveURL(/\/compte$/);
