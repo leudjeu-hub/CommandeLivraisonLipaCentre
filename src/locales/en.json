@@ -528,11 +528,11 @@
   "myOrders": {
     "title": "My orders",
     "intro": "Orders and quote requests sent from this site while logged in to this account. The shop updates the status.",
-    "empty": "No orders yet. Only those sent while logged in appear here.",
-    "browse": "Browse the catalogue",
+    "empty": "No orders recorded on this account yet. Only orders sent while logged in to this account since 27/10/2026 appear here; earlier ones are still known to the shop.",
     "order": "Order",
     "quote": "Quote",
     "sentOn": "Sent on {{date}}",
+    "sentOnQuote": "Sent on {{date}}",
     "status": {
       "new": "Awaiting confirmation",
       "confirmed": "Confirmed",

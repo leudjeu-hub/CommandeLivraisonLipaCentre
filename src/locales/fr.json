@@ -528,11 +528,11 @@
   "myOrders": {
     "title": "Mes commandes",
     "intro": "Les commandes et devis envoyés depuis ce site en étant connecté à ce compte. Le statut est mis à jour par la librairie.",
-    "empty": "Aucune commande pour l'instant. Seules celles envoyées en étant connecté apparaissent ici.",
-    "browse": "Voir le catalogue",
+    "empty": "Aucune commande enregistrée sur ce compte pour l'instant. Seules les commandes envoyées en étant connecté à ce compte depuis le 27/10/2026 apparaissent ici ; les précédentes restent connues de la librairie.",
     "order": "Commande",
     "quote": "Devis",
     "sentOn": "Envoyée le {{date}}",
+    "sentOnQuote": "Envoyé le {{date}}",
     "status": {
       "new": "En attente de confirmation",
       "confirmed": "Confirmée",

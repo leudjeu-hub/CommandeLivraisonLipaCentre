@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 import { Alert, Box, Button, Chip, Collapse, Paper, Stack, Typography } from '@mui/material';
 import { money } from '../data/catalogue';
 import { clientRef, listMyOrders, notesWithoutRef, type Order } from '../data/ordersApi';
@@ -12,7 +11,7 @@ const STATUS_COLOR = {
   new: 'warning', confirmed: 'info', delivered: 'success', cancelled: 'default',
 } as const;
 
-export default function MyOrders() {
+export default function MyOrders({ first = false }: { first?: boolean }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
   const [orders, setOrders] = useState<Order[] | null>(null);
@@ -30,7 +29,7 @@ export default function MyOrders() {
     new Date(iso).toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   return (
-    <Box component="section" aria-labelledby="mes-commandes" sx={{ mt: 4 }}>
+    <Box component="section" aria-labelledby="mes-commandes" sx={{ mt: first ? 0 : 4 }}>
       <Typography id="mes-commandes" variant="h5" component="h2" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>
         {t('myOrders.title')}
       </Typography>
@@ -43,8 +42,7 @@ export default function MyOrders() {
       {!orders && !error && <Typography color="text.secondary" role="status">{t('admin.loading')}</Typography>}
       {orders?.length === 0 && (
         <Paper variant="outlined" sx={{ p: 2 }}>
-          <Typography sx={{ mb: 1.5 }}>{t('myOrders.empty')}</Typography>
-          <Button component={RouterLink} to="/catalogue" variant="contained">{t('myOrders.browse')}</Button>
+          <Typography>{t('myOrders.empty')}</Typography>
         </Paper>
       )}
       <Stack spacing={1.5}>
@@ -59,7 +57,7 @@ export default function MyOrders() {
                     {t(o.kind === 'quote' ? 'myOrders.quote' : 'myOrders.order')} {clientRef(o) ?? t('orders.number', { id: o.id })}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {t('myOrders.sentOn', { date: date(o.created_at) })}
+                    {t(o.kind === 'quote' ? 'myOrders.sentOnQuote' : 'myOrders.sentOn', { date: date(o.created_at) })}
                     {o.kind === 'order' && ` · ${money(o.total + (fee ?? 0), locale)}`}
                   </Typography>
                 </Box>
