@@ -22,3 +22,8 @@ body { margin: 0; background: #f7f4ec; color: #1b2433; font-family: system-ui, -
 .shell-eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8a6a2b; }
 .shell-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 !important; }
 .shell-btn-alt { background: #16325c; }
+
+/* Catalogue et pages de catégorie (scripts/catalogue-statique.mjs) : articles et prix sans JavaScript */
+.shell-list { margin-top: 32px; text-align: left; }
+.shell-list h2 { margin: 24px 0 8px; font: 400 1.25rem/1.25 Georgia, "Times New Roman", serif; }
+.shell-list ul { margin: 0; padding-left: 1.2em; }

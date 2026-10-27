@@ -405,7 +405,8 @@ test('site publié : articles regroupés et filtrés par famille', async ({ page
   }));
   await page.goto('/catalogue');
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(5);
-  await expect(page.locator('section h2')).toHaveText(['Papier (1)', 'Sacs et cartables (2)', 'Stylos (1)', 'Autres articles (1)']);
+  // Ordre de la rentrée (FAMILY_ORDER), familles inconnues ensuite par ordre alphabétique
+  await expect(page.locator('section h2')).toHaveText(['Sacs et cartables (2)', 'Papier (1)', 'Stylos (1)', 'Autres articles (1)']);
   await page.getByRole('button', { name: 'Scolaire' }).click();
   const families = page.getByRole('group', { name: 'Familles' });
   await expect(families.getByRole('button')).toHaveText(['Toutes', 'Sacs et cartables', 'Stylos']);
@@ -655,13 +656,54 @@ test('copie publiée : les articles indisponibles n’apparaissent pas', async (
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(7);
 });
 
-test('accueil : un raccourci de catégorie ouvre le catalogue filtré', async ({ page }) => {
+test('accueil : un raccourci de catégorie ouvre la page de la catégorie', async ({ page }) => {
   await snapshot(page, PRODUCTS);
   await page.goto('/');
   await page.getByRole('link', { name: /^Fournitures de bureau/ }).click();
-  await expect(page).toHaveURL(/\/catalogue\?cat=Bureau$/);
+  await expect(page).toHaveURL(/\/fournitures-de-bureau$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fournitures de bureau à Yaoundé');
   await expect(page.getByRole('button', { name: 'Bureau', pressed: true })).toBeVisible();
   await expect(page.locator('[data-testid="product-card"]')).toHaveCount(PRODUCTS.filter((p) => p.category === 'Bureau').length);
+  // Une autre catégorie ouvre sa propre page ; « Tout » ramène au catalogue complet
+  await page.getByRole('button', { name: 'Livres', exact: true }).click();
+  await expect(page).toHaveURL(/\/livres-scolaires$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Livres scolaires et dictionnaires à Yaoundé');
+  await page.getByRole('button', { name: 'Tout' }).click();
+  await expect(page).toHaveURL(/\/catalogue$/);
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(PRODUCTS.length);
+});
+
+test('pages de catégorie : titre propre, adresse directe, ancien filtre ?cat= toujours valable', async ({ page }) => {
+  await snapshot(page, PRODUCTS);
+  await page.goto('/fournitures-scolaires');
+  await expect(page).toHaveTitle(/Fournitures scolaires/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fournitures scolaires à Yaoundé');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(PRODUCTS.filter((p) => p.category === 'Scolaire').length);
+  await page.goto('/catalogue?cat=Livres');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fournitures scolaires, de bureau et livres');
+  await expect(page.getByRole('button', { name: 'Livres', pressed: true })).toBeVisible();
+});
+
+test('catalogue : article sans photo propre en carte texte, photo de la famille une fois en tête', async ({ page }) => {
+  const famille = 'img/produits/famille-cahiers.webp';
+  const list = PRODUCTS.map((p, i) => (i < 2 ? { ...p, family: 'Cahiers, blocs et registres', image: famille } : p));
+  await mockApi(page, (path) => ({ body: path === '/products/' ? list : null }));
+  await page.goto('/catalogue');
+  const cards = page.locator('[data-testid="product-card"]');
+  await expect(cards).toHaveCount(PRODUCTS.length);
+  await expect(page.locator(`[data-testid="product-card"] img[src$="${famille}"]`)).toHaveCount(0);
+  await expect(page.locator(`section h2`).first()).toHaveText('Cahiers, blocs et registres (2)');
+  await expect(page.locator(`section img[src$="${famille}"]`)).toHaveCount(1);
+  // Les articles avec leur propre photo la gardent
+  await expect(page.locator('[data-testid="product-card"] img')).toHaveCount(PRODUCTS.length - 2);
+});
+
+test('accueil : la sélection vient de selection.json quand rien n’est encore chargé', async ({ page }) => {
+  await page.route('**/selection.json', (route) => route.fulfill({ contentType: 'application/json', body: JSON.stringify(PRODUCTS.slice(0, 4)) }));
+  await page.route(`${API}/products/`, () => {}); // l'API ne répond jamais
+  await page.goto('/');
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(4);
+  await expect(page.locator('[data-testid="product-card"] h3').first()).toHaveText(PRODUCTS[0].name);
 });
 
 test('accueil : engagements chiffrés, écoles et entreprises, FAQ ; titre propre à chaque page', async ({ page }) => {

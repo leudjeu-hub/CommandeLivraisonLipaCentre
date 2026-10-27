@@ -35,6 +35,18 @@ export interface DeliveryRules {
 
 export const CATEGORIES = ['Tout', 'Scolaire', 'Bureau', 'Livres'];
 
+// Une page par catégorie (adresse propre, titre propre, articles dans le HTML publié) : c'est ce
+// que Google peut classer sur « fournitures scolaires Yaoundé », pas un filtre ?cat= du catalogue
+export const CATEGORY_PAGES = [
+  { cat: 'Scolaire', route: 'fournitures-scolaires' },
+  { cat: 'Bureau', route: 'fournitures-de-bureau' },
+  { cat: 'Livres', route: 'livres-scolaires' },
+] as const;
+export const categoryPath = (cat: string) => {
+  const page = CATEGORY_PAGES.find((c) => c.cat === cat);
+  return page ? `/${page.route}` : '/catalogue';
+};
+
 export const SHOP = {
   whatsapp: '237693240396',
   email: 'Lipacentre237@gmail.com',

@@ -52,7 +52,10 @@
     "count_one": "{{count}} item",
     "count_other": "{{count}} items",
     "more_one": "Show more ({{count}} left)",
-    "more_other": "Show more ({{count}} left)"
+    "more_other": "Show more ({{count}} left)",
+    "titleScolaire": "School supplies in Yaoundé",
+    "titleBureau": "Office supplies in Yaoundé",
+    "titleLivres": "School books and dictionaries in Yaoundé"
   },
   "delivery": {
     "eyebrow": "A local service",
@@ -517,7 +520,11 @@
     "order": "Your order · Librairie Papeterie du Centre",
     "cart": "Your basket · Librairie Papeterie du Centre",
     "other": "Librairie Papeterie du Centre · Yaoundé",
-    "privacy": "Privacy · Librairie Papeterie du Centre"
+    "privacy": "Privacy · Librairie Papeterie du Centre",
+    "catScolaire": "School supplies in Yaoundé: exercise books, pens, geometry · Librairie Papeterie du Centre",
+    "catBureau": "Office supplies in Yaoundé: paper, binders · Librairie Papeterie du Centre",
+    "catLivres": "School books and dictionaries in Yaoundé · Librairie Papeterie du Centre",
+    "notFound": "Page not found · Librairie Papeterie du Centre"
   },
   "notFound": {
     "title": "Page not found",

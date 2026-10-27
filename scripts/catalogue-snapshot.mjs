@@ -2,9 +2,11 @@
 // attendant l'API Render (en veille : ~40 s de réveil), ou à sa place si elle est injoignable.
 // Lancé par deploy.yml après le build. API injoignable : on garde la copie vide ([]) sans faire
 // échouer le déploiement ; le site attend alors l'API comme avant.
+// Écrit aussi les articles dans les pages publiées et selection.json (voir catalogue-statique.mjs).
 // Usage : node scripts/catalogue-snapshot.mjs [dossier]   (par défaut : dist)
 import fs from 'node:fs';
 import path from 'node:path';
+import { writeStaticCatalogue } from './catalogue-statique.mjs';
 
 const API = (process.env.PROD_API_URL || 'https://papeterie-api-kshr.onrender.com').replace(/\/$/, '');
 const out = path.join(process.argv[2] || 'dist', 'catalogue.json');
@@ -34,3 +36,5 @@ const products = list
   .map(({ stock, status, available, ...p }) => p);
 fs.writeFileSync(out, JSON.stringify(products));
 console.log(`${products.length} articles écrits dans ${out} (${Math.round(fs.statSync(out).size / 1024)} Ko).`);
+// Les mêmes articles dans le HTML du catalogue et des pages de catégorie, et la sélection de l'accueil
+writeStaticCatalogue(path.dirname(out), products);

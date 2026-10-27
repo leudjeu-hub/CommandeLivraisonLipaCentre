@@ -6,8 +6,8 @@ import LocalShippingIcon from '@mui/icons-material/LocalShippingOutlined';
 import RedeemIcon from '@mui/icons-material/RedeemOutlined';
 import PaymentsIcon from '@mui/icons-material/PaymentsOutlined';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import { DELIVERY, DELIVERY_RULES, money, whatsappLink } from '../data/catalogue';
-import { useProducts } from '../data/useProducts';
+import { DELIVERY, DELIVERY_RULES, categoryPath, money, whatsappLink } from '../data/catalogue';
+import { useSelection } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
 import QuoteSection from '../components/QuoteSection';
 
@@ -15,8 +15,8 @@ export default function HomePage() {
   const { t, i18n } = useTranslation();
   const fr = i18n.language === 'fr';
   const locale = fr ? 'fr-FR' : 'en-GB';
-  // Quelques articles avec prix, pour montrer le catalogue dès l'accueil
-  const selection = useProducts().filter((p) => p.price !== null).slice(0, 4);
+  // Quelques articles avec prix, pour montrer le catalogue dès l'accueil (sans télécharger tout le catalogue)
+  const selection = useSelection();
   const steps = [1, 2, 3].map((n) => ({ n, title: t(`strip.step${n}Title`), text: t(`strip.step${n}Text`) }));
 
   // Arguments chiffrés tirés de la grille de livraison (src/data/catalogue.ts), jamais écrits en dur
@@ -117,7 +117,7 @@ export default function HomePage() {
             <li key={c.cat}>
               <Box
                 component={Link}
-                to={`/catalogue?cat=${c.cat}`}
+                to={categoryPath(c.cat)}
                 sx={{
                   display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, alignItems: { xs: 'center', sm: 'stretch' }, gap: { xs: 2, sm: 0 },
                   height: '100%', bgcolor: '#fff', border: '1px solid', borderColor: 'divider', borderRadius: 3, overflow: 'hidden',

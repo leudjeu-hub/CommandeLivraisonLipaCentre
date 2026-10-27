@@ -10,6 +10,9 @@ import Toast from './Toast';
 const TITLES: Record<string, string> = {
   '/': 'seo.home',
   '/catalogue': 'seo.catalogue',
+  '/fournitures-scolaires': 'seo.catScolaire',
+  '/fournitures-de-bureau': 'seo.catBureau',
+  '/livres-scolaires': 'seo.catLivres',
   '/livraison': 'seo.delivery',
   '/panier': 'seo.cart',
   '/confidentialite': 'seo.privacy',

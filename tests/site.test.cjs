@@ -85,7 +85,8 @@ test('build : sitemap.xml = accueil + pages indexables, aux adresses de leur bal
   const sitemap = fs.readFileSync('dist/sitemap.xml', 'utf8');
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   const canonical = (file) => fs.readFileSync(`dist/${file}`, 'utf8').match(/rel="canonical" href="([^"]+)"/)?.[1];
-  assert.deepEqual(locs, [canonical('index.html'), canonical('catalogue.html'), canonical('livraison.html'), canonical('confidentialite.html')]);
+  assert.deepEqual(locs, [canonical('index.html'), canonical('catalogue.html'),
+    canonical('fournitures-scolaires.html'), canonical('fournitures-de-bureau.html'), canonical('livres-scolaires.html'), canonical('livraison.html'), canonical('confidentialite.html')]);
   // Fichier de vérification Google Search Console (propriété « Préfixe d'URL ») : à garder en ligne
   for (const file of ['google22b032c38b924131.html', 'google0fc62c3005d6e561.html']) {
     assert.equal(fs.readFileSync(`dist/${file}`, 'utf8').trim(), `google-site-verification: ${file}`);
@@ -126,4 +127,35 @@ test('copie du catalogue : vide dans le dépôt (remplie au déploiement seuleme
   assert.deepEqual(JSON.parse(fs.readFileSync('public/catalogue.json', 'utf8')), []);
   const deploy = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
   assert.match(deploy, /node scripts\/catalogue-snapshot\.mjs dist/);
+});
+
+test('sélection de l’accueil : vide dans le dépôt (remplie au déploiement seulement)', () => {
+  assert.deepEqual(JSON.parse(fs.readFileSync('public/selection.json', 'utf8')), []);
+});
+
+test('déploiement : articles écrits dans le catalogue et les pages de catégorie publiés', async () => {
+  const { writeStaticCatalogue } = await import('../scripts/catalogue-statique.mjs');
+  const dir = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'statique-'));
+  const shell = '<h1>Librairie</h1><p class="shell-info">WhatsApp</p>';
+  for (const route of ['catalogue', 'fournitures-scolaires', 'fournitures-de-bureau', 'livres-scolaires']) {
+    fs.writeFileSync(path.join(dir, `${route}.html`), shell);
+  }
+  writeStaticCatalogue(dir, [
+    { id: 3, category: 'Bureau', family: 'Papier', name: 'Rame A4', price: 4000 },
+    { id: 1, category: 'Scolaire', family: 'Sacs et cartables', name: 'Cartable <rouge>', price: null },
+    { id: 2, category: 'Scolaire', family: 'Cahiers, blocs et registres', name: 'Cahier 200 pages', price: 1500 },
+  ]);
+  const scolaire = fs.readFileSync(path.join(dir, 'fournitures-scolaires.html'), 'utf8');
+  assert.match(scolaire, /<h1>Fournitures scolaires à Yaoundé<\/h1>/);
+  // Ordre des familles de la rentrée, texte échappé, « Sur devis » sans prix
+  assert.ok(scolaire.indexOf('<h2>Cahiers, blocs et registres</h2>') < scolaire.indexOf('<h2>Sacs et cartables</h2>'));
+  assert.match(scolaire, /Cartable &lt;rouge&gt; : <strong>Sur devis<\/strong>/);
+  assert.match(scolaire, /Cahier 200 pages : <strong>1 500 FCFA<\/strong>/);
+  assert.doesNotMatch(scolaire, /Rame A4/);
+  // Les coordonnées restent avant la liste
+  assert.ok(scolaire.indexOf('shell-info') < scolaire.indexOf('shell-list'));
+  assert.match(fs.readFileSync(path.join(dir, 'catalogue.html'), 'utf8'), /Cahier 200 pages[\s\S]*Rame A4/);
+  // Accueil : articles avec un prix, par numéro
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'selection.json'), 'utf8')).map((p) => p.id), [2, 3]);
+  fs.rmSync(dir, { recursive: true });
 });
