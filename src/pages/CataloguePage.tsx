@@ -7,7 +7,7 @@ import { CATEGORIES, categoryPath, whatsappLink, type Product } from '../data/ca
 import { useCatalogue } from '../data/useProducts';
 import ProductCard from '../components/ProductCard';
 import CatalogueUnavailable from '../components/CatalogueUnavailable';
-import { byFamilyOrder, familyImage } from '../data/photosFamilles';
+import { byFamilyOrder } from '../data/photosFamilles';
 
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('fr');
 // Cartes affichées d'un coup : 1 500 cartes (~18 000 éléments) figent un téléphone d'entrée de gamme
@@ -58,7 +58,7 @@ export default function CataloguePage({ fixedCategory }: { fixedCategory?: strin
   // Articles regroupés par famille (ordre de FAMILY_ORDER, articles sans famille à la fin)
   // (les sections au-delà de la limite sont coupées ; le titre garde le nombre total de la famille)
   const sections = useMemo(() => {
-    if (!families.length) return [{ title: '', image: undefined, total: filtered.length, items: filtered.slice(0, limit) }];
+    if (!families.length) return [{ title: '', total: filtered.length, items: filtered.slice(0, limit) }];
     const groups = new Map<string, Product[]>();
     filtered.forEach((p) => {
       const key = p.family ?? '';
@@ -73,7 +73,7 @@ export default function CataloguePage({ fixedCategory }: { fixedCategory?: strin
         const all = groups.get(title)!;
         const items = all.slice(0, Math.max(0, left));
         left -= items.length;
-        return { title: title || t('catalogue.otherFamily'), image: familyImage(title), total: all.length, items };
+        return { title: title || t('catalogue.otherFamily'), total: all.length, items };
       })
       .filter((s) => s.items.length > 0);
   }, [filtered, families, limit, t]);
@@ -161,16 +161,10 @@ export default function CataloguePage({ fixedCategory }: { fixedCategory?: strin
       ) : (
         sections.map((s, sectionIndex) => (
           <Box component="section" key={s.title} aria-label={s.title || undefined} sx={{ mb: 4 }}>
-            {/* La photo de famille, une fois en tête de section (et non répétée sur chaque carte) */}
             {s.title && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                {s.image && (
-                  <Box component="img" src={import.meta.env.BASE_URL + s.image} alt="" width={48} height={48} loading={sectionIndex === 0 ? 'eager' : 'lazy'} sx={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                )}
-                <Typography variant="h5" component="h2" sx={{ fontFamily: 'Georgia, serif' }}>
-                  {s.title} <Typography component="span" variant="body2" color="text.secondary">({s.total})</Typography>
-                </Typography>
-              </Box>
+              <Typography variant="h5" component="h2" sx={{ fontFamily: 'Georgia, serif', mb: 1.5 }}>
+                {s.title} <Typography component="span" variant="body2" color="text.secondary">({s.total})</Typography>
+              </Typography>
             )}
             <Box sx={{ display: 'grid', gap: { xs: 1.5, sm: 2.5 }, gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' } }}>
               {s.items.map((p, i) => <ProductCard key={p.id} product={p} eager={sectionIndex === 0 && i < 4} />)}
