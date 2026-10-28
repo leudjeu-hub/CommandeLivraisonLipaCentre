@@ -10,6 +10,8 @@ export const ROLE_LABEL = {
 } as const;
 
 // Gestion (/gestion) : le responsable n'y voit que les heures
+// Gestion (articles, commandes) : employés, responsables et administrateurs ; heures de l'équipe : responsables et administrateurs
+export const isStaff = (role: Role) => role !== 'user';
 export const canManageHours = (role: Role) => role === 'manager' || role === 'admin';
 
 export interface User {

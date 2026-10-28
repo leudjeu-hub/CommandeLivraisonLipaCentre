@@ -22,7 +22,7 @@ import { showToast } from '../components/Toast';
 import { useAuth } from '../context/AuthContext';
 import SessionWait from '../components/SessionWait';
 import {
-  canManageHours, deleteUser, listUsers, resetPassword, ROLE_LABEL, ROLES, setActive, setRole, setUserAdminNotes,
+  canManageHours, deleteUser, isStaff, listUsers, resetPassword, ROLE_LABEL, ROLES, setActive, setRole, setUserAdminNotes,
   type Role, type User,
 } from '../data/authApi';
 import AdminNotes from '../components/AdminNotes';
@@ -110,7 +110,7 @@ export default function AdminPage() {
 
   if (!ready || (offline && !user)) return <SessionWait />;
   if (!user) return <Navigate to={`/connexion?suite=${encodeURIComponent(pathname)}`} replace />;
-  if (!canManageHours(user.role)) {
+  if (!isStaff(user.role)) {
     return (
       <Container maxWidth="sm" sx={{ py: 4 }}>
         <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 2 }}>{t('auth.forbiddenTitle')}</Typography>
@@ -119,18 +119,21 @@ export default function AdminPage() {
     );
   }
 
+  // Articles et Commandes : toute l'équipe ; Heures : responsables et administrateurs ; Utilisateurs : administrateurs
   const isAdmin = user.role === 'admin';
-  const shown = !isAdmin && (tab === 'products' || tab === 'users') ? 'orders' : tab ?? (isAdmin ? 'products' : 'orders');
+  const hours = canManageHours(user.role);
+  const allowed = (v: typeof tab) => (v === 'users' ? isAdmin : v === 'hours' ? hours : v !== null);
+  const shown = allowed(tab) ? tab! : isAdmin ? 'products' : 'orders';
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="overline" color="secondary">{t('admin.eyebrow')}</Typography>
       <Typography variant="h4" component="h1" sx={{ fontFamily: 'Georgia, serif', mb: 1 }}>{isAdmin ? t('admin.title') : t('admin.titleManager')}</Typography>
       <Tabs value={shown} onChange={(_, v) => setTab(v)} variant="scrollable" allowScrollButtonsMobile sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
-        {isAdmin && <Tab value="products" label={t('admin.tabProducts')} />}
+        <Tab value="products" label={t('admin.tabProducts')} />
         <Tab value="orders" label={t('admin.tabOrders')} />
         {isAdmin && <Tab value="users" label={t('admin.tabUsers')} />}
-        <Tab value="hours" label={t('admin.tabHours')} />
+        {hours && <Tab value="hours" label={t('admin.tabHours')} />}
       </Tabs>
       {shown === 'products' && <ProductsAdmin />}
       {shown === 'orders' && <OrdersAdmin />}

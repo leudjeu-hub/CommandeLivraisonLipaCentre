@@ -2,7 +2,7 @@ import { request } from './productsApi';
 
 // Commandes (API : /orders/…). Le formulaire enregistre chaque commande ou demande de devis
 // (POST /orders/submit, public) ; le client l'envoie toujours par WhatsApp ou e-mail.
-// Liste et statuts : administrateurs (Gestion > Commandes). Envoyée en étant connecté (le jeton part
+// Liste, statuts et remarques : l'équipe (Gestion > Commandes) ; suppression : administrateurs. Envoyée en étant connecté (le jeton part
 // avec request()), la commande est liée au compte : le client la retrouve dans Mon compte (/orders/mine).
 
 export type OrderStatus = 'new' | 'confirmed' | 'delivered' | 'cancelled';
@@ -110,6 +110,9 @@ export const notesWithoutRef = (o: Order) => (clientRef(o) ? o.notes!.replace(RE
 
 export const setOrderStatus = (id: number, status: OrderStatus) =>
   request<Order>(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) });
+
+// Suppression définitive : administrateurs seulement (l'API répond 403 sinon)
+export const deleteOrder = (id: number) => request<void>(`/orders/${id}`, { method: 'DELETE' });
 
 export const setOrderAdminNotes = (id: number, admin_notes: string) =>
   request<Order>(`/orders/${id}/admin-notes`, { method: 'PATCH', body: JSON.stringify({ admin_notes }) });

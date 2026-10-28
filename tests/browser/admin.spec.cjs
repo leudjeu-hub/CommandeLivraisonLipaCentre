@@ -246,6 +246,7 @@ test('commandes : seul un administrateur change le statut d\'une commande livré
   let rows = await openOrders();
   await expect(rows.nth(1).getByRole('combobox', { name: 'Statut' })).not.toHaveAttribute('aria-disabled', 'true');
   await expect(page.getByText(note)).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Supprimer la commande' })).toHaveCount(2);
 
   // Responsable : la commande livrée est verrouillée, avec l'explication ; l'autre reste modifiable
   await page.route('**/auth/me', (route) => route.fulfill({
@@ -258,6 +259,8 @@ test('commandes : seul un administrateur change le statut d\'une commande livré
   await expect(locked).toHaveAccessibleDescription(note);
   await expect(rows.nth(0).getByRole('combobox', { name: 'Statut' })).not.toHaveAttribute('aria-disabled', 'true');
   await expect(page.getByText(note)).toHaveCount(1);
+  // Seul l'administrateur supprime une commande
+  await expect(page.getByRole('button', { name: 'Supprimer la commande' })).toHaveCount(0);
   await page.screenshot({ path: 'test-results/statut-livre-responsable.png', fullPage: true });
 });
 
@@ -300,4 +303,30 @@ test('commandes : remarque interne, séparée des remarques du client', async ({
   await expect(row.getByText('Remarque interne', { exact: true })).toBeVisible();
   await page.getByLabel('Rechercher (référence LC-…, nom, téléphone)').fill('acompte');
   await expect(page.getByTestId('order-row')).toHaveCount(1);
+});
+
+test('commandes : l\'administrateur supprime une commande après confirmation', async ({ page }) => {
+  const order = {
+    id: 7, kind: 'order', customer_name: 'Awa', phone: '+237 690 00 00 00', status: 'cancelled', total: 3000,
+    delivery_fee: 1000, area: 'Bastos', address: null, slot: null, payment: null, notes: null, admin_notes: null,
+    created_at: '2026-10-24T08:30:00Z', status_changed_at: '2026-10-25T08:30:00Z', items: [],
+  };
+  await page.route(/\/orders\/$/, (route) => route.fulfill({ contentType: 'application/json', body: JSON.stringify([order]) }));
+  const deleted = [];
+  await page.route(/\/orders\/7$/, (route) => {
+    deleted.push(route.request().method());
+    return route.fulfill({ status: 204 });
+  });
+  await page.goto('/gestion');
+  await page.getByRole('tab', { name: 'Commandes' }).click();
+  await page.getByRole('button', { name: /Toutes \(1\)/ }).click();
+  await page.getByRole('button', { name: 'Détails' }).click();
+  await page.getByRole('button', { name: 'Supprimer la commande' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Supprimer la commande #7 ?' });
+  await dialog.getByRole('button', { name: 'Annuler' }).click();
+  expect(deleted).toEqual([]);
+  await page.getByRole('button', { name: 'Supprimer la commande' }).click();
+  await dialog.getByRole('button', { name: 'Supprimer', exact: true }).click();
+  await expect(page.getByTestId('order-row')).toHaveCount(0);
+  expect(deleted).toEqual(['DELETE']);
 });

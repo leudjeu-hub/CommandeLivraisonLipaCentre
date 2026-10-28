@@ -68,29 +68,31 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   (jeton `centre-auth-token` dans localStorage, envoyé en `Authorization: Bearer` par `request()` de
   `src/data/productsApi.ts`). Rôles : `user` (client) et `admin`. Commander reste possible sans compte.
   Seul un 401 de l'API efface la session ; API injoignable → session gardée, `SessionWait` propose de réessayer.
-- Gestion (articles, commandes et utilisateurs) : `/gestion` (`src/pages/AdminPage.tsx`), **administrateurs
-  uniquement** (les responsables n'y voient que les commandes et les heures) (l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
+- Gestion : `/gestion` (`src/pages/AdminPage.tsx`), pour l'équipe (décision d'Alain, 2026-10-28) : articles et
+  commandes pour employés, responsables et admins ; heures pour responsables et admins ; utilisateurs pour les
+  admins seulement (`isStaff` / `canManageHours` dans `authApi.ts` ; l'API le vérifie aussi). Premier admin : `uv run python -m app.scripts.create_admin`
   dans le dépôt de l'API ; un admin peut ensuite en promouvoir d'autres (onglet « Utilisateurs »).
 - Commandes : le formulaire (`CheckoutPage.tsx`) enregistre chaque commande ou devis via le
   `POST /orders/submit` public de l'API (`src/data/ordersApi.ts`), une fois par récapitulatif, au premier
   envoi (WhatsApp, e-mail, copie, téléchargement), sans attendre la réponse (`keepalive`) : API en veille
   ou en erreur → la commande part quand même par WhatsApp / e-mail. Pas de retrait de stock. Gestion >
-  Commandes (`src/pages/OrdersAdmin.tsx`, admins et responsables) : filtre par statut (« À traiter » = nouvelle +
+  Commandes (`src/pages/OrdersAdmin.tsx`, toute l'équipe) : filtre par statut (« À traiter » = nouvelle +
   confirmée), détail, changement de statut, lien WhatsApp vers le client. Les commandes annulées
-  sont supprimées par l'API 30 jours après l'annulation (date affichée sur la commande).
+  sont supprimées par l'API 30 jours après l'annulation (date affichée sur la commande). Suppression à la main
+  (`DELETE /orders/{id}`, bouton « Supprimer la commande » avec confirmation) : admins seulement.
 - Import / export CSV des articles (Gestion > Articles, `src/pages/CatalogueImport.tsx`) : l'export et le modèle
   sont générés dans le navigateur (`;`, BOM UTF-8 pour Excel) ; l'import envoie le texte du fichier à
   `POST /products/import` (aperçu `dry_run`, puis import). C'est l'API qui vérifie et renvoie les erreurs par
   ligne sous forme de codes, traduits par `admin.importErr.*`. Fichier non UTF-8 → relu en Windows-1252.
-- Rôles : `user` (client), `employee`, `manager` (responsable : onglets « Commandes » et « Heures » de `/gestion`,
+- Rôles : `user` (client), `employee` (onglets « Articles » et « Commandes »), `manager` (responsable : en plus « Heures »,
   ne corrige pas ses propres heures), `admin`. Un admin bloque / débloque ou supprime un compte
   (Gestion > Utilisateurs) ; l'API refuse de supprimer un compte qui a des heures (409 → le bloquer).
 - Remarques internes (`admin_notes`, `src/components/AdminNotes.tsx`) : sur chaque compte (Gestion > Utilisateurs,
   `PATCH /users/{id}/admin-notes`, admins) et chaque commande (détail dans Gestion > Commandes,
-  `PATCH /orders/{id}/admin-notes`, admins et responsables ; trouvées par la recherche). Jamais montrées au client :
+  `PATCH /orders/{id}/admin-notes`, toute l'équipe ; trouvées par la recherche). Jamais montrées au client :
   l'API ne les renvoie pas à `/auth/*`, `/orders/mine` ni `/orders/submit`. `notes` reste le texte du client.
 - Statut d'une commande livrée (décision d'Alain, 2026-10-28) : seul un admin peut le changer ; pour un
-  responsable, le sélecteur de Gestion > Commandes est désactivé avec une explication, et l'API répond 403.
+  employé ou un responsable, le sélecteur de Gestion > Commandes est désactivé avec une explication, et l'API répond 403.
 - Gestion > Utilisateurs affiche la dernière connexion (`last_login_at`, renvoyé seulement par `/users/`,
   heure locale du navigateur) ; `null` = « pas encore enregistrée » (compte pas reconnecté depuis le suivi).
 - Pointage des employés : rôle `employee` (attribué dans Gestion > Utilisateurs). Sur `/compte`,

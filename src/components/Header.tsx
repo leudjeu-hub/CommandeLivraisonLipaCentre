@@ -9,7 +9,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { canManageHours } from '../data/authApi';
+import { isStaff } from '../data/authApi';
 import { whatsappLink } from '../data/catalogue';
 import { FOCUS_ON_DARK } from '../theme';
 
@@ -49,8 +49,8 @@ export default function Header() {
     { to: '/catalogue', label: t('nav.catalogue') },
     ...(customer ? [{ to: '/compte', label: t('nav.myOrders') }] : []),
     { to: '/livraison', label: t('nav.delivery') },
-    // Gestion pour les administrateurs et les responsables (heures)
-    ...(user && canManageHours(user.role) ? [{ to: '/gestion', label: t('nav.admin') }] : []),
+    // Gestion pour l'équipe : employés (articles, commandes), responsables (+ heures), administrateurs
+    ...(user && isStaff(user.role) ? [{ to: '/gestion', label: t('nav.admin') }] : []),
     // « Votre compte » : la connexion si personne n'est connecté, sinon la page du compte
     { to: user ? '/compte' : '/connexion', label: t(user ? 'nav.myAccount' : 'nav.account') },
   ];
