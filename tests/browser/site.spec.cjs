@@ -791,3 +791,10 @@ test('page chargée à part : pas de pied de page avant la page (aucun décalage
     expect(await page.evaluate(() => window.__cls), path).toBeLessThan(0.05);
   }
 });
+
+test('site publié : l’accueil réveille l’API (GET /) dès l’arrivée du visiteur', async ({ page }) => {
+  const wake = page.waitForRequest((r) => r.url() === `${API}/` && r.method() === 'GET');
+  await mockApi(page, () => ({ body: null }));
+  await page.goto('/');
+  await wake;
+});

@@ -111,6 +111,14 @@ export async function request<T>(path: string, init?: RequestOptions): Promise<T
   return body as T;
 }
 
+// Réveil du serveur Render dès l'arrivée d'un visiteur (GET /, quelques octets) : s'il dort, ses ~40 s
+// de démarrage passent pendant que le visiteur lit l'accueil, et non à la connexion ou à l'envoi.
+// Réponse ignorée (no-cors : ni en-tête CORS requis ni erreur dans la console) ; rien en développement.
+export function wakeApi() {
+  if (!import.meta.env.VITE_API_URL) return;
+  fetch(import.meta.env.VITE_API_URL + '/', { mode: 'no-cors', cache: 'no-store' }).catch(() => undefined);
+}
+
 // Une minute : le serveur Render en veille met ~40 s à répondre (message « Chargement… » du catalogue)
 export const PRODUCTS_TIMEOUT = 60_000;
 // Lecture publique sans jeton : requête « simple », sans OPTIONS préalable, même connecté.

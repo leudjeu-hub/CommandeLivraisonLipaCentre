@@ -50,6 +50,10 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   de 3 h : l'API les remplace dès qu'elle répond, et `POST /orders/submit` recalcule les prix.
 - Réveil de l'API : `.github/workflows/reveil-api.yml` appelle `GET /` toutes les 10 min de 5 h à 23 h
   (heure de Yaoundé) pour que Render ne se mette pas en veille (~570 h/mois sur 750 h gratuites).
+  En pratique GitHub ne le lance que toutes les 35 à 50 min (mesuré le 28/10/2026) : Render s'endort quand
+  même. Le vrai réveil est une sonde externe (UptimeRobot, toutes les 5 min). En plus, le site publié
+  appelle `GET /` au chargement (`wakeApi()`, `src/main.tsx`) pour que le démarrage du serveur passe
+  pendant que le visiteur lit l'accueil.
 - Catalogue (~1 500 articles) : `/catalogue` affiche 24 cartes puis « Afficher plus » ; Gestion > Articles
   50 lignes, avec une recherche (nom, n°, famille). Ne jamais afficher toute la liste d'un coup (téléphones
   d'entrée de gamme en 3G). Zones de livraison, catégories et WhatsApp :

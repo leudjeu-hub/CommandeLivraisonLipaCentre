@@ -8,7 +8,9 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import './i18n';
 import { theme } from './theme';
+import { wakeApi } from './data/productsApi';
 
+wakeApi();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
