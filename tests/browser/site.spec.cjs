@@ -686,18 +686,15 @@ test('pages de catégorie : titre propre, adresse directe, ancien filtre ?cat= t
   await expect(page.getByRole('button', { name: 'Livres', pressed: true })).toBeVisible();
 });
 
-test('catalogue : article sans photo propre en carte texte, photo de la famille une fois en tête', async ({ page }) => {
+test('catalogue : chaque carte garde sa photo, même la photo de sa famille', async ({ page }) => {
   const famille = 'img/produits/famille-cahiers.webp';
   const list = PRODUCTS.map((p, i) => (i < 2 ? { ...p, family: 'Cahiers, blocs et registres', image: famille } : p));
   await mockApi(page, (path) => ({ body: path === '/products/' ? list : null }));
   await page.goto('/catalogue');
-  const cards = page.locator('[data-testid="product-card"]');
-  await expect(cards).toHaveCount(PRODUCTS.length);
-  await expect(page.locator(`[data-testid="product-card"] img[src$="${famille}"]`)).toHaveCount(0);
-  await expect(page.locator(`section h2`).first()).toHaveText('Cahiers, blocs et registres (2)');
-  await expect(page.locator(`section img[src$="${famille}"]`)).toHaveCount(1);
-  // Les articles avec leur propre photo la gardent
-  await expect(page.locator('[data-testid="product-card"] img')).toHaveCount(PRODUCTS.length - 2);
+  await expect(page.locator('[data-testid="product-card"]')).toHaveCount(PRODUCTS.length);
+  await expect(page.locator('section h2').first()).toHaveText('Cahiers, blocs et registres (2)');
+  await expect(page.locator(`[data-testid="product-card"] img[src$="${famille}"]`)).toHaveCount(2);
+  await expect(page.locator('[data-testid="product-card"] img')).toHaveCount(PRODUCTS.length);
 });
 
 test('accueil : la sélection vient de selection.json quand rien n’est encore chargé', async ({ page }) => {

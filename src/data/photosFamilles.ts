@@ -29,11 +29,6 @@ export function familyImage(family: string | undefined): string | undefined {
   return FAMILY_PHOTOS.find((p) => p.family === family)?.image;
 }
 
-/** La photo de famille sert d'illustration : pas une photo de l'article lui-même. */
-export function isFamilyPhoto(image: string | undefined): boolean {
-  return !!image && FAMILY_PHOTOS.some((p) => p.image === image);
-}
-
 // Ordre des familles dans le catalogue : ce que les parents cherchent d'abord à la rentrée, le bureau
 // ensuite. Une famille absente de cette liste vient après, par ordre alphabétique.
 export const FAMILY_ORDER = [
