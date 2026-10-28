@@ -1,23 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Alert, Box, Button, Chip, Collapse, FormControl, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack,
+  Alert, Box, Button, Chip, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack,
   TextField, ToggleButton, ToggleButtonGroup, Typography,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import { money, PAYMENT_LABELS, SLOT_LABELS } from '../data/catalogue';
 import {
-  clientRef, customerWhatsApp, listOrders, notesWithoutRef, ORDER_STATUSES, setOrderAdminNotes, setOrderStatus,
+  clientRef, customerWhatsApp, deleteOrder, listOrders, notesWithoutRef, ORDER_STATUSES, setOrderAdminNotes, setOrderStatus,
   type Order, type OrderStatus,
 } from '../data/ordersApi';
 import { showToast } from '../components/Toast';
 import AdminNotes from '../components/AdminNotes';
 import { useAuth } from '../context/AuthContext';
 
-// Onglet « Commandes » de la gestion (administrateurs) : commandes et devis envoyés par le
-// formulaire du site, détail et suivi du statut, remarque interne. Le stock n'est pas modifié ici.
+// Onglet « Commandes » de la gestion (employés, responsables, administrateurs) : commandes et devis envoyés
+// par le formulaire du site, détail et suivi du statut, remarque interne. Le stock n'est pas modifié ici.
 // Une commande livrée est close : seul un administrateur peut en changer le statut (l'API répond 403 sinon).
+// Seul un administrateur peut supprimer une commande, après confirmation.
 
 type Filter = 'open' | OrderStatus | 'all';
 const FILTERS: Filter[] = ['open', ...ORDER_STATUSES, 'all'];
@@ -39,6 +40,8 @@ export default function OrdersAdmin() {
   const [filter, setFilter] = useState<Filter>('open');
   const [open, setOpen] = useState<number | null>(null);
   const [search, setSearch] = useState('');
+  const [toDelete, setToDelete] = useState<Order | null>(null);
+  const [deleteError, setDeleteError] = useState('');
 
   const load = useCallback(() => {
     setError('');
@@ -73,6 +76,19 @@ export default function OrdersAdmin() {
   const saveNotes = async (order: Order, text: string) => {
     const updated = await setOrderAdminNotes(order.id, text);
     setOrders((list) => list?.map((o) => (o.id === updated.id ? updated : o)) ?? null);
+  };
+
+  const handleDelete = async () => {
+    if (!toDelete) return;
+    setDeleteError('');
+    try {
+      await deleteOrder(toDelete.id);
+      setOrders((list) => list?.filter((o) => o.id !== toDelete.id) ?? null);
+      showToast(t('orders.deleted', { id: label(toDelete) }));
+      setToDelete(null);
+    } catch (err) {
+      setDeleteError((err as Error).message);
+    }
   };
 
   // Même règle que l'API : 30 jours après l'annulation (ou la création, pour les anciennes)
@@ -191,6 +207,11 @@ export default function OrdersAdmin() {
                       </Button>
                     )}
                     <Button size="small" variant="outlined" href={`tel:${o.phone.replace(/[^\d+]/g, '')}`}>{t('orders.call')}</Button>
+                    {isAdmin && (
+                      <Button size="small" color="error" onClick={() => { setDeleteError(''); setToDelete(o); }}>
+                        {t('orders.delete')}
+                      </Button>
+                    )}
                   </Box>
                   {locked && (
                     <Typography id={`status-lock-${o.id}`} variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -203,6 +224,18 @@ export default function OrdersAdmin() {
           );
         })}
       </Stack>
+
+      <Dialog open={toDelete !== null} onClose={() => setToDelete(null)}>
+        <DialogTitle>{t('orders.deleteTitle', { id: toDelete ? label(toDelete) : '' })}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{t('orders.deleteText')}</DialogContentText>
+          {deleteError && <Alert severity="error" sx={{ mt: 2 }}>{deleteError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setToDelete(null)}>{t('admin.cancel')}</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">{t('admin.delete')}</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

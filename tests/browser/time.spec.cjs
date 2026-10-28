@@ -95,7 +95,7 @@ test('le gérant voit les totaux et corrige un pointage', async ({ page }) => {
   await expect(page.getByTestId('entry-row').last()).toContainText('corrigé');
 });
 
-test('le responsable voit les commandes et les heures, et ne corrige pas les siennes', async ({ page }) => {
+test('le responsable voit les articles, les commandes et les heures, et ne corrige pas les siennes', async ({ page }) => {
   const entries = [
     entry(1, EMPLOYEE, todayAt(0, 0), todayAt(2, 0)),
     entry(2, MANAGER, todayAt(0, 0), todayAt(1, 0)),
@@ -104,8 +104,8 @@ test('le responsable voit les commandes et les heures, et ne corrige pas les sie
   await page.route(/\/orders\/$/, (route) => route.fulfill({ contentType: 'application/json', body: '[]' }));
   await page.goto('/gestion');
   await expect(page.getByRole('heading', { name: 'Gestion', exact: true })).toBeVisible();
-  // Ni articles ni utilisateurs ; les commandes s'ouvrent d'abord
-  await expect(page.getByRole('tab')).toHaveText(['Commandes', 'Heures']);
+  // Pas d'utilisateurs ; les commandes s'ouvrent d'abord
+  await expect(page.getByRole('tab')).toHaveText(['Articles', 'Commandes', 'Heures']);
   await expect(page.getByRole('tab', { name: 'Commandes' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByText('Aucune commande ici.')).toBeVisible();
   await page.getByRole('tab', { name: 'Heures' }).click();
@@ -114,4 +114,15 @@ test('le responsable voit les commandes et les heures, et ne corrige pas les sie
   await expect(page.getByRole('button', { name: /Corriger le pointage de awa@exemple.cm/ })).toHaveCount(1);
   await expect(page.getByRole('button', { name: /Corriger le pointage de resp@exemple.cm/ })).toHaveCount(0);
   await expect(page.getByTestId('hours-row').filter({ hasText: 'resp@exemple.cm' })).toContainText('1 h 00');
+});
+
+test("l'employé gère les articles et les commandes, pas les heures de l'équipe", async ({ page }) => {
+  await mockApi(page, EMPLOYEE, []);
+  await page.route(/\/orders\/$/, (route) => route.fulfill({ contentType: 'application/json', body: '[]' }));
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Gestion' }).first().click();
+  await expect(page).toHaveURL(/\/gestion$/);
+  await expect(page.getByRole('tab')).toHaveText(['Articles', 'Commandes']);
+  await expect(page.getByRole('tab', { name: 'Commandes' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('Aucune commande ici.')).toBeVisible();
 });
