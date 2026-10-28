@@ -13,9 +13,11 @@ import {
 } from '../data/ordersApi';
 import { showToast } from '../components/Toast';
 import AdminNotes from '../components/AdminNotes';
+import { useAuth } from '../context/AuthContext';
 
 // Onglet « Commandes » de la gestion (administrateurs) : commandes et devis envoyés par le
 // formulaire du site, détail et suivi du statut, remarque interne. Le stock n'est pas modifié ici.
+// Une commande livrée est close : seul un administrateur peut en changer le statut (l'API répond 403 sinon).
 
 type Filter = 'open' | OrderStatus | 'all';
 const FILTERS: Filter[] = ['open', ...ORDER_STATUSES, 'all'];
@@ -30,6 +32,7 @@ const STATUS_COLOR = {
 
 export default function OrdersAdmin() {
   const { t, i18n } = useTranslation();
+  const isAdmin = useAuth().user?.role === 'admin';
   const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-GB';
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [error, setError] = useState('');
@@ -119,6 +122,7 @@ export default function OrdersAdmin() {
         {shown.map((o) => {
           const whatsapp = customerWhatsApp(o.phone);
           const fee = o.delivery_fee;
+          const locked = o.status === 'delivered' && !isAdmin;
           return (
             <Paper key={o.id} data-testid="order-row" variant="outlined" sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
@@ -169,13 +173,14 @@ export default function OrdersAdmin() {
                   )}
                   <AdminNotes value={o.admin_notes} onSave={(text) => saveNotes(o, text)} />
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center', mt: 2 }}>
-                    <FormControl size="small" sx={{ minWidth: 170 }}>
+                    <FormControl size="small" sx={{ minWidth: 170 }} disabled={locked}>
                       <InputLabel id={`status-${o.id}`}>{t('orders.statusLabel')}</InputLabel>
                       <Select
                         labelId={`status-${o.id}`}
                         label={t('orders.statusLabel')}
                         value={o.status}
                         onChange={(e) => changeStatus(o, e.target.value as OrderStatus)}
+                        SelectDisplayProps={locked ? { 'aria-describedby': `status-lock-${o.id}` } : undefined}
                       >
                         {ORDER_STATUSES.map((s) => <MenuItem key={s} value={s}>{t(`orders.status.${s}`)}</MenuItem>)}
                       </Select>
@@ -187,6 +192,11 @@ export default function OrdersAdmin() {
                     )}
                     <Button size="small" variant="outlined" href={`tel:${o.phone.replace(/[^\d+]/g, '')}`}>{t('orders.call')}</Button>
                   </Box>
+                  {locked && (
+                    <Typography id={`status-lock-${o.id}`} variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      {t('orders.deliveredLocked')}
+                    </Typography>
+                  )}
                 </Box>
               </Collapse>
             </Paper>

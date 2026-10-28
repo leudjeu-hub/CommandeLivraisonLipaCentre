@@ -470,6 +470,7 @@
     "feeFree": "offerte",
     "toPay": "Total :",
     "statusLabel": "Statut",
+    "deliveredLocked": "Commande livrée : seul un administrateur peut en changer le statut.",
     "whatsapp": "Écrire sur WhatsApp",
     "call": "Appeler",
     "statusChanged": "Commande {{id}} : {{status}}.",
