@@ -8,13 +8,14 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import { money, PAYMENT_LABELS, SLOT_LABELS } from '../data/catalogue';
 import {
-  clientRef, customerWhatsApp, listOrders, notesWithoutRef, ORDER_STATUSES, setOrderStatus, type Order,
-  type OrderStatus,
+  clientRef, customerWhatsApp, listOrders, notesWithoutRef, ORDER_STATUSES, setOrderAdminNotes, setOrderStatus,
+  type Order, type OrderStatus,
 } from '../data/ordersApi';
 import { showToast } from '../components/Toast';
+import AdminNotes from '../components/AdminNotes';
 
 // Onglet « Commandes » de la gestion (administrateurs) : commandes et devis envoyés par le
-// formulaire du site, détail et suivi du statut. Le stock n'est pas modifié ici.
+// formulaire du site, détail et suivi du statut, remarque interne. Le stock n'est pas modifié ici.
 
 type Filter = 'open' | OrderStatus | 'all';
 const FILTERS: Filter[] = ['open', ...ORDER_STATUSES, 'all'];
@@ -46,12 +47,12 @@ export default function OrdersAdmin() {
     () => Object.fromEntries(FILTERS.map((f) => [f, orders?.filter((o) => matches(o, f)).length ?? 0])),
     [orders],
   );
-  // Recherche par référence, nom ou téléphone, tous statuts confondus (le client peut citer une
+  // Recherche par référence, nom, remarque interne ou téléphone, tous statuts confondus (le client peut citer une
   // commande déjà livrée). « 2510-4821 », « 4821 » et « LC-2510-4821 » trouvent la même commande.
   const query = search.trim().toLowerCase();
   const digits = query.replace(/\D/g, '');
   const found = (o: Order) =>
-    `${clientRef(o) ?? ''} n° ${o.id} ${o.customer_name}`.toLowerCase().includes(query) ||
+    `${clientRef(o) ?? ''} n° ${o.id} ${o.customer_name} ${o.admin_notes ?? ''}`.toLowerCase().includes(query) ||
     (digits.length >= 4 && `${clientRef(o) ?? ''} ${o.phone}`.replace(/\D/g, '').includes(digits));
   const shown = orders?.filter((o) => (query ? found(o) : matches(o, filter))) ?? [];
 
@@ -64,6 +65,11 @@ export default function OrdersAdmin() {
     } catch (err) {
       setError((err as Error).message);
     }
+  };
+
+  const saveNotes = async (order: Order, text: string) => {
+    const updated = await setOrderAdminNotes(order.id, text);
+    setOrders((list) => list?.map((o) => (o.id === updated.id ? updated : o)) ?? null);
   };
 
   // Même règle que l'API : 30 jours après l'annulation (ou la création, pour les anciennes)
@@ -129,6 +135,7 @@ export default function OrdersAdmin() {
                       <Chip size="small" variant="outlined" label={t('orders.purgeOn', { date: purgeDate(o) })} />
                     )}
                     {o.kind === 'quote' && <Chip size="small" variant="outlined" label={t('orders.quote')} />}
+                    {o.admin_notes && <Chip size="small" variant="outlined" color="secondary" label={t('adminNotes.chip')} />}
                     {o.kind === 'order' && (
                       <Chip size="small" variant="outlined" label={money(o.total + (fee ?? 0), locale)} />
                     )}
@@ -160,6 +167,7 @@ export default function OrdersAdmin() {
                       {' · '}<strong>{t('orders.toPay')} {money(o.total + (fee ?? 0), locale)}</strong>
                     </Typography>
                   )}
+                  <AdminNotes value={o.admin_notes} onSave={(text) => saveNotes(o, text)} />
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center', mt: 2 }}>
                     <FormControl size="small" sx={{ minWidth: 170 }}>
                       <InputLabel id={`status-${o.id}`}>{t('orders.statusLabel')}</InputLabel>

@@ -21,6 +21,8 @@ export interface User {
   is_active: boolean;
   // Liste /users/ (administrateurs) seulement ; null = aucune connexion enregistrée depuis le suivi
   last_login_at?: string | null;
+  // Remarque interne des administrateurs (liste /users/ seulement, jamais montrée au client)
+  admin_notes?: string | null;
 }
 
 interface TokenResponse {
@@ -50,6 +52,9 @@ export const setRole = (id: number, role: Role) =>
 
 export const setActive = (id: number, active: boolean) =>
   request<User>(`/users/${id}/active`, { method: 'PATCH', body: JSON.stringify({ active }) });
+
+export const setUserAdminNotes = (id: number, admin_notes: string) =>
+  request<User>(`/users/${id}/admin-notes`, { method: 'PATCH', body: JSON.stringify({ admin_notes }) });
 
 export const deleteUser = (id: number) => request<void>(`/users/${id}`, { method: 'DELETE' });
 

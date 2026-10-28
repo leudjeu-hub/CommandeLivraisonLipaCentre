@@ -575,5 +575,16 @@
       "delivered": "Delivered",
       "cancelled": "Cancelled"
     }
+  },
+  "adminNotes": {
+    "label": "Internal note",
+    "title": "Internal note:",
+    "help": "Only visible in Management, never to the customer.",
+    "add": "Add a note",
+    "edit": "Edit the note",
+    "save": "Save",
+    "saved": "Note saved",
+    "cleared": "Note cleared",
+    "chip": "Internal note"
   }
 }
