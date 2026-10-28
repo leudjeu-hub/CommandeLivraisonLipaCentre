@@ -223,6 +223,44 @@ test('commandes : filtrer, voir le détail, changer le statut', async ({ page })
   await expect(orderRows).toHaveCount(1);
 });
 
+test('commandes : seul un administrateur change le statut d\'une commande livrée', async ({ page }) => {
+  const order = (id, extra = {}) => ({
+    id, kind: 'order', customer_name: 'Awa', phone: '+237 690 00 00 00', status: 'delivered', total: 3000,
+    delivery_fee: 1000, area: 'Bastos', address: null, slot: null, payment: null, notes: null, admin_notes: null,
+    created_at: '2026-10-24T08:30:00Z', status_changed_at: '2026-10-25T08:30:00Z', items: [], ...extra,
+  });
+  await page.route(/\/orders\/$/, (route) => route.fulfill({
+    contentType: 'application/json', body: JSON.stringify([order(2, { customer_name: 'Paul', status: 'confirmed' }), order(1)]),
+  }));
+  const openOrders = async () => {
+    await page.goto('/gestion');
+    await page.getByRole('tab', { name: 'Commandes' }).click();
+    await page.getByRole('button', { name: /Toutes \(2\)/ }).click();
+    const rows = page.getByTestId('order-row');
+    for (const i of [0, 1]) await rows.nth(i).getByRole('button', { name: 'Détails' }).click();
+    return rows;
+  };
+  const note = 'Commande livrée : seul un administrateur peut en changer le statut.';
+
+  // Administrateur : tout reste modifiable
+  let rows = await openOrders();
+  await expect(rows.nth(1).getByRole('combobox', { name: 'Statut' })).not.toHaveAttribute('aria-disabled', 'true');
+  await expect(page.getByText(note)).toHaveCount(0);
+
+  // Responsable : la commande livrée est verrouillée, avec l'explication ; l'autre reste modifiable
+  await page.route('**/auth/me', (route) => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify({ id: 2, email: 'resp@exemple.cm', role: 'manager', created_at: '2026-10-19T08:00:00' }),
+  }));
+  rows = await openOrders();
+  const locked = rows.nth(1).getByRole('combobox', { name: 'Statut' });
+  await expect(locked).toHaveAttribute('aria-disabled', 'true');
+  await expect(locked).toHaveAccessibleDescription(note);
+  await expect(rows.nth(0).getByRole('combobox', { name: 'Statut' })).not.toHaveAttribute('aria-disabled', 'true');
+  await expect(page.getByText(note)).toHaveCount(1);
+  await page.screenshot({ path: 'test-results/statut-livre-responsable.png', fullPage: true });
+});
+
 test('commandes : remarque interne, séparée des remarques du client', async ({ page }) => {
   let order = {
     id: 5, kind: 'order', customer_name: 'Awa', phone: '+237 690 00 00 00', status: 'new', total: 3000,

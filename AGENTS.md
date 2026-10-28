@@ -89,6 +89,8 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
   `PATCH /users/{id}/admin-notes`, admins) et chaque commande (détail dans Gestion > Commandes,
   `PATCH /orders/{id}/admin-notes`, admins et responsables ; trouvées par la recherche). Jamais montrées au client :
   l'API ne les renvoie pas à `/auth/*`, `/orders/mine` ni `/orders/submit`. `notes` reste le texte du client.
+- Statut d'une commande livrée (décision d'Alain, 2026-10-28) : seul un admin peut le changer ; pour un
+  responsable, le sélecteur de Gestion > Commandes est désactivé avec une explication, et l'API répond 403.
 - Gestion > Utilisateurs affiche la dernière connexion (`last_login_at`, renvoyé seulement par `/users/`,
   heure locale du navigateur) ; `null` = « pas encore enregistrée » (compte pas reconnecté depuis le suivi).
 - Pointage des employés : rôle `employee` (attribué dans Gestion > Utilisateurs). Sur `/compte`,

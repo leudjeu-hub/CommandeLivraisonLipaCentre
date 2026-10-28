@@ -470,6 +470,7 @@
     "feeFree": "free",
     "toPay": "Total:",
     "statusLabel": "Status",
+    "deliveredLocked": "Delivered order: only an administrator can change its status.",
     "whatsapp": "Message on WhatsApp",
     "call": "Call",
     "statusChanged": "Order {{id}}: {{status}}.",
