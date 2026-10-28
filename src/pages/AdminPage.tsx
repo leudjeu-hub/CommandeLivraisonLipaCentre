@@ -22,8 +22,10 @@ import { showToast } from '../components/Toast';
 import { useAuth } from '../context/AuthContext';
 import SessionWait from '../components/SessionWait';
 import {
-  canManageHours, deleteUser, listUsers, resetPassword, ROLE_LABEL, ROLES, setActive, setRole, type Role, type User,
+  canManageHours, deleteUser, listUsers, resetPassword, ROLE_LABEL, ROLES, setActive, setRole, setUserAdminNotes,
+  type Role, type User,
 } from '../data/authApi';
+import AdminNotes from '../components/AdminNotes';
 import HoursAdmin from './HoursAdmin';
 import OrdersAdmin from './OrdersAdmin';
 import CatalogueImport, { exportCatalogue } from './CatalogueImport';
@@ -214,6 +216,13 @@ function UsersAdmin({ currentUserId }: { currentUserId: number }) {
                 {!u.is_active && <Chip size="small" color="error" label={t('admin.blocked')} />}
               </Stack>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{lastLogin(u.last_login_at)}</Typography>
+              <AdminNotes
+                value={u.admin_notes}
+                onSave={async (text) => {
+                  const updated = await setUserAdminNotes(u.id, text);
+                  setUsers((list) => list?.map((x) => (x.id === updated.id ? updated : x)) ?? null);
+                }}
+              />
             </Box>
             {/* Se retirer ses propres droits ou se bloquer ferait perdre l'accès à cette page */}
             {u.id !== currentUserId && (

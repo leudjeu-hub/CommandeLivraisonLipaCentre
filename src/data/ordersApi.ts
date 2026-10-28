@@ -35,6 +35,8 @@ export interface Order {
   // Dernier changement de statut : une commande annulée est supprimée 30 jours après
   status_changed_at: string | null;
   items: OrderItem[];
+  // Remarque interne de la boutique : listes de la Gestion seulement, jamais renvoyée au client
+  admin_notes?: string | null;
   // Réponse à un envoi sans compte seulement : code pour rattacher la commande au compte plus tard
   claim_code?: string | null;
 }
@@ -108,6 +110,9 @@ export const notesWithoutRef = (o: Order) => (clientRef(o) ? o.notes!.replace(RE
 
 export const setOrderStatus = (id: number, status: OrderStatus) =>
   request<Order>(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) });
+
+export const setOrderAdminNotes = (id: number, admin_notes: string) =>
+  request<Order>(`/orders/${id}/admin-notes`, { method: 'PATCH', body: JSON.stringify({ admin_notes }) });
 
 // Lien WhatsApp vers le client : numéro saisi librement (+237 6…, 6…, 00237…)
 export function customerWhatsApp(phone: string): string | null {

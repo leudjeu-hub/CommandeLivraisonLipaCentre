@@ -81,6 +81,10 @@ Consignes pour les assistants IA qui travaillent sur ce dépôt.
 - Rôles : `user` (client), `employee`, `manager` (responsable : onglets « Commandes » et « Heures » de `/gestion`,
   ne corrige pas ses propres heures), `admin`. Un admin bloque / débloque ou supprime un compte
   (Gestion > Utilisateurs) ; l'API refuse de supprimer un compte qui a des heures (409 → le bloquer).
+- Remarques internes (`admin_notes`, `src/components/AdminNotes.tsx`) : sur chaque compte (Gestion > Utilisateurs,
+  `PATCH /users/{id}/admin-notes`, admins) et chaque commande (détail dans Gestion > Commandes,
+  `PATCH /orders/{id}/admin-notes`, admins et responsables ; trouvées par la recherche). Jamais montrées au client :
+  l'API ne les renvoie pas à `/auth/*`, `/orders/mine` ni `/orders/submit`. `notes` reste le texte du client.
 - Gestion > Utilisateurs affiche la dernière connexion (`last_login_at`, renvoyé seulement par `/users/`,
   heure locale du navigateur) ; `null` = « pas encore enregistrée » (compte pas reconnecté depuis le suivi).
 - Pointage des employés : rôle `employee` (attribué dans Gestion > Utilisateurs). Sur `/compte`,

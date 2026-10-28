@@ -575,5 +575,16 @@
       "delivered": "Livrée",
       "cancelled": "Annulée"
     }
+  },
+  "adminNotes": {
+    "label": "Remarque interne",
+    "title": "Remarque interne :",
+    "help": "Visible seulement dans la Gestion, jamais par le client.",
+    "add": "Ajouter une remarque",
+    "edit": "Modifier la remarque",
+    "save": "Enregistrer",
+    "saved": "Remarque enregistrée",
+    "cleared": "Remarque effacée",
+    "chip": "Remarque interne"
   }
 }

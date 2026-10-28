@@ -11,8 +11,8 @@ test.beforeEach(async ({ page }) => {
   page.on('pageerror', (e) => { throw e; });
   const json = (route, status, body) =>
     route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
-  // /auth/* ne renvoie pas last_login_at, seule la liste /users/ (administrateurs) le donne
-  const publicUser = ({ password, last_login_at, ...u }) => u;
+  // /auth/* ne renvoie ni last_login_at ni admin_notes, seule la liste /users/ (administrateurs) les donne
+  const publicUser = ({ password, last_login_at, admin_notes, ...u }) => u;
   const adminUser = ({ password, ...u }) => u;
   const session = (route, user) => {
     const token = `jeton-${user.id}-${tokens.size}`;
@@ -53,7 +53,8 @@ test.beforeEach(async ({ page }) => {
       users.get(id).password = 'provisoire7';
       return json(route, 200, { password: 'provisoire7' });
     }
-    if (path.endsWith('/active')) users.get(id).is_active = body.active;
+    if (path.endsWith('/admin-notes')) users.get(id).admin_notes = body.admin_notes.trim() || null;
+    else if (path.endsWith('/active')) users.get(id).is_active = body.active;
     else users.get(id).role = body.role;
     return json(route, 200, adminUser(users.get(id)));
   });
@@ -474,4 +475,35 @@ test('commande envoyée sans compte : rattachée au compte créé ensuite sur ce
   expect(claimed).toEqual([{ codes: ['code-invite'] }]);
   // Code utilisé : oublié, pas renvoyé à la visite suivante
   expect(await page.evaluate(() => localStorage.getItem('centre-commandes-a-rattacher'))).toBeNull();
+});
+
+test('remarque interne sur un compte (Gestion > Utilisateurs)', async ({ page }) => {
+  await page.goto('/connexion');
+  await page.getByLabel('E-mail').fill('admin@exemple.cm');
+  await page.getByLabel('Mot de passe').fill('admin-123');
+  await page.getByRole('button', { name: 'Se connecter' }).click();
+  await page.goto('/gestion');
+  await page.getByRole('tab', { name: 'Utilisateurs' }).click();
+  const row = page.getByTestId('user-row').first();
+  await row.getByRole('button', { name: 'Ajouter une remarque' }).click();
+  await row.getByLabel('Remarque interne').fill('Achète pour l\'école Les Lauriers\npaie toujours en espèces');
+  await expect(row).toContainText('jamais par le client');
+  await row.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(page.getByText('Remarque enregistrée')).toBeVisible();
+  await expect(row).toContainText('Remarque interne : Achète pour l\'école Les Lauriers');
+  // Relue depuis l'API après rechargement
+  await page.reload();
+  await page.getByRole('tab', { name: 'Utilisateurs' }).click();
+  await expect(row).toContainText('paie toujours en espèces');
+  // Annuler ne change rien ; vider efface
+  await row.getByRole('button', { name: 'Modifier la remarque' }).click();
+  await row.getByLabel('Remarque interne').fill('autre chose');
+  await row.getByRole('button', { name: 'Annuler' }).click();
+  await expect(row).toContainText('Les Lauriers');
+  await row.getByRole('button', { name: 'Modifier la remarque' }).click();
+  await row.getByLabel('Remarque interne').fill('   ');
+  await row.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(page.getByText('Remarque effacée')).toBeVisible();
+  await expect(row).not.toContainText('Remarque interne');
+  await expect(row.getByRole('button', { name: 'Ajouter une remarque' })).toBeVisible();
 });

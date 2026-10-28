@@ -222,3 +222,44 @@ test('commandes : filtrer, voir le détail, changer le statut', async ({ page })
   await search.fill('');
   await expect(orderRows).toHaveCount(1);
 });
+
+test('commandes : remarque interne, séparée des remarques du client', async ({ page }) => {
+  let order = {
+    id: 5, kind: 'order', customer_name: 'Awa', phone: '+237 690 00 00 00', status: 'new', total: 3000,
+    delivery_fee: 1000, area: 'Bastos', address: null, slot: null, payment: null,
+    notes: 'Référence : LC-2410-4821\nSonner deux fois', admin_notes: null, created_at: '2026-10-24T08:30:00Z',
+    status_changed_at: null, items: [],
+  };
+  const sent = [];
+  await page.route(/\/orders\/(\d+\/admin-notes)?$/, (route) => {
+    const req = route.request();
+    if (req.method() === 'PATCH') {
+      sent.push(req.postDataJSON());
+      if (req.postDataJSON().admin_notes === 'erreur') return route.fulfill({ status: 500, contentType: 'application/json', body: '{"detail":"Erreur serveur"}' });
+      order = { ...order, admin_notes: req.postDataJSON().admin_notes || null };
+      return route.fulfill({ contentType: 'application/json', body: JSON.stringify(order) });
+    }
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify([order]) });
+  });
+  await page.goto('/gestion');
+  await page.getByRole('tab', { name: 'Commandes' }).click();
+  const row = page.getByTestId('order-row').first();
+  await row.getByRole('button', { name: 'Détails' }).click();
+  await row.getByRole('button', { name: 'Ajouter une remarque' }).click();
+  await row.getByLabel('Remarque interne').fill('erreur');
+  await row.getByRole('button', { name: 'Enregistrer' }).click();
+  // Erreur : le texte reste dans le champ pour réessayer
+  await expect(row.getByRole('alert')).toBeVisible();
+  await expect(row.getByLabel('Remarque interne')).toHaveValue('erreur');
+  await row.getByLabel('Remarque interne').fill('Acompte 2 000 FCFA reçu');
+  await row.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(row).toContainText('Remarque interne : Acompte 2 000 FCFA reçu');
+  // Les remarques du client restent à part, inchangées
+  await expect(row).toContainText('Remarques : Sonner deux fois');
+  expect(sent).toEqual([{ admin_notes: 'erreur' }, { admin_notes: 'Acompte 2 000 FCFA reçu' }]);
+  // Repère visible sans ouvrir le détail, et la recherche trouve le texte de la remarque
+  await row.getByRole('button', { name: 'Masquer' }).click();
+  await expect(row.getByText('Remarque interne', { exact: true })).toBeVisible();
+  await page.getByLabel('Rechercher (référence LC-…, nom, téléphone)').fill('acompte');
+  await expect(page.getByTestId('order-row')).toHaveCount(1);
+});
