@@ -2,3 +2,6 @@
 # domaine compte : ce fichier ne servira qu'avec un nom de domaine propre.
 User-agent: *
 Allow: /
+# Site de test (branche develop), voir .github/workflows/deploy.yml
+Disallow: /test/
+Disallow: /CommandeLivraisonLipaCentre/test/

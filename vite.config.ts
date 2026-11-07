@@ -25,6 +25,9 @@ const apiCsp: Plugin = {
 // sitemap.xml liste l'accueil et les pages indexables (mêmes adresses que leur balise canonical), à
 // envoyer dans Google Search Console : sur github.io, le robots.txt du site n'est pas lu par Google.
 const SITE_URL = 'https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/';
+// Site de test (branche develop, publié sous …/test/ par deploy.yml) : SITE_TEST=1. Toutes les pages en
+// noindex, pas de sitemap, et un bandeau « Site de test » (src/components/Layout.tsx).
+const SITE_TEST = process.env.SITE_TEST === '1';
 const fr = JSON.parse(fs.readFileSync(new URL('./src/locales/fr.json', import.meta.url), 'utf8'));
 const PAGES: { route: string; title: string; description?: string; noindex?: boolean }[] = [
   { route: 'catalogue', title: fr.seo.catalogue, description: 'Cahiers, stylos, géométrie, papier, classement, dictionnaires, livres scolaires, sacs et cartables : prix en FCFA. Livraison à Yaoundé, paiement à la réception.' },
@@ -59,7 +62,8 @@ const spaFallback: Plugin = {
   },
   closeBundle: () => {
     // Lien « Votre compte » de l'écran de démarrage : écrit /connexion dans index.html, préfixé ici par le chemin du site
-    const html = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8').replace('href="/connexion"', `href="${base}connexion"`);
+    let html = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8').replace('href="/connexion"', `href="${base}connexion"`);
+    if (SITE_TEST) html = html.replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />');
     fs.writeFileSync(path.join(outDir, '404.html'), html
       .replace(/<title>[^<]*<\/title>/, `<title>${escapeAttr(fr.seo.notFound)}</title>`)
       .replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />'));
@@ -73,11 +77,11 @@ const spaFallback: Plugin = {
       if (page.description) out = out
         .replace(/(<meta name="description" content=")[^"]*/, `$1${escapeAttr(page.description)}`)
         .replace(/(<meta property="og:description" content=")[^"]*/, `$1${escapeAttr(page.description)}`);
-      if (page.noindex) out = out.replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />');
+      if (page.noindex || SITE_TEST) out = out.replace(/<link rel="canonical"[^>]*>/, '<meta name="robots" content="noindex" />');
       fs.writeFileSync(path.join(outDir, `${page.route}.html`), out);
     }
-    const urls = ['', ...PAGES.filter((page) => !page.noindex).map((page) => page.route)];
-    fs.writeFileSync(
+    const urls = SITE_TEST ? [] : ['', ...PAGES.filter((page) => !page.noindex).map((page) => page.route)];
+    if (urls.length) fs.writeFileSync(
       path.join(outDir, 'sitemap.xml'),
       '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + urls.map((route) => `  <url><loc>${SITE_URL}${route}</loc></url>\n`).join('')
@@ -94,7 +98,10 @@ export default defineConfig(({ command }) => ({
   base: process.env.BASE_PATH || '/',
   plugins: [react(), apiCsp, spaFallback],
   // Préfixe des appels à l'API (src/data/productsApi.ts) : vide en développement (même origine, proxy)
-  define: { 'import.meta.env.VITE_API_URL': JSON.stringify(command === 'build' ? PROD_API : '') },
+  define: {
+    'import.meta.env.VITE_API_URL': JSON.stringify(command === 'build' ? PROD_API : ''),
+    'import.meta.env.VITE_SITE_TEST': JSON.stringify(SITE_TEST),
+  },
   server: {
     port: 4200,
     host: '127.0.0.1',
