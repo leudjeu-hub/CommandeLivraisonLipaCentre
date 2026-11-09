@@ -7,9 +7,9 @@ import { homeShell } from './scripts/accueil-statique';
 
 // API (articles, connexion, comptes).
 // - Développement : l'API locale, relayée par le proxy Vite (CATALOGUE_API=http://… npm run dev).
-// - Site publié : l'API sur Render, appelée directement (PROD_API_URL=https://… npm run build).
+// - Site publié : l’API via le relais Cloudflare lipace-api (vers Render), appelée directement (PROD_API_URL=https://… npm run build).
 const DEV_API = process.env.CATALOGUE_API || 'http://localhost:8000';
-const PROD_API = (process.env.PROD_API_URL || 'https://papeterie-api-kshr.onrender.com').replace(/\/$/, '');
+const PROD_API = (process.env.PROD_API_URL || 'https://lipace-api.leudjeu.workers.dev').replace(/\/$/, '');
 
 // Build : la CSP autorise aussi l'API (connect-src) ; en développement, 'self' suffit (proxy)
 const apiCsp: Plugin = {

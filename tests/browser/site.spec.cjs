@@ -4,7 +4,7 @@ const { test, expect } = require('@playwright/test');
 // Le site publié appelle l'API sur Render (vite.config.ts). Dans les tests, elle est simulée :
 // par défaut GET /products/ renvoie les 8 articles de products.json, le reste répond 503 ; un test
 // peut la remplacer avec mockApi(). Toute autre requête externe fait échouer le test.
-const API = 'https://papeterie-api-kshr.onrender.com';
+const API = 'https://lipace-api.leudjeu.workers.dev';
 const PRODUCTS = require('./products.json');
 
 test.beforeEach(async ({ page }) => {

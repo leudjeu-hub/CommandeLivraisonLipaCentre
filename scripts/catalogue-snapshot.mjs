@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { writeStaticCatalogue } from './catalogue-statique.mjs';
 
-const API = (process.env.PROD_API_URL || 'https://papeterie-api-kshr.onrender.com').replace(/\/$/, '');
+const API = (process.env.PROD_API_URL || 'https://lipace-api.leudjeu.workers.dev').replace(/\/$/, '');
 const out = path.join(process.argv[2] || 'dist', 'catalogue.json');
 
 async function fetchProducts() {
