@@ -1,0 +1,533 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>La stack LipaCentre</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : une colonne de lecture (~70ch), le schéma déborde en pleine largeur avec défilement horizontal propre */
+:root{
+  --bg:#f5f7fa; --paper:#ffffff; --fg:#1b2330; --muted:#5b6678; --line:#d5dbe4; --ink:#2b3545;
+  --accent:#0f6b8f;
+  --cf:#e8771a; --cf-bg:#fdf1e6;
+  --rd:#6a4bd8; --rd-bg:#f0ecfd;
+  --ne:#14946a; --ne-bg:#e6f6ef;
+  --gh:#7a8291; --gh-bg:#eef0f3;
+  --cl:#2c6fd1; --cl-bg:#e9f1fc;
+  --warn:#b4231b; --warn-bg:#fdecea; --ok:#1f7a45; --mid:#a0620a; --mid-bg:#fdf3e1;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161e; --paper:#18202b; --fg:#e6ebf2; --muted:#9aa5b6; --line:#2d3848; --ink:#c9d2df;
+  --accent:#5cc0e6;
+  --cf:#f59a4c; --cf-bg:#2e2116; --rd:#a48cff; --rd-bg:#231d3a; --ne:#45cf9c; --ne-bg:#14291f;
+  --gh:#9aa2b0; --gh-bg:#1f2630; --cl:#6fa6f5; --cl-bg:#152338;
+  --warn:#ff8a80; --warn-bg:#3a1a18; --ok:#6fd49a; --mid:#f2b45a; --mid-bg:#33260f;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161e; --paper:#18202b; --fg:#e6ebf2; --muted:#9aa5b6; --line:#2d3848; --ink:#c9d2df;
+  --accent:#5cc0e6;
+  --cf:#f59a4c; --cf-bg:#2e2116; --rd:#a48cff; --rd-bg:#231d3a; --ne:#45cf9c; --ne-bg:#14291f;
+  --gh:#9aa2b0; --gh-bg:#1f2630; --cl:#6fa6f5; --cl-bg:#152338;
+  --warn:#ff8a80; --warn-bg:#3a1a18; --ok:#6fd49a; --mid:#f2b45a; --mid-bg:#33260f;
+  color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+.read{max-width:70ch}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.65rem;font-weight:700;margin-bottom:12px}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0 0 12px}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+code{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 5px;word-break:break-word}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.lede{font-size:1.15rem;color:var(--ink);max-width:62ch;margin-top:14px}
+.meta{font-size:.9rem;color:var(--muted);margin-top:10px}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Schéma */
+.figure{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 0 10px}
+.figure .scroll{overflow-x:auto;padding:0 14px}
+.figure svg{display:block;width:100%;min-width:880px;height:auto}
+.figure .hint{font-size:.85rem;color:var(--muted);padding:6px 18px 0}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:10px 18px 4px;font-size:.88rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:3px;border:2px solid}
+svg text{font-family:var(--f-body);fill:var(--fg)}
+svg .t-title{font-family:var(--f-display);font-weight:700;font-size:15px}
+svg .t-sub{font-size:12px;fill:var(--muted)}
+svg .t-mono{font-family:var(--f-mono);font-size:11px;fill:var(--ink)}
+svg .t-zone{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;font-weight:600}
+svg .t-edge{font-size:11.5px;fill:var(--ink)}
+svg .num circle{fill:var(--accent)}
+svg .num text{fill:var(--paper);font-family:var(--f-mono);font-weight:600;font-size:11px}
+.z-cf{fill:var(--cf-bg);stroke:var(--cf)} .z-rd{fill:var(--rd-bg);stroke:var(--rd)} .z-ne{fill:var(--ne-bg);stroke:var(--ne)}
+.z-gh{fill:var(--gh-bg);stroke:var(--gh);stroke-dasharray:6 5} .z-cl{fill:var(--cl-bg);stroke:var(--cl)}
+.box{fill:var(--paper);stroke:var(--ink);stroke-width:1.2}
+.box-off{fill:var(--paper);stroke:var(--gh);stroke-width:1.2;stroke-dasharray:4 4}
+.edge{fill:none;stroke:var(--ink);stroke-width:1.6}
+.edge-off{fill:none;stroke:var(--gh);stroke-width:1.5;stroke-dasharray:5 5}
+.edge-dev{fill:none;stroke:var(--cf);stroke-width:1.6;stroke-dasharray:7 4}
+.lbl-cf{fill:var(--cf)} .lbl-rd{fill:var(--rd)} .lbl-ne{fill:var(--ne)} .lbl-gh{fill:var(--gh)} .lbl-cl{fill:var(--cl)} .lbl-warn{fill:var(--warn)}
+.bridge{fill:none;stroke:var(--paper);stroke-width:6}
+
+/* Trajet */
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:s}
+ol.steps li{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start}
+ol.steps li::before{counter-increment:s;content:counter(s);font-family:var(--f-mono);font-weight:600;font-size:.9rem;
+  width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--paper);display:grid;place-items:center;margin-top:2px}
+ol.steps li div{min-width:0}
+ol.steps b{font-family:var(--f-display)}
+.time{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+
+/* Pièces */
+.pieces{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.piece{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--c,var(--ink));border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.piece .who{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.piece p{margin:0;font-size:.97rem}
+.piece .ana{color:var(--muted);font-style:italic}
+.piece dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:.88rem}
+.piece dt{color:var(--muted)} .piece dd{margin:0;min-width:0;overflow-wrap:anywhere}
+
+/* Intérieur */
+.inside{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.inside > div{min-width:0}
+.tree{font-family:var(--f-mono);font-size:.82rem;line-height:1.55;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;white-space:pre;margin:10px 0 0;color:var(--ink)}
+.tree .c{color:var(--muted)}
+
+table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--paper)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+td.y{color:var(--ok);font-weight:600} td.n{color:var(--muted)}
+
+/* Faiblesses */
+.risks{display:flex;flex-direction:column;gap:12px}
+.risk{display:grid;grid-template-columns:96px 1fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.risk > div{min-width:0}
+.risk p{margin:4px 0 0;font-size:.97rem}
+.pill{font-family:var(--f-mono);font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;align-self:start;text-align:center}
+.p-hi{background:var(--warn-bg);color:var(--warn)} .p-mid{background:var(--mid-bg);color:var(--mid)} .p-lo{background:var(--gh-bg);color:var(--muted)}
+@media (max-width:520px){.risk{grid-template-columns:1fr}.pill{justify-self:start}}
+
+dl.gloss{display:grid;grid-template-columns:minmax(120px,max-content) 1fr;gap:10px 18px;margin:0}
+dl.gloss dt{font-family:var(--f-display);font-weight:700}
+dl.gloss dd{margin:0;min-width:0}
+@media (max-width:520px){dl.gloss{grid-template-columns:1fr;gap:2px}dl.gloss dd{margin-bottom:10px}}
+
+.note{border-left:3px solid var(--accent);padding:4px 0 4px 16px;color:var(--ink)}
+ul.plain{margin:6px 0 0;padding-left:20px}
+ul.plain li{margin-bottom:4px}
+</style>
+
+<div class="wrap">
+
+<header class="read">
+  <div class="eyebrow">LipaCentre · lipace.shop · état au 9 novembre 2026</div>
+  <h1>La stack LipaCentre</h1>
+  <p class="lede">Tout ce qui fait tourner le site de commande, de l'adresse tapée dans le téléphone jusqu'à la ligne enregistrée dans la base de données. Écrit pour quelqu'un qui débute : chaque pièce est expliquée, avec ce qu'elle fait chez nous et ce qui peut casser.</p>
+  <p class="meta">En une phrase : le code vit sur GitHub, Cloudflare construit et sert le site statique à chaque modification, le site parle à une API Python hébergée sur Render, qui range les données dans PostgreSQL chez Neon. Le nom lipace.shop est loué chez IONOS. Les commandes partent ensuite par WhatsApp vers la boutique.</p>
+  <p class="meta"><b>Changement du 9 novembre :</b> le compte GitHub leudjeu-hub est réactivé. La mise en ligne passe de l'envoi manuel d'un zip au déploiement automatique depuis GitHub, sur un nouveau Worker « commandelivraisonlipacentre ». Le passage n'est pas terminé : voir « Ce qu'il reste à faire ».</p>
+</header>
+
+<section>
+  <div class="read">
+    <div class="eyebrow">Vue d'ensemble</div>
+    <h2>Le schéma</h2>
+    <p>Lis-le de gauche à droite. Les numéros suivent le trajet d'une commande, expliqué juste en dessous. Les pointillés gris sont des pièces provisoires ou pas encore vérifiées depuis le retour de GitHub.</p>
+  </div>
+  <div class="figure">
+    <div class="scroll">
+<svg viewBox="0 0 1000 600" role="img" aria-labelledby="sch-t sch-d">
+  <title id="sch-t">Schéma de la stack LipaCentre</title>
+  <desc id="sch-d">Le téléphone du client demande l'adresse au DNS Cloudflare, charge le site depuis le Worker du site, envoie les données (pour l'instant via le Worker relais lipace-api) à l'API FastAPI sur Render, qui lit et écrit dans PostgreSQL chez Neon. La commande part aussi par WhatsApp à la boutique. Le code est sur GitHub ; chaque push sur main est construit et publié automatiquement par Cloudflare.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+    <marker id="ar-off" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--gh)"/></marker>
+    <marker id="ar-dev" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--cf)"/></marker>
+  </defs>
+
+  <!-- Zones -->
+  <rect x="10" y="150" width="190" height="190" rx="10" class="z-cl" stroke-width="1.5"/>
+  <text x="24" y="170" class="t-zone lbl-cl">CHEZ LE CLIENT</text>
+  <rect x="220" y="30" width="390" height="320" rx="10" class="z-cf" stroke-width="1.5"/>
+  <text x="236" y="50" class="t-zone lbl-cf">CLOUDFLARE · gratuit</text>
+  <rect x="635" y="150" width="180" height="170" rx="10" class="z-rd" stroke-width="1.5"/>
+  <text x="649" y="170" class="t-zone lbl-rd">RENDER · gratuit</text>
+  <rect x="835" y="150" width="155" height="170" rx="10" class="z-ne" stroke-width="1.5"/>
+  <text x="849" y="170" class="t-zone lbl-ne">NEON · gratuit</text>
+  <rect x="635" y="375" width="355" height="200" rx="10" class="z-gh" stroke-width="1.5" style="stroke-dasharray:none"/>
+  <text x="649" y="395" class="t-zone lbl-gh">GITHUB · réactivé le 9 nov.</text>
+
+  <!-- IONOS -->
+  <rect x="20" y="40" width="170" height="74" rx="8" class="box"/>
+  <text x="34" y="64" class="t-title">IONOS</text>
+  <text x="34" y="82" class="t-sub">registraire : nom loué ici</text>
+  <text x="34" y="98" class="t-sub">DNS confié à Cloudflare</text>
+
+  <!-- DNS -->
+  <rect x="240" y="64" width="350" height="62" rx="8" class="box"/>
+  <text x="256" y="88" class="t-title">DNS de lipace.shop</text>
+  <text x="256" y="108" class="t-sub">l'annuaire : « lipace.shop » → quel serveur ?</text>
+
+  <!-- Worker site -->
+  <rect x="240" y="160" width="165" height="120" rx="8" class="box"/>
+  <text x="254" y="183" class="t-title">Worker du site</text>
+  <text x="254" y="202" class="t-sub" style="font-size:10.5px">commandelivraisonlipacentre</text>
+  <text x="254" y="224" class="t-mono">index.html</text>
+  <text x="254" y="240" class="t-mono">assets/*.js *.css</text>
+  <text x="254" y="256" class="t-mono">catalogue.json</text>
+  <text x="254" y="272" class="t-mono">img/</text>
+
+  <!-- Worker relais -->
+  <rect x="425" y="160" width="165" height="120" rx="8" class="box-off"/>
+  <text x="439" y="183" class="t-title">Worker « lipace-api »</text>
+  <text x="439" y="202" class="t-sub">le relais (provisoire)</text>
+  <text x="439" y="224" class="t-mono">répond au CORS</text>
+  <text x="439" y="240" class="t-mono">retire Origin</text>
+  <text x="439" y="256" class="t-mono">transmet à Render</text>
+
+  <!-- Phone -->
+  <rect x="45" y="182" width="120" height="146" rx="16" class="box"/>
+  <rect x="88" y="190" width="34" height="5" rx="2.5" style="fill:var(--line)"/>
+  <text x="105" y="222" text-anchor="middle" class="t-title">Téléphone</text>
+  <text x="105" y="241" text-anchor="middle" class="t-sub">navigateur</text>
+  <text x="105" y="264" text-anchor="middle" class="t-mono">React</text>
+  <text x="105" y="280" text-anchor="middle" class="t-mono">panier en</text>
+  <text x="105" y="296" text-anchor="middle" class="t-mono">localStorage</text>
+
+  <!-- WhatsApp / boutique -->
+  <rect x="20" y="395" width="170" height="58" rx="8" class="box"/>
+  <text x="34" y="419" class="t-title">WhatsApp</text>
+  <text x="34" y="438" class="t-sub">récapitulatif de commande</text>
+  <rect x="20" y="505" width="170" height="62" rx="8" class="box"/>
+  <text x="34" y="529" class="t-title">Boutique</text>
+  <text x="34" y="548" class="t-sub">Carrefour Abbia, Yaoundé</text>
+
+  <!-- Dev -->
+  <rect x="220" y="425" width="390" height="92" rx="8" class="box"/>
+  <text x="236" y="449" class="t-title">Construction automatique (Cloudflare)</text>
+  <text x="236" y="469" class="t-mono">git push main → npm run build → dist/</text>
+  <text x="236" y="489" class="t-sub">Cloudflare récupère le code sur GitHub à chaque</text>
+  <text x="236" y="506" class="t-sub">modification et publie le Worker du site tout seul</text>
+
+  <!-- UptimeRobot -->
+  <rect x="650" y="40" width="150" height="64" rx="8" class="box"/>
+  <text x="664" y="64" class="t-title">UptimeRobot</text>
+  <text x="664" y="84" class="t-sub">sonne toutes les 5 min</text>
+
+  <!-- FastAPI -->
+  <rect x="650" y="182" width="150" height="122" rx="8" class="box"/>
+  <text x="664" y="205" class="t-title">API FastAPI</text>
+  <text x="664" y="223" class="t-sub">Python · papeterie-api</text>
+  <text x="664" y="245" class="t-mono">/products</text>
+  <text x="664" y="261" class="t-mono">/orders</text>
+  <text x="664" y="277" class="t-mono">/auth /users</text>
+  <text x="664" y="293" class="t-mono">/time</text>
+
+  <!-- PostgreSQL cylinder -->
+  <path d="M862 200 v80 a50 12 0 0 0 100 0 v-80" class="box"/>
+  <ellipse cx="912" cy="200" rx="50" ry="12" class="box"/>
+  <text x="912" y="240" text-anchor="middle" class="t-title">PostgreSQL</text>
+  <text x="912" y="258" text-anchor="middle" class="t-sub">la base de données</text>
+  <text x="912" y="276" text-anchor="middle" class="t-mono">6 tables</text>
+
+  <!-- GitHub boxes -->
+  <rect x="650" y="410" width="145" height="76" rx="8" class="box"/>
+  <path d="M650 448 H630 V471 H612" class="edge" marker-end="url(#ar)"/>
+  <text x="616" y="440" class="t-edge">push</text>
+  <text x="664" y="433" class="t-title">Code source</text>
+  <text x="664" y="452" class="t-sub">dépôt site</text>
+  <text x="664" y="469" class="t-sub">dépôt backend</text>
+  <rect x="810" y="410" width="168" height="152" rx="8" class="box-off"/>
+  <text x="824" y="433" class="t-title">GitHub Actions</text>
+  <text x="824" y="452" class="t-sub">robots qui tournent seuls</text>
+  <text x="824" y="474" class="t-mono">tests (CI)</text>
+  <text x="824" y="490" class="t-mono">sauvegarde 02:15</text>
+  <text x="824" y="506" class="t-mono">photo du catalogue</text>
+  <text x="824" y="522" class="t-mono">réveil API</text>
+  <text x="824" y="546" class="t-sub lbl-warn" style="fill:var(--warn)">arrêtés depuis le 7 nov.</text>
+
+  <!-- Edges -->
+  <!-- IONOS -> DNS -->
+  <path d="M190 72 H215 V84 H238" class="edge" marker-end="url(#ar)"/>
+  <!-- 1 phone -> DNS -->
+  <path d="M165 200 H212 V112 H238" class="edge" marker-end="url(#ar)"/>
+  <!-- 2 phone -> site -->
+  <path d="M165 232 H238" class="edge" marker-end="url(#ar)"/>
+  <!-- 3 phone -> relais -->
+  <path d="M297 305 H507 V282" class="edge" marker-end="url(#ar)"/>
+  <path d="M165 305 H283" class="edge"/>
+  <!-- dev -> site (line 3 has a gap where it crosses) -->
+  <path d="M290 425 V283" class="edge-dev" marker-end="url(#ar-dev)"/>
+  <text x="298" y="400" class="t-edge" style="fill:var(--cf)">mise en ligne automatique</text>
+  <!-- 4 relais -> api -->
+  <path d="M590 220 H648" class="edge-off" marker-end="url(#ar-off)"/>
+  <!-- 5 api -> db -->
+  <path d="M800 243 H860" class="edge" marker-end="url(#ar)"/>
+  <!-- 6 phone -> whatsapp -->
+  <path d="M105 328 V393" class="edge" marker-end="url(#ar)"/>
+  <!-- 7 whatsapp -> boutique -->
+  <path d="M105 453 V503" class="edge" marker-end="url(#ar)"/>
+  <!-- uptime -> api -->
+  <path d="M725 104 V180" class="edge" marker-end="url(#ar)"/>
+  <text x="732" y="128" class="t-edge">« es-tu</text>
+  <text x="732" y="142" class="t-edge">réveillée ? »</text>
+  <!-- github -> render -->
+  <path d="M722 410 V306" class="edge" marker-end="url(#ar)"/>
+  <text x="730" y="345" class="t-edge">déploiement</text>
+  <text x="730" y="359" class="t-edge">automatique</text>
+  <!-- actions -> neon -->
+  <path d="M912 410 V294" class="edge-off" marker-end="url(#ar-off)"/>
+  <text x="918" y="345" class="t-edge" style="fill:var(--gh)">copie de</text>
+  <text x="918" y="360" class="t-edge" style="fill:var(--gh)">sécurité</text>
+
+  <!-- Numbers -->
+  <g class="num"><circle cx="212" cy="150" r="10"/><text x="212" y="154" text-anchor="middle">1</text></g>
+  <g class="num"><circle cx="200" cy="232" r="10"/><text x="200" y="236" text-anchor="middle">2</text></g>
+  <g class="num"><circle cx="400" cy="305" r="10"/><text x="400" y="309" text-anchor="middle">3</text></g>
+  <g class="num"><circle cx="619" cy="220" r="10"/><text x="619" y="224" text-anchor="middle">4</text></g>
+  <g class="num"><circle cx="830" cy="243" r="10"/><text x="830" y="247" text-anchor="middle">5</text></g>
+  <g class="num"><circle cx="105" cy="362" r="10"/><text x="105" y="366" text-anchor="middle">6</text></g>
+  <g class="num"><circle cx="105" cy="478" r="10"/><text x="105" y="482" text-anchor="middle">7</text></g>
+</svg>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="border-color:var(--cl);background:var(--cl-bg)"></i>appareil du client</span>
+      <span><i class="sw" style="border-color:var(--cf);background:var(--cf-bg)"></i>Cloudflare</span>
+      <span><i class="sw" style="border-color:var(--rd);background:var(--rd-bg)"></i>Render</span>
+      <span><i class="sw" style="border-color:var(--ne);background:var(--ne-bg)"></i>Neon</span>
+      <span><i class="sw" style="border-color:var(--gh);background:var(--gh-bg)"></i>GitHub</span>
+      <span><i class="sw" style="border-color:var(--gh);background:var(--paper);border-style:dashed"></i>provisoire ou à vérifier</span>
+    </div>
+    <p class="hint">Sur téléphone, fais glisser le schéma vers la gauche pour voir la partie droite.</p>
+  </div>
+</section>
+
+<section class="read">
+  <div class="eyebrow">Une requête, pas à pas</div>
+  <h2>Le trajet d'une commande</h2>
+  <p>Un client de Yaoundé ouvre <code>lipace.shop</code>, met deux cahiers dans son panier et commande. Voici ce qui se passe, dans l'ordre.</p>
+  <ol class="steps">
+    <li><div><b>Trouver l'adresse.</b> Le téléphone ne connaît pas « lipace.shop ». Il demande au <b>DNS</b> où se trouve ce nom. IONOS, chez qui le nom est loué, a confié cette réponse à Cloudflare. Cloudflare répond : « c'est chez moi ». <span class="time">quelques millisecondes</span></div></li>
+    <li><div><b>Charger le site.</b> Le Worker du site (<code>commandelivraisonlipacentre</code>, qui remplace l'ancien Worker <code>lipace</code> envoyé à la main) envoie des fichiers tout prêts : la page HTML, le JavaScript (React) et les images. Il ne calcule rien, il distribue des fichiers. Chaque page (<code>catalogue.html</code>, <code>panier.html</code>…) existe déjà en HTML, ce qui affiche quelque chose même avant que le JavaScript ait fini de charger. <span class="time">rapide, Cloudflare a des serveurs proches</span></div></li>
+    <li><div><b>Demander les données.</b> Pour afficher les prix à jour ou enregistrer la commande, le JavaScript du téléphone envoie une requête en JSON (par exemple <code>GET /products/</code> ou <code>POST /orders/submit</code>). Dans la version publiée pendant la suspension de GitHub, elle ne va pas directement à Render, mais au <b>relais</b> <code>lipace-api.leudjeu.workers.dev</code>. Le code actuel sur GitHub (branche <code>main</code>) appelle Render directement, sauf si la variable <code>PROD_API_URL</code> est réglée dans la construction Cloudflare. Si le client est connecté, la requête porte son <b>jeton</b> (une sorte de badge) dans l'en-tête <code>Authorization</code>.</div></li>
+    <li><div><b>Le relais transmet (provisoire).</b> Le relais répond lui-même aux questions de sécurité du navigateur (le CORS, voir le glossaire), retire l'en-tête qui dit d'où vient la requête, puis la renvoie telle quelle à l'API sur Render. La réponse de Render revient par le même chemin.</div></li>
+    <li><div><b>L'API travaille.</b> FastAPI vérifie le jeton et le rôle, contrôle les données (nom, téléphone, quantités), puis lit ou écrit dans PostgreSQL chez Neon. Pour une commande, elle crée une ligne dans <code>orders</code> et une ligne par article dans <code>order_items</code>, avec le statut « nouvelle ». <span class="time">si Render dormait : jusqu'à ~50 s de réveil</span></div></li>
+    <li><div><b>Le message part.</b> En même temps que l'enregistrement, le téléphone ouvre WhatsApp avec un récapitulatif déjà rédigé (articles, quartier, créneau, référence). Le site n'attend pas la réponse de l'API pour ouvrir WhatsApp.</div></li>
+    <li><div><b>La boutique traite.</b> La boutique reçoit le message. Le personnel ouvre <code>/gestion</code>, retrouve la commande par sa référence et la passe en « confirmée », puis « livrée ». Ces clics refont le trajet 2 → 5.</div></li>
+  </ol>
+</section>
+
+<section>
+  <div class="read">
+    <div class="eyebrow">Les pièces une par une</div>
+    <h2>Qui fait quoi</h2>
+    <p>Chaque carte dit ce qu'est la pièce, une image pour s'en souvenir, et ce qu'elle fait concrètement chez LipaCentre.</p>
+  </div>
+  <div class="pieces">
+    <article class="piece" style="--c:var(--ink)">
+      <div class="who">Nom de domaine · IONOS</div>
+      <h3>lipace.shop</h3>
+      <p>Le nom que les clients tapent. On le loue à l'année chez IONOS, le « registraire ».</p>
+      <p class="ana">Comme le nom inscrit au registre du commerce : il t'appartient, mais il ne dit pas où se trouve la boutique.</p>
+      <dl><dt>Chez nous</dt><dd>IONOS ne fait plus que la location. Les serveurs de noms pointent vers Cloudflare.</dd></dl>
+    </article>
+    <article class="piece" style="--c:var(--cf)">
+      <div class="who">DNS · Cloudflare</div>
+      <h3>L'annuaire</h3>
+      <p>Traduit un nom (<code>lipace.shop</code>, <code>www.lipace.shop</code>) en adresse de serveur.</p>
+      <p class="ana">L'annuaire téléphonique d'Internet.</p>
+      <dl><dt>Chez nous</dt><dd>Zone lipace.shop chez Cloudflare (serveurs de noms changés chez IONOS). Les enregistrements mail (MX/TXT) d'IONOS y sont conservés.</dd><dt>À faire</dt><dd><code>www.lipace.shop</code> ne répond pas encore : il faut le brancher sur le Worker du site.</dd></dl>
+    </article>
+    <article class="piece" style="--c:var(--cf)">
+      <div class="who">Front-end · Worker « commandelivraisonlipacentre »</div>
+      <h3>Le site</h3>
+      <p>Ce que le client voit : pages, boutons, panier. Écrit en <b>React 19</b> avec la bibliothèque de composants <b>MUI</b>, assemblé par <b>Vite</b> en fichiers statiques.</p>
+      <p class="ana">La vitrine et le comptoir. Elle ne garde rien en réserve, elle demande tout à l'arrière-boutique.</p>
+      <dl><dt>Adresses</dt><dd>commandelivraisonlipacentre.leudjeu.workers.dev ; lipace.shop et www.lipace.shop à y brancher</dd><dt>Mise en ligne</dt><dd>Automatique : Cloudflare reconstruit le site à chaque push sur <code>main</code> du dépôt GitHub</dd><dt>Ancien</dt><dd>Worker « lipace » (zip envoyé à la main) : tient encore lipace.shop, à supprimer une fois le domaine déplacé</dd><dt>Mémoire</dt><dd>Panier et jeton de connexion dans le <code>localStorage</code> du téléphone</dd></dl>
+    </article>
+    <article class="piece" style="--c:var(--cf)">
+      <div class="who">Relais · Worker « lipace-api »</div>
+      <h3>Le relais d'API</h3>
+      <p>Un petit programme de 40 lignes qui reçoit les requêtes du site et les renvoie à Render. Ajouté le 7 novembre parce qu'on ne pouvait plus modifier la liste des sites autorisés sur Render.</p>
+      <p class="ana">Un coursier entre la vitrine et l'arrière-boutique, posté parce que la porte directe est coincée.</p>
+      <dl><dt>Code</dt><dd><code>domaine-lipace-shop/relais-api-worker.js</code></dd><dt>Statut</dt><dd>Provisoire. GitHub étant revenu, Render devrait de nouveau être modifiable : corriger la liste CORS, puis retirer le relais</dd></dl>
+    </article>
+    <article class="piece" style="--c:var(--rd)">
+      <div class="who">Back-end · Render</div>
+      <h3>L'API FastAPI</h3>
+      <p>Le cerveau. Un programme Python (framework <b>FastAPI</b>) qui applique les règles : qui a le droit de quoi, calcul des statuts, suppression des vieilles commandes. Il parle à la base avec <b>SQLAlchemy</b>.</p>
+      <p class="ana">L'arrière-boutique avec le gérant qui vérifie chaque bon.</p>
+      <dl><dt>Adresse</dt><dd>papeterie-api-kshr.onrender.com</dd><dt>Offre</dt><dd>Gratuite : s'endort après 15 min sans visite, 750 h par mois</dd></dl>
+    </article>
+    <article class="piece" style="--c:var(--ne)">
+      <div class="who">Base de données · Neon</div>
+      <h3>PostgreSQL</h3>
+      <p>Là où tout est rangé durablement : articles, commandes, comptes, heures de travail. Seule l'API y a accès, jamais le téléphone directement.</p>
+      <p class="ana">Le grand registre dans le coffre.</p>
+      <dl><dt>Tables</dt><dd>products, orders, order_items, users, auth_tokens, time_entries</dd><dt>Connexion</dt><dd>Compte Neon par e-mail, pas via GitHub</dd></dl>
+    </article>
+    <article class="piece" style="--c:var(--ink)">
+      <div class="who">Surveillance · UptimeRobot</div>
+      <h3>Le réveil</h3>
+      <p>Interroge l'API toutes les 5 minutes. Effet voulu : Render ne s'endort jamais, donc pas d'attente de 50 secondes le matin. Bonus : il prévient par mail si l'API ne répond plus.</p>
+      <p class="ana">Le voisin qui frappe à la porte pour que le gardien ne s'endorme pas.</p>
+      <dl><dt>Vérifié</dt><dd>Fonctionne depuis le 28 octobre</dd></dl>
+    </article>
+    <article class="piece" style="--c:var(--ink)">
+      <div class="who">Messagerie · WhatsApp</div>
+      <h3>Le canal de commande</h3>
+      <p>La commande est envoyée à la boutique par un lien <code>wa.me</code> pré-rempli. C'est un choix métier : les clients connaissent WhatsApp, et la boutique peut discuter avec eux.</p>
+      <p class="ana">Le bon de commande que le client apporte lui-même au comptoir.</p>
+    </article>
+    <article class="piece" style="--c:var(--gh)">
+      <div class="who">Code et automatisation · GitHub</div>
+      <h3>Dépôts et robots</h3>
+      <p>Le code source (site et backend), les tests automatiques à chaque modification, la sauvegarde chiffrée de la base chaque nuit, le déploiement automatique sur Render, et maintenant la source du déploiement Cloudflare.</p>
+      <p class="ana">Les archives et les employés de nuit.</p>
+      <dl><dt>Dépôts</dt><dd>leudjeu-hub/CommandeLivraisonLipaCentre (site), leudjeu-hub/CommandeLivraisonLipaCentreBackend (API)</dd><dt>Statut</dt><dd>Compte suspendu du 7 au 9 novembre (ticket 4968259), réactivé le 9. Aucun robot GitHub Actions du site n'a tourné depuis le 7 novembre : à relancer et vérifier.</dd></dl>
+    </article>
+    <article class="piece" style="--c:var(--gh)">
+      <div class="who">À retirer</div>
+      <h3>Les anciennes adresses</h3>
+      <p><b>GitHub Pages</b> (leudjeu-hub.github.io/CommandeLivraisonLipaCentre) : le robot <code>deploy.yml</code> y publie encore le site. <b>Emergent</b> (papeterie-mobile) : l'ancienne app de commande.</p>
+      <p class="ana">Les anciennes enseignes à décrocher, sinon les clients se trompent de porte.</p>
+      <dl><dt>Cible</dt><dd>Une seule adresse publique : lipace.shop</dd></dl>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="read">
+    <div class="eyebrow">Sous le capot</div>
+    <h2>L'intérieur du site et de l'API</h2>
+    <p>Les deux programmes sont découpés en couches. Chaque couche ne parle qu'à sa voisine, ce qui permet de modifier une partie sans tout casser.</p>
+  </div>
+  <div class="inside">
+    <div>
+      <h3>Le site (React)</h3>
+      <div class="tree"><span class="c"># ce que l'utilisateur voit</span>
+Pages
+ ├ Accueil, Livraison, Confidentialité
+ ├ Catalogue  /catalogue /fournitures-…
+ ├ Panier     /panier
+ ├ Commander  /commander
+ ├ Compte     /compte  (Mes commandes)
+ ├ Connexion  /connexion /inscription
+ └ Gestion    /gestion (personnel)
+<span class="c"># la mémoire de l'écran</span>
+CartContext   le panier
+AuthContext   qui est connecté
+<span class="c"># les appels à l'API</span>
+productsApi  ordersApi  authApi  timeApi
+catalogue.ts  zones, frais, lien wa.me</div>
+    </div>
+    <div>
+      <h3>L'API (FastAPI)</h3>
+      <div class="tree"><span class="c"># routeurs : les « guichets »</span>
+/products   articles, import CSV
+/orders     envoyer, lire, statut,
+            mes commandes, rattacher
+/auth       connexion, inscription, moi
+/users      comptes et rôles (admin)
+/time       pointage des heures
+<span class="c"># services : les règles métier</span>
+ProductService  OrderService
+AuthService     TimeService
+<span class="c"># modèles : les tables</span>
+Product  Order  OrderItem
+User  AuthToken  TimeEntry</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="read">
+    <div class="eyebrow">Sécurité</div>
+    <h2>Qui a le droit de quoi</h2>
+    <p>Chaque rôle hérite des droits du rôle au-dessus de lui dans le tableau. L'API vérifie le rôle à chaque requête : cacher un bouton dans le site ne suffit pas, c'est le serveur qui décide.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Action</th><th>Visiteur</th><th>Client</th><th>Employé</th><th>Responsable</th><th>Admin</th></tr></thead>
+      <tbody>
+        <tr><td>Voir le catalogue, commander</td><td class="y">oui</td><td class="y">oui</td><td class="y">oui</td><td class="y">oui</td><td class="y">oui</td></tr>
+        <tr><td>Voir ses propres commandes</td><td class="n">non</td><td class="y">oui</td><td class="y">oui</td><td class="y">oui</td><td class="y">oui</td></tr>
+        <tr><td>Gérer articles, commandes, pointer</td><td class="n">non</td><td class="n">non</td><td class="y">oui</td><td class="y">oui</td><td class="y">oui</td></tr>
+        <tr><td>Voir et corriger les heures de tous</td><td class="n">non</td><td class="n">non</td><td class="n">non</td><td class="y">oui</td><td class="y">oui</td></tr>
+        <tr><td>Modifier une commande livrée, supprimer</td><td class="n">non</td><td class="n">non</td><td class="n">non</td><td class="n">non</td><td class="y">oui</td></tr>
+        <tr><td>Comptes, rôles, mots de passe</td><td class="n">non</td><td class="n">non</td><td class="n">non</td><td class="n">non</td><td class="y">oui</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="read">
+    <div class="eyebrow">Sans langue de bois</div>
+    <h2>Les points faibles</h2>
+    <p>La stack est simple et gratuite, et c'est un bon choix pour une boutique de cette taille. GitHub est revenu, mais le passage vers Cloudflare n'est pas fini et les contournements de la suspension sont encore en place. Classés du plus grave au moins grave :</p>
+  </div>
+  <div class="risks">
+    <div class="risk"><span class="pill p-hi">Grave</span><div><h3>La page de connexion reste blanche sur lipace.shop</h3><p>Le site construit charge ses fichiers JavaScript depuis <code>https://www.lipace.shop/assets/…</code> alors que le visiteur est sur <code>lipace.shop</code>, et <code>www</code> ne répond pas encore. Le code sur GitHub n'écrit nulle part « www » : l'adresse vient très probablement de la variable <code>BASE_PATH</code> réglée dans la construction Cloudflare. Il faut la mettre à <code>/</code> (ou la supprimer), et brancher aussi <code>www.lipace.shop</code>.</p></div></div>
+    <div class="risk"><span class="pill p-hi">Grave</span><div><h3>Sauvegarde de nuit pas encore vérifiée</h3><p>La copie chiffrée de chaque nuit tourne sur GitHub Actions. Le compte est revenu, mais côté site plus aucun robot n'a tourné depuis le 7 novembre, et GitHub ne relance pas toujours seul les tâches planifiées après une suspension. Vérifier dans l'onglet Actions du dépôt backend que la sauvegarde est de nouveau passée, sinon la relancer à la main.</p></div></div>
+    <div class="risk"><span class="pill p-mid">Moyen</span><div><h3>Le code sur GitHub n'est pas celui de lipace.shop</h3><p>La branche <code>main</code> date du 28 octobre : adresse officielle github.io (balises canonical, sitemap) et appel direct à Render. Les réglages faits pendant la suspension (lipace.shop, relais) n'y sont pas. Le nouveau Worker publie donc l'ancienne configuration tant que ce n'est pas corrigé dans le code.</p></div></div>
+    <div class="risk"><span class="pill p-mid">Moyen</span><div><h3>Trois versions du site en ligne</h3><p>L'ancien Worker « lipace » tient très probablement encore lipace.shop (Cloudflare refuse d'y brancher le nouveau tant que l'ancien le garde), le nouveau Worker tourne sur workers.dev, et GitHub Pages republie toutes les 3 heures. Il faut retirer lipace.shop de l'ancien Worker, le brancher sur le nouveau, puis couper GitHub Pages et l'app Emergent.</p></div></div>
+    <div class="risk"><span class="pill p-mid">Moyen</span><div><h3>Le relais ajoute un maillon</h3><p>Une requête passe maintenant par deux services au lieu d'un. Si le relais tombe ou dépasse la limite gratuite de Cloudflare, le site s'affiche encore mais plus rien ne s'enregistre. Il retire aussi l'en-tête d'origine : l'API ne peut plus savoir d'où vient la requête, la protection CORS ne se fait plus qu'au relais.</p></div></div>
+    <div class="risk"><span class="pill p-mid">Moyen</span><div><h3>Catalogue figé et tests non bloquants</h3><p>Sur GitHub Pages, <code>catalogue.json</code> était rafraîchi toutes les 3 heures et rien n'était publié si un test échouait. Cloudflare ne reconstruit qu'à chaque push et ne lance pas les tests avant de publier : à reprendre dans la configuration de construction ou dans un robot GitHub.</p></div></div>
+    <div class="risk"><span class="pill p-mid">Moyen</span><div><h3>Une commande peut n'exister que dans WhatsApp</h3><p>Le site ouvre WhatsApp sans attendre la réponse de l'API, pour ne pas bloquer le client. Si l'API échoue à ce moment-là, la boutique reçoit le message mais la commande n'apparaît pas dans Gestion. C'est un compromis voulu, il faut le connaître.</p></div></div>
+    <div class="risk"><span class="pill p-lo">Faible</span><div><h3>Tout repose sur des offres gratuites</h3><p>Render gratuit (une seule instance, 750 h par mois, donc pas de seconde API pour tester), Neon gratuit, Cloudflare gratuit. Ça suffit aujourd'hui. Le jour où le trafic augmente, Render sera le premier à limiter.</p></div></div>
+    <div class="risk"><span class="pill p-lo">Faible</span><div><h3>Plus de site de test</h3><p>Le site de test (branche <code>develop</code>) était prévu sur GitHub Pages et n'a jamais été mis en service. Avec Cloudflare, chaque branche peut avoir sa propre adresse de prévisualisation (<code>*-commandelivraisonlipacentre.leudjeu.workers.dev</code>) : c'est la voie la plus simple.</p></div></div>
+  </div>
+</section>
+
+<section class="read">
+  <div class="eyebrow">La suite</div>
+  <h2>Ce qu'il reste à faire</h2>
+  <p>GitHub est rétabli et le déploiement automatique vers Cloudflare existe. Pour finir le passage, dans l'ordre :</p>
+  <ul class="plain">
+    <li>dans la construction Cloudflare, mettre <code>BASE_PATH</code> à <code>/</code> (fin de la page blanche) et régler <code>PROD_API_URL</code> ;</li>
+    <li>retirer lipace.shop de l'ancien Worker « lipace », le brancher avec <code>www.lipace.shop</code> sur le Worker « commandelivraisonlipacentre », puis supprimer l'ancien ;</li>
+    <li>mettre lipace.shop comme adresse officielle dans le code (<code>vite.config.ts</code>, <code>index.html</code>, README) ;</li>
+    <li>désactiver GitHub Pages (<code>deploy.yml</code>) et l'app Emergent ;</li>
+    <li>corriger la liste des sites autorisés sur Render, puis supprimer le relais pour revenir à un appel direct ;</li>
+    <li>vérifier que la sauvegarde de nuit repart, et supprimer le robot « réveil API » devenu inutile grâce à UptimeRobot.</li>
+  </ul>
+</section>
+
+<section class="read">
+  <div class="eyebrow">Les mots du métier</div>
+  <h2>Glossaire</h2>
+  <dl class="gloss">
+    <dt>Front-end</dt><dd>La partie qui tourne dans le navigateur du client. Ici, le site React.</dd>
+    <dt>Back-end</dt><dd>La partie qui tourne sur un serveur et que le client ne voit pas. Ici, l'API FastAPI et la base.</dd>
+    <dt>API</dt><dd>Un ensemble de « guichets » (adresses comme <code>/orders</code>) auxquels un programme envoie des demandes et reçoit des réponses en JSON.</dd>
+    <dt>JSON</dt><dd>Un format texte pour échanger des données : <code>{"quantite": 2, "nom": "cahier"}</code>.</dd>
+    <dt>SPA</dt><dd>« Single Page Application » : le site charge une fois son JavaScript, puis change de page sans tout recharger.</dd>
+    <dt>Site statique</dt><dd>Des fichiers servis tels quels, sans calcul côté serveur. Rapide et presque gratuit à héberger.</dd>
+    <dt>Worker</dt><dd>Un petit programme qui tourne sur les serveurs de Cloudflare, près de l'utilisateur. Chez nous : un qui sert le site, un qui fait relais (provisoire), et l'ancien Worker du site à supprimer.</dd>
+    <dt>DNS</dt><dd>Le système qui traduit un nom de domaine en adresse de serveur.</dd>
+    <dt>CORS</dt><dd>Une règle des navigateurs : un site ne peut appeler une API d'un autre domaine que si cette API dit « ce site-là est autorisé ». C'est cette liste qu'on n'arrive plus à modifier sur Render.</dd>
+    <dt>Jeton</dt><dd>Une longue chaîne aléatoire reçue à la connexion. Le site la joint à chaque requête pour prouver qui est connecté, sans renvoyer le mot de passe. La base n'en garde qu'une empreinte (SHA-256).</dd>
+    <dt>Démarrage à froid</dt><dd>Le temps qu'un serveur endormi met à se réveiller. Sur Render gratuit, 40 à 60 secondes.</dd>
+    <dt>Déploiement</dt><dd>Mettre une nouvelle version en ligne.</dd>
+    <dt>CI</dt><dd>« Intégration continue » : des tests lancés automatiquement à chaque modification du code.</dd>
+    <dt>Migration</dt><dd>Un script qui modifie la structure de la base (ajouter une colonne, par exemple) sans perdre les données.</dd>
+  </dl>
+</section>
+
+<section class="read note">
+  <h3>D'où viennent ces informations</h3>
+  <p style="margin-top:6px">Mise à jour du 9 novembre. Vérifié : le dépôt du site sur GitHub (React 19, TypeScript, Vite 6, MUI 6, react-router 7, i18next ; dernier changement sur <code>main</code> le 28 octobre ; aucune exécution GitHub Actions depuis le 7 novembre), le Worker « commandelivraisonlipacentre » et son adresse workers.dev (capture du tableau de bord), et le refus de Cloudflare de brancher lipace.shop parce qu'un autre domaine personnalisé le tient. Repris sans revérification : la structure interne de l'API, les tables et les droits par rôle (état du 28 octobre). Non vérifié d'ici (sites inaccessibles depuis mon environnement) : ce que sert lipace.shop en ce moment, les variables de construction Cloudflare, la sauvegarde de nuit du backend.</p>
+</section>
+
+</div>
+
+</body></html>
