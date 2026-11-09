@@ -11,5 +11,7 @@
     "html_handling": "auto-trailing-slash",
     // Toute autre adresse : 404.html, qui contient l'application (le routeur affiche la bonne page)
     "not_found_handling": "404-page"
-  }
+  },
+  // Aperçu de chaque branche (commande `wrangler preview` de Cloudflare) : bloc requis, même vide
+  "previews": {}
 }
