@@ -1,5 +1,6 @@
 # Site ouvert au public (décision d'Alain, 2026-10-25), servi à la racine de lipace.shop : ce fichier est lu.
 User-agent: *
 Allow: /
-
-Sitemap: https://lipace.shop/sitemap.xml
+# Site de test (branche develop), voir .github/workflows/deploy.yml
+Disallow: /test/
+Disallow: /CommandeLivraisonLipaCentre/test/

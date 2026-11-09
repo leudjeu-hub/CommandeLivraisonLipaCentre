@@ -2,7 +2,7 @@ name: Vérifications du site
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, develop]
 permissions:
   contents: read
 jobs:
