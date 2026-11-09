@@ -15,7 +15,7 @@ test('index.html : structure accessible et SEO de base', () => {
 
 test('index.html : site ouvert aux moteurs de recherche, fiche de la boutique valide', () => {
   assert.doesNotMatch(html, /name="robots"/, 'noindex retiré : le site est ouvert au public');
-  assert.match(html, /<link rel="canonical" href="https:\/\/leudjeu-hub\.github\.io\/CommandeLivraisonLipaCentre\/"/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/lipace\.shop\/"/);
   const ld = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
   assert.ok(ld, 'JSON-LD absent');
   const store = JSON.parse(ld[1]);
@@ -117,13 +117,13 @@ test('build : dist/ existe avec index.html', () => {
   assert.ok(fs.existsSync('dist/index.html'), 'dist/index.html manquant — lancez npm run build');
 });
 
-test('build : le site publié appelle l’API Render et rien d’autre', () => {
+test('build : le site publié appelle l’API (relais lipace-api) et rien d’autre', () => {
   const built = fs.readFileSync('dist/index.html', 'utf8');
   const csp = built.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/)[1];
-  assert.match(csp, /connect-src 'self' https:\/\/papeterie-api-kshr\.onrender\.com;/);
+  assert.match(csp, /connect-src 'self' https:\/\/lipace-api\.leudjeu\.workers\.dev;/);
   const js = fs.readdirSync('dist/assets').filter((f) => f.endsWith('.js'))
     .map((f) => fs.readFileSync(path.join('dist/assets', f), 'utf8')).join('\n');
-  assert.match(js, /https:\/\/papeterie-api-kshr\.onrender\.com/);
+  assert.match(js, /https:\/\/lipace-api\.leudjeu\.workers\.dev/);
   assert.doesNotMatch(js, /localhost:8000/, 'adresse de l’API locale dans le build');
 });
 

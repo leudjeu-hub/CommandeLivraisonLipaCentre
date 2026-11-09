@@ -1,4 +1,5 @@
-# Site ouvert au public (décision d'Alain, 2026-10-25). Sur github.io, seul le robots.txt de la racine du
-# domaine compte : ce fichier ne servira qu'avec un nom de domaine propre.
+# Site ouvert au public (décision d'Alain, 2026-10-25), servi à la racine de lipace.shop : ce fichier est lu.
 User-agent: *
 Allow: /
+
+Sitemap: https://lipace.shop/sitemap.xml

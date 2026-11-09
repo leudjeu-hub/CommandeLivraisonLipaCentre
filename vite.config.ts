@@ -7,9 +7,9 @@ import { homeShell } from './scripts/accueil-statique';
 
 // API (articles, connexion, comptes).
 // - Développement : l'API locale, relayée par le proxy Vite (CATALOGUE_API=http://… npm run dev).
-// - Site publié : l'API sur Render, appelée directement (PROD_API_URL=https://… npm run build).
+// - Site publié : l’API via le relais Cloudflare lipace-api (vers Render), appelée directement (PROD_API_URL=https://… npm run build).
 const DEV_API = process.env.CATALOGUE_API || 'http://localhost:8000';
-const PROD_API = (process.env.PROD_API_URL || 'https://papeterie-api-kshr.onrender.com').replace(/\/$/, '');
+const PROD_API = (process.env.PROD_API_URL || 'https://lipace-api.leudjeu.workers.dev').replace(/\/$/, '');
 
 // Build : la CSP autorise aussi l'API (connect-src) ; en développement, 'self' suffit (proxy)
 const apiCsp: Plugin = {
@@ -24,7 +24,7 @@ const apiCsp: Plugin = {
 // 404.html (copie aussi) laisse le routeur répondre pour toute autre adresse.
 // sitemap.xml liste l'accueil et les pages indexables (mêmes adresses que leur balise canonical), à
 // envoyer dans Google Search Console : sur github.io, le robots.txt du site n'est pas lu par Google.
-const SITE_URL = 'https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/';
+const SITE_URL = 'https://lipace.shop/';
 const fr = JSON.parse(fs.readFileSync(new URL('./src/locales/fr.json', import.meta.url), 'utf8'));
 const PAGES: { route: string; title: string; description?: string; noindex?: boolean }[] = [
   { route: 'catalogue', title: fr.seo.catalogue, description: 'Cahiers, stylos, géométrie, papier, classement, dictionnaires, livres scolaires, sacs et cartables : prix en FCFA. Livraison à Yaoundé, paiement à la réception.' },
