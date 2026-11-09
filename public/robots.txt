@@ -4,3 +4,5 @@ Allow: /
 # Site de test (branche develop), voir .github/workflows/deploy.yml
 Disallow: /test/
 Disallow: /CommandeLivraisonLipaCentre/test/
+
+Sitemap: https://lipace.shop/sitemap.xml
