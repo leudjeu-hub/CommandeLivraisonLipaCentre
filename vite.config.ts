@@ -24,7 +24,7 @@ const apiCsp: Plugin = {
 // 404.html (copie aussi) laisse le routeur répondre pour toute autre adresse.
 // sitemap.xml liste l'accueil et les pages indexables (mêmes adresses que leur balise canonical), à
 // envoyer dans Google Search Console : sur github.io, le robots.txt du site n'est pas lu par Google.
-const SITE_URL = 'https://leudjeu-hub.github.io/CommandeLivraisonLipaCentre/';
+const SITE_URL = 'https://lipace.shop/';
 // Site de test (branche develop, publié sous …/test/ par deploy.yml) : SITE_TEST=1. Toutes les pages en
 // noindex, pas de sitemap, et un bandeau « Site de test » (src/components/Layout.tsx).
 const SITE_TEST = process.env.SITE_TEST === '1';
