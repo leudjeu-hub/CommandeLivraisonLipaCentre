@@ -1,10 +1,16 @@
-# Publie le site sur GitHub Pages à chaque push sur main, et toutes les 3 heures pour rafraîchir la
-# copie du catalogue (dist/catalogue.json, voir scripts/catalogue-snapshot.mjs).
+# Publie deux sites sur GitHub Pages, dans un seul envoi :
+# - le vrai site (vu par les clients) : toujours construit depuis la branche main ;
+# - le site de test, sous …/test/ : construit depuis la branche develop (si elle existe), avec un bandeau
+#   « Site de test » et toutes ses pages en noindex (SITE_TEST=1, voir vite.config.ts).
+# Un push sur develop met donc à jour le site de test, sans rien changer au vrai site (reconstruit à
+# l'identique depuis main). Une nouveauté n'arrive chez les clients qu'avec la fusion develop → main.
+# Aussi toutes les 3 heures pour rafraîchir la copie du catalogue (dist/catalogue.json, voir
+# scripts/catalogue-snapshot.mjs).
 # Prérequis (une seule fois) : Settings → Pages → Source : « GitHub Actions ».
 name: Déploiement GitHub Pages
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   schedule:
     - cron: '30 */3 * * *'
   workflow_dispatch:
@@ -18,25 +24,63 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+env:
+  BASE: /CommandeLivraisonLipaCentre/
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm ci --no-audit --no-fund
-      - run: npm run build
+
+      # Vrai site : main, quel que soit le push qui a lancé le déploiement
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: prod
+      - working-directory: prod
+        run: npm ci --no-audit --no-fund
+      - working-directory: prod
+        run: npm run build
         env:
-          BASE_PATH: /CommandeLivraisonLipaCentre/
-      - run: npm test
+          BASE_PATH: ${{ env.BASE }}
+      - working-directory: prod
+        run: npm test
       # Après les tests : ils vérifient le site avec une copie vide (public/catalogue.json)
-      - run: node scripts/catalogue-snapshot.mjs dist
+      - working-directory: prod
+        run: node scripts/catalogue-snapshot.mjs dist
+
+      # Site de test : develop, seulement si la branche existe
+      - id: develop
+        run: |
+          if git ls-remote --exit-code --heads "https://github.com/${{ github.repository }}" develop >/dev/null; then
+            echo "existe=oui" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Pas de branche develop : vrai site seul, sans site de test."
+          fi
+      - if: steps.develop.outputs.existe == 'oui'
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          path: test
+      - if: steps.develop.outputs.existe == 'oui'
+        working-directory: test
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+          node scripts/catalogue-snapshot.mjs dist
+          rm -f dist/robots.txt dist/google*.html
+          cp -r dist ../prod/dist/test
+        env:
+          BASE_PATH: ${{ env.BASE }}test/
+          SITE_TEST: '1'
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: dist
+          path: prod/dist
 
   deploy:
     needs: build

@@ -52,6 +52,12 @@ export default function Layout() {
       >
         {t('nav.skip')}
       </Box>
+      {/* Site de test (branche develop) : impossible de le confondre avec le vrai site */}
+      {import.meta.env.VITE_SITE_TEST && (
+        <Box role="note" sx={{ bgcolor: '#b71c1c', color: '#fff', textAlign: 'center', fontWeight: 700, fontSize: 14, py: 0.75, px: 2 }}>
+          SITE DE TEST : version en développement, pas visible par les clients. Commandes réelles, ne pas commander pour rien.
+        </Box>
+      )}
       <Header />
       {/* Page chargée à part (voir App.tsx) : en attendant, un indicateur sur toute la hauteur de l'écran,
           et le pied de page n'arrive qu'avec la page. Sinon il s'affiche en haut puis saute vers le bas
