@@ -1,0 +1,15 @@
+// Publication sur Cloudflare Workers (site statique, servi depuis dist/ après `npm run build`).
+// Cloudflare construit le site à chaque push : main → production, autres branches → aperçu.
+// Ne pas définir BASE_PATH dans les variables de build Cloudflare : le site est servi à la racine.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "commandelivraisonlipacentre",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // /connexion → connexion.html, etc. (une page HTML par route, voir vite.config.ts)
+    "html_handling": "auto-trailing-slash",
+    // Toute autre adresse : 404.html, qui contient l'application (le routeur affiche la bonne page)
+    "not_found_handling": "404-page"
+  }
+}
