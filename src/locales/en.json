@@ -549,7 +549,7 @@
   },
   "privacy": {
     "title": "Privacy",
-    "updated": "What we do with the information in your order. Updated 27 October 2026.",
+    "updated": "What we do with the information in your order. Updated 15 November 2026.",
     "whoTitle": "Who is responsible",
     "whoText": "Librairie Papeterie du Centre, Carrefour Abbia, Yaoundé. Phone and WhatsApp: +237 6 93 24 03 96. Email: Lipacentre237@gmail.com.",
     "whatTitle": "What information",
@@ -557,7 +557,7 @@
     "whyTitle": "Why",
     "whyText": "Only to prepare your order, deliver it and contact you about it. No advertising, no resale, no audience tracking.",
     "recipientsTitle": "Who receives it",
-    "recipientsText": "Only the bookshop. Your order is stored with Neon (database) through Render (server), two hosts located outside Cameroon. If you choose WhatsApp or email, your message also goes through WhatsApp (Meta) or your mail app and Gmail (Google), under their own rules. We never sell or lend your information to anyone.",
+    "recipientsText": "The bookshop, and the technical providers that run the site, all located outside Cameroon: Cloudflare (hosts the site and passes orders on to the server), Render (server) and Neon (database). If you choose WhatsApp or email, your message also goes through WhatsApp (Meta) or your mail app and Gmail (Google), under their own rules. We never sell or lend your information to anyone.",
     "retentionTitle": "How long",
     "retentionText": "Cancelled orders are deleted after 30 days, delivered orders after 12 months. An account is kept while you use it; you can ask for it to be deleted at any time.",
     "browserTitle": "What stays on your phone",
