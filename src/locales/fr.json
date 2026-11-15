@@ -549,7 +549,7 @@
   },
   "privacy": {
     "title": "Confidentialité",
-    "updated": "Ce que nous faisons des informations de votre commande. Mise à jour : 27 octobre 2026.",
+    "updated": "Ce que nous faisons des informations de votre commande. Mise à jour : 15 novembre 2026.",
     "whoTitle": "Qui est responsable",
     "whoText": "Librairie Papeterie du Centre, Carrefour Abbia, Yaoundé. Tél. et WhatsApp : +237 6 93 24 03 96. E-mail : Lipacentre237@gmail.com.",
     "whatTitle": "Quelles informations",
@@ -557,7 +557,7 @@
     "whyTitle": "Pourquoi",
     "whyText": "Uniquement pour préparer votre commande, vous livrer et vous contacter à son sujet. Pas de publicité, pas de revente, pas de mesure d'audience.",
     "recipientsTitle": "Qui les reçoit",
-    "recipientsText": "La librairie seulement. Votre commande est enregistrée chez Neon (base de données) via Render (serveur), deux hébergeurs situés hors du Cameroun. Si vous choisissez WhatsApp ou l'e-mail, votre message passe aussi par WhatsApp (Meta) ou par votre messagerie et Gmail (Google), selon leurs propres règles. Nous ne vendons ni ne prêtons vos informations à personne.",
+    "recipientsText": "La librairie, et les prestataires techniques qui font fonctionner le site, tous situés hors du Cameroun : Cloudflare (hébergement du site et transmission des commandes vers le serveur), Render (serveur) et Neon (base de données). Si vous choisissez WhatsApp ou l'e-mail, votre message passe aussi par WhatsApp (Meta) ou par votre messagerie et Gmail (Google), selon leurs propres règles. Nous ne vendons ni ne prêtons vos informations à personne.",
     "retentionTitle": "Combien de temps",
     "retentionText": "Les commandes annulées sont effacées après 30 jours, les commandes livrées après 12 mois. Un compte est gardé tant que vous l'utilisez ; vous pouvez demander à tout moment qu'il soit supprimé.",
     "browserTitle": "Ce qui reste dans votre téléphone",

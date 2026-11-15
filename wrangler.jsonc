@@ -12,6 +12,13 @@
     // Toute autre adresse : 404.html, qui contient l'application (le routeur affiche la bonne page)
     "not_found_handling": "404-page"
   },
+  // Lancé par `wrangler deploy` (donc par chaque build Cloudflare) : construit le site, puis copie le
+  // catalogue de l'API dans dist/ (catalogue.json, selection.json, articles dans le HTML du catalogue et
+  // des pages de catégorie), pour que le site ne soit pas vide si l'API ne répond pas. API injoignable :
+  // copie vide, le déploiement continue (voir scripts/catalogue-snapshot.mjs).
+  "build": {
+    "command": "npm run build && node --experimental-strip-types scripts/catalogue-snapshot.mjs dist"
+  },
   // Aperçu de chaque branche (commande `wrangler preview` de Cloudflare) : bloc requis, même vide
   "previews": {}
 }
